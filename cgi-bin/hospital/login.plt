@@ -1,3 +1,4 @@
+#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 function renderLoginPage(var msg="")
@@ -46,6 +47,12 @@ function login(var uname,var pass)
 
 
 #main starts here
+if(getenv("HTTP_COOKIE")!=nil)
+{
+  var cookies = cgi.cookies()
+  if(cookies.hasKey("user") and cookies.hasKey("pass") and cookies.hasKey("level"))
+    redirect("dashboard.plt")
+}
 var form = cgi.FormData()
 if(!form.hasKey("username") or !form.hasKey("password"))
   renderLoginPage()

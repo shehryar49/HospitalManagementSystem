@@ -1,3 +1,4 @@
+#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
@@ -16,7 +17,7 @@ function addPatient(var form)
     var status = form["status"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = format("INSERT INTO patients VALUES('%','%','%','%','%');",name,cnic,phone,dob,status)
+    var query = format("INSERT INTO patients VALUES('%','%','%','%','%',NULL);",name,cnic,phone,dob,status)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")
@@ -27,7 +28,7 @@ function addPatient(var form)
     return nil
   }
 }
-function viewall(var form)
+function viewall()
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
@@ -102,11 +103,14 @@ function deletePatient(var form)
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
+    mysql.close(conn)
     printf(successAlert,"Delete QUERY executed.")
+    viewall() #view changed table
   }
   catch(err)
   {
     printf(errAlert,"Deletion failed.")
+    viewall()
     return nil
   }
 }
@@ -207,7 +211,7 @@ if(operation == "add")
 else if(operation == "delete")
   deletePatient(form)
 else if(operation == "view")
-  viewall(form)
+  viewall()
 else if(operation == "search")
   searchPatient(form)
 else if(operation == "update")

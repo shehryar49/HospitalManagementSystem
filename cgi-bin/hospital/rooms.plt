@@ -1,3 +1,4 @@
+#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 

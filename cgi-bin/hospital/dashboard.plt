@@ -1,3 +1,4 @@
+#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import cgi
 var cookies = cgi.cookies()

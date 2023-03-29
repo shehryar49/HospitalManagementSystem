@@ -1,3 +1,4 @@
+#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteItem(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
