@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Doctor Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function calcAttendance()
+    {
+      var att = 0;
+      fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=attinfo')
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+         att = parseInt(html);
+         var element = document.createElement('style'),sheet;
+          document.head.appendChild(element);
+          sheet = element.sheet;
+          var rule = ".box .percent svg circle:nth-child(1){stroke-dashoffset: calc(440px - (440px * "+att.toString()+") / 100);stroke: #24a0ed;}";
+          sheet.insertRule(rule);
+          document.getElementById('percVal').innerHTML = att.toString() +"%";
+
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+  }
+function getInformation()
+{
+    fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=info')
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+        document.getElementById("Information").innerHTML = html;
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+}
+function logout()
+{
+        window.location.href = "logout.plt";
+}
+function showAppointments()
+    {
+        fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=viewspecific')
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+        document.getElementById("responseAppointments").innerHTML = html;
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+    }
+    function searchAppointments()
+    {
+      var date = document.getElementById("app_date").value;
+        fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=searchSpec&date='+date)
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+        document.getElementById("responseAppointments").innerHTML = html;
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+    }
+    function cancelAppointment(elem)
+    {
+      var row = elem.parentElement.parentElement;
+      var cnic = row.children[5].innerHTML;
+      var date = row.children[4].innerHTML;
+      var starttime = row.children[2].innerHTML;
+      var query_string = "d_id="+cnic+"&app_date="+date+"&start="+starttime;
+      query_string = encodeURI(query_string);
+        fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=delete&'+query_string)
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+        var k = document.getElementById("responseAppointments");
+        k.innerHTML = html+k.innerHTML;
+        setTimeout(hideAlerts,3000);
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+    }
+    function getatt()
+    {
+        fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=attendance')
+      .then(function(response) { return response.text()})
+    .then(function(html) {document.getElementById("responseAttendance").innerHTML = html;})
+    .catch(function(err) {console.log('Failed to fetch page: ', err);});
+    }
+</script>
+<style>
+.whattheycallstar{
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+.whattheycallbody{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 30px;
+}
+.box{
+  position: relative;
+  width: 100%;
+  min-width: 200px;
+  height: 300px;
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: rgb(122, 122, 122);
+
+  border:solid;
+  border-color: #24a0ed;
+
+  background-color: rgba(48, 48, 48, 0.9);
+
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  border-radius: 30px;
+}
+.box .percent{
+  
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+.box .percent svg{
+  position: relative;
+  width: 150px
+  height = 150px;
+}
+.box .percent svg circle{
+  width: 150px
+  height = 150px;
+  fill: none;
+  stroke-width: 10;
+  stroke: #e1e1e1;
+  transform: translate(5px, 5px);
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  stroke-linecap: round;
+}
+.box .percent svg circle:nth-child(1)
+{
+  stroke-dashoffset: 0;
+  stroke: #e1e1e1;
+}
+/*added the rule to javascript*/
+.box .percent .number{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #24a0ed;
+}
+.box .percent .number h2 span{
+  font-size: 12px;
+}
+.box .text{
+  padding: 10px 0 0;
+  color:#24a0ed;
+  font-weight: 100;
+  letter-spacing: 1px;
+  font-size: 20px;
+}
+.delBtn
+  {
+    border: none;
+    color: rgb(200,0,0);
+    background-color: transparent;
+
+  }
+  .updateBtn
+  {
+    border: none;
+    color:blue;
+    background-color: transparent;
+  }
+  .table td,
+.table th {
+  word-break: break-word;
+}
+.search_select_box{
+  max-width: 400px;
+}
+.buttonstyle{
+  text-align: center;
+}
+.buttonstyle .btn{
+  width: 100%;
+}
+</style>
+</head>
+<body onload="getInformation();calcAttendance()">
+<div class="container">
+    <br>
+  <div class="row">
+    <div class="col">
+      <h2>Zainab Memorial Hospital</h2>
+    </div>
+    <div class="col"></div>
+    <div class="col">
+    <button class="btn btn-outline-danger float-right" onclick="logout()">Logout</button>
+    </div>
+  </div>
+  <br>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs navbar-dark" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#home">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#appointments">Appointments</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#attendance">Attendance</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="home" class="container tab-pane active" ><br>
+        <h3>Personal Record</h3>
+    <div class="card-body" id="Information" ></div>
+    </br></br>
+    </div>
+    <div id="attendance" class="container tab-pane" ><br>
+      <h3>Attendance History</h3>
+      <div class="whattheycallstar">
+        <div class="whattheycallbody">
+      <div id="attBox" class="box">
+        <div class="percent">
+          <svg>
+            <circle cx="70" cy="70" r="70"></circle>
+            <circle cx="70" cy="70" r="70"></circle>
+          </svg>
+          <div class="number">
+            <h2 id="percVal"><span>%</span></h2>
+          </div>
+        </div>
+        <h2 class="text">Attendance</h1>
+      </div>
+      </div>
+      </div>
+      <div class="buttonstyle">
+        <br>
+        <button class="btn btn-outline-primary" onclick="getatt()">View Details</button>
+    </div>
+    <br>
+    <div id="responseAttendance"></div>
+  </div>
+  <div id="appointments" class="container tab-pane" ><br>
+    <h3>Appointments</h3>
+    <div class="row">
+      <input class="form-control w-25 ml-2" type="text" id="app_date" placeholder="Seach By Date">
+      <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchAppointments()">Search</button>
+    <button class="btn btn-outline-primary btn-sm ml-2" onclick="showAppointments()">View all</button>
+      </div>
+      <br>
+      <div id="responseAppointments">
+      </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
