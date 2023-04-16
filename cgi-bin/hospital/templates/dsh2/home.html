@@ -15,9 +15,9 @@
     ///////////////////////////////////////////////SUCCESS/ERR ALERTS/////////////////////////////
     function hideAlerts()
     {
-      var k = document.getElementsByClassName("alert");
-      if(k.length >= 1)//close alert at the end
-        k[k.length-1].children[0].click();
+      //var k = document.getElementsByClassName("alert");
+      //if(k.length >= 1)//close alert at the end
+      //  k[k.length-1].children[0].click();
     }
     ///////////////////////////////////////////////////PATIENT SCRIPT////////////////////////////////
     function showPatients()
@@ -79,7 +79,7 @@
         console.log('Failed to fetch page: ', err);
     });
     }
-     function addPatient()
+    /*function addPatient()
     {
       var cnic = document.getElementById('cnic2').value;
       var name = document.getElementById('Name').value;
@@ -101,7 +101,7 @@
     .catch(function(err) {
         console.log('Failed to fetch page: ', err);
     });
-    }
+    }*/
     function updatePatient(elem)
     {
       var row = elem.parentElement.parentElement;
@@ -138,27 +138,31 @@
     }*/
     function admit()
     {
-        var datetime = document.getElementById('admissionDate').value 
-        var room = document.getElementById('roomid').value
-        var cnic = document.getElementById('toAdmit').value
-        
-        var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=admit&cnic='+cnic+"&dt="+datetime+"&room="+room;
-        string_url = encodeURI(string_url);
-        fetch(string_url)
-        .then(function(response){ return response.text()})
-        .then(function(html){
-          var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html+whytho.innerHTML;
-          setTimeout(hideAlerts,3000); //is this to hide the success/err alerts after some time?
-        })
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
+
+      var name = document.getElementById('Name').value;
+      var cnic = document.getElementById('cnic2').value;
+      var phone = document.getElementById('phone').value; 
+      var dob = document.getElementById('dob').value;
+      var room = document.getElementById('roomSelect').value
+      
+      
+      var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=admit&cnic='+cnic+"&name="+name+"&phone="+phone+"&dob="+dob+"&room="+room;
+      string_url = encodeURI(string_url);
+      fetch(string_url)
+      .then(function(response){ return response.text()})
+      .then(function(html){
+      var whytho = document.getElementById("response").innerHTML = html;
+      whytho.innerHTML = html+whytho.innerHTML;
+      setTimeout(hideAlerts,3000); //is this to hide the success/err alerts after some time?
+      })
+      .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
     }
     function discharge()
     {
         var status = document.getElementById('statusSelect').value
-        var cnic = document.getElementById('toAdmit').value
+        var cnic = document.getElementById('toDischarge').value
         
-        var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=admit&cnic='+cnic+"&status="+status;
+        var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=discharge&cnic='+cnic+"&status="+status;
         string_url = encodeURI(string_url);
         fetch(string_url)
         .then(function(response){ return response.text()})
@@ -861,32 +865,7 @@ function showUsers()
     <label>Phone</label>
         <br>
         <div id="accordion">
-
-            <div class="card">
-              <div class="card-header">
-                <a class="card-link text-primary" data-toggle="collapse" href="#collapseOne">
-                 Add Record
-                </a>
-              </div>
-              <div id="collapseOne" class="collapse" data-parent="#accordion">
-                <div class="card-body">
-                    <h4>Add record</h4>
-                    <input class="form-control w-25" type="text" id="Name" placeholder="Name">
-                    <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
-                    <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
-                
-                    Date of birth
-                    <input class="form-control mt-2 w-25" type="date" id="dob">
-                
-                    <input class="form-control form-control-sm w-25 mt-2"  type="text" id="status" placeholder="Status">
-                    <button class="btn btn-outline-success btn-sm mt-2" onclick="addPatient()">Add</button>
-                    <br><br>
-                </div>
-              </div>
-            </div>
-
             <div id="idkwutitmeantagain">
-
               <div class="card">
                 <div class="card-header">
                   <a class="card-link" data-toggle="collapse" href="#collapsibleAdmission">
@@ -896,14 +875,30 @@ function showUsers()
                 <div id="collapsibleAdmission" class="collapse" data-parent="#idekwutitmeant">
                   <div class="card-body">
                       <h4>Admission Details</h4>
-    
-                      <input class="form-control w-25" type="text" id="toAdmit" placeholder="Patient CNIC">
-    
-                      Date of Admission
-                      <input class="form-control w-25 mt-2" type="datetime-local" id="admissionDate">
-                      Room
-    
-                      <input class="form-control w-25" type = "text" id="roomid">
+
+                      <input class="form-control w-25" type="text" id="Name" placeholder="Name">
+                    <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
+                    <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
+                
+                      Date of birth
+                      <input class="form-control mt-2 w-25" type="date" id="dob">
+                      Room<br>
+                    <select class="form-select form-select-sm" id="roomSelect" aria-label="Default select example">
+                      <option selected>Room</option>
+                      <option value="1">Cardiology</option>
+                      <option value="2">Neurosurgery</option>
+                      <option value="3">Plastic surgery</option>
+                      <option value="4">ENT</option>
+                      <option value="5">Eye</option>
+                      <option value="6">Paediatric</option>
+                      <option value="7">Nephrology</option>
+                      <option value="8">Gynae</option>
+                      <option value="9">Urology</option>
+                      <option value="10">Medicine</option>
+                      <option value="11">Surgery</option>
+                      <option value="12">Psychiatry</option>
+                    </select>
+                    <br>
                       
                       <button class="btn btn-outline-success btn-sm mt-2" onclick="admit()">Admit</button>
                   </div>
@@ -1149,10 +1144,11 @@ function showUsers()
               <div class="card-body">
                   <h4>Add Appointment</h4>
 
-                  <input class="form-control w-25" type="text" id="cnicDoc" placeholder="Doctor CNIC">
-                  <input class="form-control w-25 mt-2" type="text" id="cnicPatients" placeholder="Patient CNIC">
-
-
+                  <input class="form-control w-25" type="text" id="Name" placeholder="Name">
+                  <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
+                  <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
+                  Date of birth
+                  <input class="form-control mt-2 w-25" type="date" id="dob">
                   Date of Appointment
                   <input class="form-control w-25 mt-2" type="date" id="DateAppointment">
                   Start Time
