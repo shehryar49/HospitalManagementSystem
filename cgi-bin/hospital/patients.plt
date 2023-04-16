@@ -1,4 +1,3 @@
-#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
@@ -109,7 +108,7 @@ function deletePatient(var form)
   }
   catch(err)
   {
-    printf(errAlert,"Deletion failed.")
+    printf(errAlert,"Deletion failed."+err.msg)
     viewall()
     return nil
   }
@@ -150,7 +149,7 @@ function getHistory(var f)
     }
     try{
       var cnic = f["cnic"]
-      var query = "Select p.name, r.cnic, d.name, r.d_id, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from patients as p, records as r, doctors as d where d.cnic = r.d_id and p.cnic = r.cnic and type = 0 and p.cnic ='"+cnic+"';"
+      var query = "Select d.name, r.d_id, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from patients as p, records as r, doctors as d where d.cnic = r.d_id and p.cnic = r.cnic and type = 0 and p.cnic ='"+cnic+"';"
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       mysql.query(conn,query)
@@ -158,7 +157,7 @@ function getHistory(var f)
       var res = mysql.store_result(conn)
       var total = mysql.num_rows(res)
       print("<h2>Appointment History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Patient Name</th><th>Patient Cnic</th><th>Doctor Name</th><th>Doctor CNIC</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th><th></th></tr>")
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Doctor CNIC</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th><th></th></tr>")
       var all = []
       for(var i=1 to total step 1)
       {
@@ -171,12 +170,12 @@ function getHistory(var f)
       }
       print("</table>")
 
-      query = "Select p.name, r.cnic, d.name, r.d_id, r.admitDate, r.expiryDate, a.type , r.fee from patients as p, records as r, doctors as d, rooms as a where a.id = r.r_id and d.cnic = r.d_id and p.cnic = r.cnic and r.type = 1 and p.cnic ='"+cnic+"';"
+      query = "Select d.name, r.d_id, r.admitDate, r.expiryDate, r.fee from patients as p, records as r, doctors as d, rooms as a where a.id = r.r_id and d.cnic = r.d_id and p.cnic = r.cnic and r.type = 1 and p.cnic ='"+cnic+"';"
       mysql.query(conn,query)
       res = mysql.store_result(conn)
       total = mysql.num_rows(res)
       print("<h2>Admission History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Patient Name</th><th>Patient Cnic</th><th>Doctor Name</th><th>Doctor CNIC</th><th>Admit</th><th>Discharge</th><th>Room Type</th><th>Fee</th><th></th></tr>")
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Doctor CNIC</th><th>Admit</th><th>Discharge</th><th>Room Type</th><th>Fee</th><th></th></tr>")
       for(var i=1 to total step 1)
       {
         var fields = mysql.fetch_row_as_str(res)

@@ -1,4 +1,3 @@
-#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 function renderLoginPage(var msg="")

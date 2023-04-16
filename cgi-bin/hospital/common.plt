@@ -2,8 +2,6 @@ import regex
 import cgi
 import mysql
 
-##this is a comment
-
 var successAlert = "<div class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">%<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>"
 var errAlert = "<div class=\"alert alert-warning alert-dismissible fade show\" role=\"alert\">%<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>"
 function isAlpha(var str)

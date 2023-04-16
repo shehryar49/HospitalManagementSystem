@@ -1,4 +1,3 @@
-#!/usr/bin/plutonium
 #!C:/plutonium/plutonium.exe
 import "common.plt"
 
@@ -53,18 +52,18 @@ function show(var f)
 
 function admit(var f)
 {
-    if(!f.hasKey("cnic") or !f.hasKey("dt") or !f.hasKey("room")){
+    if(!f.hasKey("cnic") or !f.hasKey("name") or !f.hasKey("phone") or !f.hasKey("dob") or !f.hasKey("room")){
         print("all parameters not received")
         return nil
     }
     var cnic = f["cnic"]
     if(cnic == ""){
-        print("CNIC cannot be null")
+        print("CNIC cannot be blank")
         return nil
     }
     var room = f["room"]
     if(room == ""){
-        print("Room ID cannot be NUll")
+        print("Room ID cannot be blank")
         return nil
     }
     try
@@ -78,51 +77,50 @@ function admit(var f)
         var row = mysql.fetch_row_as_str(result)
         if(row == nil)
         {
-            print("Patient not entered in database")
-            return nil
+           var dob = f["dob"]
+           var phone = f["phone"]
+           var name = f["name"] 
+           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','not admit');"
+           mysql.query(connection,sqlquery)
         }
+
+        sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+        mysql.query(connection,sqlquery)
+        result = mysql.store_result(connection)
+        row = mysql.fetch_row_as_str(result)
+
         if(row[0] == "deceased")
         {
             printf("Invalid! Patient records states patient has passed away")
             return nil
         }
         ##to check availability of room
-        sqlquery = "select occ, totalBeds, perDay from rooms where id = " + room + " ;"
+        sqlquery = "select id from rooms where dept_id = " + room + " and totalBeds != occ;"
+        
+
         mysql.query(connection,sqlquery)
         result = mysql.store_result(connection)
         row = mysql.fetch_row_as_str(result)
         if(row == nil)
         {
-            print("Room does not exist")
+            print("Empty room not found")
             return nil
         }
-        if(row[0] == row[1])
-        {
-            print("Room Full")
-            return nil
-        }
-
         ##update tables
-        sqlquery = "Update patients Set status = 'Admit' where cnic = '"+cnic +"' ;"
+        sqlquery = "Update patients Set status = 'Admit' where cnic = '"+cnic +"';"
         mysql.query(connection,sqlquery)
 
-        sqlquery = "Update rooms Set occ = occ + 1 where id = "+room+" ;"
+        var roomid = row[0]
+        sqlquery = "Update rooms Set occ = occ + 1 where dept_id = "+room+" and id ="+roomid+";"
         mysql.query(connection,sqlquery)
-        
-        var datetime = f["dt"]
-        if(datetime == ""){
-            sqlquery = "Insert into records values (1,'"+ cnic +"', NOW(), NULL, NULL , NULL, '"+room+"') ;"
-            mysql.query(connection,sqlquery)
-        }
-        else{
-            sqlquery = "Insert into records values (1,'"+ cnic +"', '"+datetime+"' , NULL, NULL , NULL, '"+room+"') ;"
-            mysql.query(connection,sqlquery)
-        }
-
+    
+        sqlquery = "Insert into records values (1,'"+ cnic +"',NOW(), NULL, NULL,NULL,"+roomid+","+room+");"
+        println(sqlquery)
+        mysql.query(connection,sqlquery)
         printf(successAlert,"Success!")
     }
     catch(thrownerror){
-        print(errAlert,"Operation failed: ", thrownerror)
+        printf(errAlert,"Operation failed: "+thrownerror.msg)
         return nil
     }
 }
@@ -138,34 +136,37 @@ function discharge(var f)
         print("CNIC cannot be null")
         return nil
     }
-    var status = f["status"];
+    var status = f["status"]
      try{
         
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
 
         ##get total charges
-        sqlquery = "select perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"');"
+        var sqlquery = "select id, dept_id, perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
+        println(sqlquery)
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
-        var totalcharges = float(row[0])
+        var totalcharges = float(row[2])
+        var id = row[0]
+        var dept_id = row[1]
 
         #update tables
-        var sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';";
-        var mysql.query(connection,sqlquery)
-
-        sqlquery = o"Update records Set expiryDate = NOW(), perDay = datediff(CURDATE(),admitDate) *"+totalcharges+" where id = "+room+" ;"
+        sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';"
         mysql.query(connection,sqlquery)
 
-        sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"');"
+        sqlquery = "Update records Set expiryDate = NOW(), perDay = datediff(CURDATE(),admitDate) *"+totalcharges+" where id = "+id+" and dept_id = "+dept_id+" ;"
+        mysql.query(connection,sqlquery)
+
+        sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"' and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
         mysql.query(connection,sqlquery)
         
 
         printf(successAlert,"Success!")
     }
     catch(thrownerror){
-        printf(errAlert,"Operation failed: ")
+        printf(errAlert,"Operation failed:"+thrownerror.msg)
         return nil
     }
 }
