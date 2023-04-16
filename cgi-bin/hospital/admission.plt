@@ -183,12 +183,12 @@ if(!receivedform.hasKey("operation"))
     print("Error! operation undefined")
     exit()
 }
-var definedoperation = receivedform["operation"]
-if(definedoperation == "show")
+var op = receivedform["operation"]
+if(op == "show")
     show(receivedform)
-else if(definedoperation == "admit")
+else if(op == "admit")
     admit(receivedform)
-else if(definedoperation == "discharge")
+else if(op == "discharge")
     discharge(receivedform)
 else
     print("Unknown operation")
