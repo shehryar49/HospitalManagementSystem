@@ -79,29 +79,6 @@
         console.log('Failed to fetch page: ', err);
     });
     }
-    /*function addPatient()
-    {
-      var cnic = document.getElementById('cnic2').value;
-      var name = document.getElementById('Name').value;
-      var dob = document.getElementById('dob').value;
-      var status = document.getElementById('status').value;
-      var phone = document.getElementById('phone').value;
-      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&status="+status+"&phone="+phone;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/patients.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("response");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
-    }*/
     function updatePatient(elem)
     {
       var row = elem.parentElement.parentElement;
@@ -126,16 +103,6 @@
         console.log('Failed to fetch page: ', err);
     });
     }
-    /*function searchAdmittedPatients()
-    {
-        var cnic = document.getElementById('SearchPatientByIDAdmit').value;
-        var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=show&cnic='+cnic;
-        string_url = encodeURI(string_url);
-        fetch(string_url)
-        .then(function(response){ return response.text()})
-        .then(function(html){document.getElementById("responseAdmission").innerHTML = html;})
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
-    }*/
     function admit()
     {
 
@@ -247,32 +214,6 @@
         console.log('Failed to fetch page: ', err);
     });
     }
-    /*function addDoctor()
-    {
-      var cnic = document.getElementById('cnic3').value;
-      var name = document.getElementById('Name1').value;
-      var dob = document.getElementById('dob1').value;
-      var beg = document.getElementById('shiftbeg1').value;
-      var end = document.getElementById('shiftend1').value;
-      var salary = document.getElementById('salary1').value;
-      var spec = document.getElementById('spec').value;
-      var phone = document.getElementById('phone1').value;
-      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&salary="+salary+"&phone="+phone+"&start="+beg+"&end="+end+"&spec="+spec;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("response1");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
-    }*/
     function updateDoctor(elem)
     {
       var row = elem.parentElement.parentElement;
@@ -920,7 +861,7 @@ function showUsers()
                     Status Change<br>
                     <select class="form-select form-select-sm" id="statusSelect" aria-label="Default select example">
                       <option selected>Status</option>
-                      <option value="Dicharged">Discharged</option>
+                      <option value="Not Admit">Discharged</option>
                       <option value="Deceased">Deceased</option>
                     </select>
                     <br>
