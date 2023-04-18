@@ -107,11 +107,11 @@ function admit(var f)
             return nil
         }
         ##update tables
-        sqlquery = "Update patients Set status = 'Admit' where cnic = '"+cnic +"';"
-        mysql.query(connection,sqlquery)
-
         var roomid = row[0]
         sqlquery = "Update rooms Set occ = occ + 1 where dept_id = "+room+" and id ="+roomid+";"
+        mysql.query(connection,sqlquery)
+
+         sqlquery = "Update patients Set status = 'Admit', r_id = "+roomid+", dept_id = "+room+" where cnic = '"+cnic +"';"
         mysql.query(connection,sqlquery)
     
         sqlquery = "Insert into records values (1,'"+ cnic +"',NOW(), NULL, NULL,NULL,"+roomid+","+room+");"
@@ -127,7 +127,7 @@ function admit(var f)
 
 function discharge(var f)
 {
-      if(!f.hasKey("cnic") or !f.hasKey("status")){
+    if(!f.hasKey("cnic") or !f.hasKey("status")){
         print("all parameters not received")
         return nil
     }
@@ -142,24 +142,33 @@ function discharge(var f)
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
 
-        ##get total charges
-        var sqlquery = "select id, dept_id, perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
-        println(sqlquery)
+        var sqlquery = "Select status from patients where cnic = '"+cnic+"';"
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
+        var patstatus = mysql.fetch_row_as_str(result)
+        if(patstatus[0] != "Admit")
+        {
+            printf(errAlert,"Patient is not admitted, cannot set status as "+status)
+            return nil
+        }
+
+        ##get total charges
+        sqlquery = "select id, dept_id, perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
+        mysql.query(connection,sqlquery)
+        result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
-        var totalcharges = float(row[2])
+        var totalcharges = row[2]
         var id = row[0]
         var dept_id = row[1]
 
         #update tables
+        sqlquery = "Update records Set expiryDate = NOW(), fee = CEILING((TIMESTAMPDIFF(SECOND,'23/4/18 00:00:00', NOW()))/86400)*"+totalcharges+" where r_id = "+id+" and dept_id = "+dept_id+" and cnic = '"+cnic+"' ;"
+        mysql.query(connection,sqlquery)
+
         sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';"
         mysql.query(connection,sqlquery)
 
-        sqlquery = "Update records Set expiryDate = NOW(), perDay = datediff(CURDATE(),admitDate) *"+totalcharges+" where id = "+id+" and dept_id = "+dept_id+" ;"
-        mysql.query(connection,sqlquery)
-
-        sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"' and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
+        sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
         mysql.query(connection,sqlquery)
         
 
@@ -183,12 +192,12 @@ if(!receivedform.hasKey("operation"))
     print("Error! operation undefined")
     exit()
 }
-var op = receivedform["operation"]
-if(op == "show")
+var definedoperation = receivedform["operation"]
+if(definedoperation == "show")
     show(receivedform)
-else if(op == "admit")
+else if(definedoperation == "admit")
     admit(receivedform)
-else if(op == "discharge")
+else if(definedoperation == "discharge")
     discharge(receivedform)
 else
     print("Unknown operation")

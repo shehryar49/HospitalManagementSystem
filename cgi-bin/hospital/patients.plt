@@ -149,7 +149,7 @@ function getHistory(var f)
     }
     try{
       var cnic = f["cnic"]
-      var query = "Select d.name, r.d_id, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from patients as p, records as r, doctors as d where d.cnic = r.d_id and p.cnic = r.cnic and type = 0 and p.cnic ='"+cnic+"';"
+      var query = "select d.name, dept.deptname, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from doctors as d, records as r, departments as dept where r.type = 0 and r.dept_id = dept.dept_id and  d.cnic = r.d_id and r.cnic ='"+cnic+"';"
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       mysql.query(conn,query)
@@ -157,8 +157,7 @@ function getHistory(var f)
       var res = mysql.store_result(conn)
       var total = mysql.num_rows(res)
       print("<h2>Appointment History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Doctor CNIC</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th><th></th></tr>")
-      var all = []
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Department</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th><th></th></tr>")
       for(var i=1 to total step 1)
       {
         var fields = mysql.fetch_row_as_str(res)
@@ -170,12 +169,12 @@ function getHistory(var f)
       }
       print("</table>")
 
-      query = "Select d.name, r.d_id, r.admitDate, r.expiryDate, r.fee from patients as p, records as r, doctors as d, rooms as a where a.id = r.r_id and d.cnic = r.d_id and p.cnic = r.cnic and r.type = 1 and p.cnic ='"+cnic+"';"
+      query = "Select  dept.deptname, r.r_id, r.admitDate, r.expiryDate, r.fee from records as r, departments as dept where dept.dept_id = r.dept_id and r.type = 1 and r.cnic ='"+cnic+"';"
       mysql.query(conn,query)
       res = mysql.store_result(conn)
       total = mysql.num_rows(res)
       print("<h2>Admission History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Doctor CNIC</th><th>Admit</th><th>Discharge</th><th>Room Type</th><th>Fee</th><th></th></tr>")
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Department</th><th>Room No</th><th>Admit</th><th>Discharge</th><th>Fee</th><th></th></tr>")
       for(var i=1 to total step 1)
       {
         var fields = mysql.fetch_row_as_str(res)
