@@ -72,7 +72,6 @@ function searchPatient(var form)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
   print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th></tr>")
-  var all = []
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
