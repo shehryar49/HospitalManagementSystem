@@ -8,18 +8,24 @@ function show(var f)
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
 
-        var query = "select* from rooms"
+        var query = "select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from rooms as r join departments as dept on dept.dept_id = r.dept_id;"
+
+        var deptname = ""
         mysql.query(connection,query)
         var result = mysql.store_result(connection)
         var row = mysql.num_rows(result)
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Type</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>")
         for(var i=1 to row step 1)
         {
             var fields = mysql.fetch_row_as_str(result)
-            print("<tr>")
-            foreach(var field: fields)
-            printf("<td>%</td>",field)
-            print("</tr>")
+            if(fields[0] != deptname)
+            {
+                if(deptname != "")
+                    print("</table>")
+                deptname = fields[0]
+                print("<h2>", deptname,"</h2>")
+                print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
+            }
+            printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td></tr>",fields[1],fields[2],fields[3],fields[4])
         }
         print("</table>")
     }
