@@ -48,8 +48,8 @@ function viewall(var form)
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
-st.cnic = t.cnic;"
+  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
+st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id;"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
