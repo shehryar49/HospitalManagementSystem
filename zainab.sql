@@ -20,7 +20,7 @@ insert into doctors values("Dr. Asa",'32019-8917101-7','0332-6765193','1995-12-1
 
 --department table
 create table departments(dept_id int AUTO_INCREMENT PRIMARY KEY, deptname varchar(30), hod varchar(30));
-alter table departments add constraint FK_D_ID foreign key (hod) references doctors(cnic);
+alter table departments add constraint FK_D_ID foreign key (hod) references doctors(cnic) on update cascade on delete SET NULL;
 insert into departments(deptname,hod) values ('Cardiology','32019-8917101-7');
 insert into departments(deptname,hod) values ('Neurosurgery','35202-7555101-1');
 insert into departments(deptname,hod) values ('Plastic surgery','32910-1927181-7');
@@ -35,7 +35,7 @@ insert into departments(deptname) values ('Psychiatry');
 
 --works in
 create table worksIn(dept_id int, d_id varchar(30));
-alter table worksIn add constraint FK_W_doctor foreign key (d_id) references doctors(cnic);
+alter table worksIn add constraint FK_W_doctor foreign key (d_id) references doctors(cnic) on delete cascade on update cascade;
 alter table worksIn add constraint FK_W_dept foreign key (dept_id) references departments(dept_id);
 insert into worksIn values (1,'32019-8917101-7');
 insert into worksIn values (2,'35202-7555101-1');
@@ -108,12 +108,12 @@ insert into staff values('Abdullah Sheikh','30102-2849041-2','03337482910','1990
 
 --online web app users
 create table users(username varchar(30) PRIMARY KEY,password varchar(30),level int,id varchar(30));
-insert into users values('admin','admin',2, NULL);
-insert into users values('shahryar','plutoniumrocks',2, NULL);
-insert into users values('doc1', 'doc', 3, '35202-7555101-1');
-insert into users values('recep', 'pass', 1, NULL);
-insert into users values('doc2', 'doc2', 3,'32019-8917101-6');
-insert into users values('asa','asa',3,'32019-8917101-7');
+insert into users values('admin','341e72004200005c',2, NULL);
+insert into users values('shahryar','190ed442e0219ab9',2, NULL);
+insert into users values('doc1', 'b8000000b80a2121', 3, '35202-7555101-1');
+insert into users values('recep', 'a24d1600d11e1600', 1, NULL);
+insert into users values('doc2', '02b8000a4202b800', 3,'32019-8917101-6');
+insert into users values('asa','2c00d100160016d1',3,'32019-8917101-7');
 
 --inventory
 create table inventory(id int AUTO_INCREMENT PRIMARY KEY, type varchar(30), no_of_units int, price_per_unit float(24));
@@ -202,9 +202,16 @@ insert into attendance VALUES('32910-1927181-7','2023-3-11','P',1);
 --patient records 
 --type 0 = appointment, type 1 = admission
 create table records(type int, cnic varchar(30),admitDate datetime,expiryDate datetime,fee float,d_id varchar(30),r_id int, dept_id int);
-alter table records add constraint F_rp_id foreign key (cnic) references patients (cnic);
-alter table records add constraint F_rd_id foreign key (d_id) references doctors (cnic);
+
+alter table records add constraint UNIQUE (d_id, cnic, admitDate);
+
+alter table records add constraint F_rp_id foreign key (cnic) references patients (cnic) on update cascade on delete cascade;
 alter table records add constraint F_room_id foreign key (r_id, dept_id) references rooms(id, dept_id);
+
+--doctorid + starttime + cnic
+--doctor = NULL
+--pat cnic //WILL NOT BE SAME
+--if starttime = sametime //SAME patient cannot be admitted at same time
 
 insert into records values (0,'24153-2819301-9', '2023-01-01 10:00:00', '2023-01-01 11:00:00', 3000, '32910-1927181-7', NULL,3);
 insert into records values (0,'35100-1839103-8', '2023-02-11 13:00:00', '2023-02-11 14:00:00', 3000, '34212-3810353-4', NULL,4);
@@ -222,5 +229,17 @@ insert into records values (0,'35142-8193038-5', '2023-01-23 13:00:00', '2023-01
 insert into records values (0,'35100-1839103-8', '2023-01-01 10:00:00', '2023-01-01 11:00:00', 3000, '32019-8917101-7', NULL,1);
 insert into records values (0,'24153-2819301-9', '2022-12-10 15:00:00', '2022-12-10 16:00:00', 3000, '32019-8917101-7', NULL,1);
 
+
 --appointments
-create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date FROM records WHERE type = 0);
+create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
+
+--procedure for deletion
+--DELIMETER $$
+--CREATE PROCEDURE deleteDoctor(nic varchar(30))
+--BEGIN
+--	IF EXISTS (SELECT *  FROM records WHERE d_id = nic and admitDate >= CURDATE()) THEN
+--        SELECT 'Doctor has Appointments!';
+--    ELSE
+--        DELETE FROM doctors WHERE cnic = nic;
+--    END IF;
+--END $$
