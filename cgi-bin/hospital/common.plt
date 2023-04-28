@@ -102,11 +102,11 @@ function boomerHash(var str)
             if(i>=65 and i<=90) # uppercase
               e = char(i+32)
             if(map.hasKey(e))
-              res[k] = (res[k] + map[e])%256
+              res[k] = (res[k] + map[e]) & 255
             else
-              res[k] = (res[k] + char(e))%256
-            var p = i%8
-            res[p] = (res[p] + res[k])%256
+              res[k] = (res[k] + char(e)) & 255
+            var p = i & 7
+            res[p] = (res[p] + res[k]) & 255
             for(var j=1 to p step 1)
               rotateLeft(res)
             k+=1
