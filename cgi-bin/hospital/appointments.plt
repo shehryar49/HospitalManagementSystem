@@ -6,7 +6,7 @@ function searchApp(var start,var end,var all,var doc)
     var k = 0
     foreach(var record: all)
     {
-        if(format("%:00:00",str(start)) == record[1] and format("%:00:00",str(end))==record[2] and record[0]==doc)
+        if(format("%:00:00",str(start)) == record[1] and format("%:00:00",str(end))==record[2] and record[4]==doc)
           return true
         k+=1
     }
@@ -23,34 +23,61 @@ function showAvailable(var f)
     var date = f["date"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = format("select t.name,k.start,k.end
-     from(select a.cnic,a.name,b.dept_id,c.deptname 
-    from doctors as a join worksin as b on a.cnic = b.d_id 
-    join departments as c on c.dept_id=b.dept_id)t 
-    join appointments as k where t.deptname='%' and k.d_id=cnic and k.app_date='%';",dept,date)
+    var query = format("select a.name,a.cnic from doctors as a join worksin as b on a.cnic=b.d_id and b.dept_id = %;",dept)
     mysql.query(conn,query)
     var res = mysql.store_result(conn)
-    var total = mysql.num_rows(res)
-    var all = []
-    for(var i=1 to total step 1)
+    var totalDocs = mysql.num_rows(res) 
+    if(totalDocs == 0) # NO Doctor of requested department
     {
-      var row = mysql.fetch_row_as_str(res)
-     # print(row,"<br>")
-      all.push(row)
+        printf(errAlert,"No Doctor")
+        return nil
     }
-    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th>")
-    foreach(var row: all)
+    var docs = [] # all docs of requested department
+    for(var i=1 to totalDocs step 1)
+      docs.push(mysql.fetch_row_as_str(res))
+    query = format("select doctors.name,t.start,t.end,t.app_date,doctors.cnic from(
+        select * from appointments where dept_id=%)t 
+    join doctors on t.d_id=doctors.cnic and app_date='%';",dept,date)
+    mysql.query(conn,query)
+    res = mysql.store_result(conn)
+    var total = mysql.num_rows(res)
+    if(total != 0)
     {
+        var all = []
+        for(var i=1 to total step 1)
+        {
+          var row = mysql.fetch_row_as_str(res)
+          all.push(row)
+        }
+        print("<br>")
+        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th>")
+        foreach(var row: all)
+        {
+            var start = 9
+            while(start<=16)
+            {
+                var k = searchApp(start,start+1,all,row[4]) #check if this doctor has the slot free
+                if(!k)
+                    printf("<tr><td>%</td><td>%</td><td>%</td></tr>",row[0],start,start+1)
+                start+=1
+            }
+        }
+        print("</table>")
+    }
+    else #we have the doctor but no appointment on given date
+    {
+      print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th>")
+      foreach(var doc: docs)
+      {
         var start = 9
         while(start<=16)
         {
-            var k = searchApp(start,start+1,all,row[0]) #check if this doctor has the slot free
-            if(!k)
-                printf("<tr><td>%</td><td>%</td><td>%</td></tr>",row[0],start,start+1)
-            start+=1
+          printf("<tr><td>%</td><td>%</td><td>%</td></tr>",doc[0],start,start+1)
+          start+=1
         }
+      }
+      print("</table>")
     }
-    print("</table>")
 }
 function addAppointment(var f)
 {
@@ -156,7 +183,8 @@ function viewkeyAppointment(var f)
 }
 function viewAppointment(var f)
 {  
-    try{
+    try
+    {
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
         # Guess what strings in plutonium are multiline by default

@@ -28,7 +28,7 @@ function login(var uname,var pass)
     renderLoginPage("Invalid Username")
     return nil
   }
-  if(row[0]!=pass) #password mismatch
+  if(row[0]!=boomerHash(pass)) #password hash mismatch mismatch
   {
     renderLoginPage("Invalid Password")
     return nil
@@ -37,7 +37,7 @@ function login(var uname,var pass)
   # login was successful
   # set cookies and redirect to dashboard.plt
   print("Set-cookie: user=",uname,"\r\n")
-  print("Set-cookie: pass=",pass,"\r\n")
+  print("Set-cookie: pass=",row[0],"\r\n")
   print("Set-cookie: level=",row[1],"\r\n")
   print("Set-cookie: id=",row[2],"\r\n")
   
