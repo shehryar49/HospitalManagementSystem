@@ -6,7 +6,7 @@ function addinventory(var f)
 {
     if(!f.hasKey("id") or !f.hasKey("type") or !f.hasKey("nou") or !f.hasKey("ppu"))
     {   
-        print("Insfficient Parameters")
+        print("Insufficient Parameters")
         return nil
     }
     var id = f["id"]

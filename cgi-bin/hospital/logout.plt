@@ -1,4 +1,3 @@
-#!/usr/bin/plutonium
 #!C:\plutonium\plutonium.exe
 import cgi
 

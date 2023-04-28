@@ -253,12 +253,11 @@ function getallInfo()
         <b>Date of Birth: </b>%<br><br>
         <b>Age: </b>%<br><br>
         <b>CNIC: </b>%<br><br>
-        <b>Phone No: </b>%<br><br>
-        <b>Specialization: </b>%",data[1],data[0],data[3],data[8],data[1],data[2], data[4])
+        <b>Phone No: </b>%",data[1],data[0],data[3],data[7],data[1],data[2])
   }
   catch(err)
   {
-    printf(errAlert,"Operation failed")
+    printf(errAlert,"Operation failed"+err.msg)
     return nil
   }
 }

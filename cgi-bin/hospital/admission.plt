@@ -5,17 +5,17 @@ function show(var f)
 {
     if(!f.hasKey("cnic"))
     {
-        printf(errAlert,"Bad Request")
+        print("CNIC not received")
         return nil
     }
     var cnic = f["cnic"]
     if(cnic == "")
     {
-        printf(errAlert,"CNIC field can't be empty")
+        print("CNIC cannot be null")
         return nil
     }
-    try
-    {
+    
+    try{
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
         var sqlquery = "select * from patients, rooms where r_id = id and cnic = '" + cnic + "' ;"
@@ -45,7 +45,7 @@ function show(var f)
     }
     catch(thrownerror)
     {
-        print(errAlert,"Operation failed: " + thrownerror.msg)
+        print(errAlert,"Operation failed: ", thrownerror)
         return nil
     }
 }
@@ -53,7 +53,7 @@ function show(var f)
 function admit(var f)
 {
     if(!f.hasKey("cnic") or !f.hasKey("name") or !f.hasKey("phone") or !f.hasKey("dob") or !f.hasKey("room")){
-        printf(errAlert,"Bad Request")
+        print("all parameters not received")
         return nil
     }
     var cnic = f["cnic"]
