@@ -1,7 +1,6 @@
 
 use hospital;
---drop view appointments;
---drop table attendance;
+--drop view appointments;24243-1009440-4ttendance;
 --drop table records;
 --drop table rooms;
 --drop table patients;
@@ -14,24 +13,31 @@ use hospital;
 create table doctors(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,start time,end time,salary int);
 insert into doctors values('Dr. Zabago','32910-1927181-7','03253416969','1987-09-09','9:00','17:00',690000);
 insert into doctors values('Dr. Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', '9:00', '17:00', 900000);
-insert into doctors values('Dr. Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21','16:00', '21:00', 1000000);
-insert into doctors values('Dr. Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10', '13:00', '19:00', 850000);
-insert into doctors values("Dr. Asa",'32019-8917101-7','0332-6765193','1995-12-10','9:00','5:00',231220);
+insert into doctors values('Dr. Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21','9:00', '17:00', 1000000);
+insert into doctors values('Dr. Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10', '9:00', '17:00', 850000);
+insert into doctors values('Dr. Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10','9:00','17:00',231220);
+
+
+insert into doctors values('Dr. Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', '9:00', '17:00', 950000);
+insert into doctors values('Dr. Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', '9:00', '17:00', 700000);
+insert into doctors values('Dr. Kabir Mujtaba', '25754-1021678-5', '1992-8-24', '0317-1020603','9:00', '17:00', 850000);
+insert into doctors values('Dr. Ahmed Hussain', '24243-1009440-4', '1965-9-2', '0311-1001758','9:00', '17:00', 200000);
+
 
 --department table
 create table departments(dept_id int AUTO_INCREMENT PRIMARY KEY, deptname varchar(30), hod varchar(30));
 alter table departments add constraint FK_D_ID foreign key (hod) references doctors(cnic) on update cascade on delete SET NULL;
-insert into departments(deptname,hod) values ('Cardiology','32019-8917101-7');
-insert into departments(deptname,hod) values ('Neurosurgery','35202-7555101-1');
-insert into departments(deptname,hod) values ('Plastic surgery','32910-1927181-7');
-insert into departments(deptname,hod) values ('ENT','34212-3810353-4');
-insert into departments(deptname,hod) values ('Eye','32019-8917101-6');
-insert into departments(deptname) values ('Paediatric');
-insert into departments(deptname) values ('Nephrology');
-insert into departments(deptname) values ('Gynae');
-insert into departments(deptname) values ('Urology');
-insert into departments(deptname) values ('Surgery');
-insert into departments(deptname) values ('Psychiatry');
+insert into departments(deptname,hod) values ('Cardiology','32019-8917101-7'); --1
+insert into departments(deptname,hod) values ('Neurosurgery','35202-7555101-1'); --2
+insert into departments(deptname,hod) values ('Plastic surgery','32910-1927181-7');--3
+insert into departments(deptname,hod) values ('ENT','34212-3810353-4');--4
+insert into departments(deptname,hod) values ('Eye','32019-8917101-6');--5
+insert into departments(deptname,hod) values ('Paediatric', '25754-1021678-5');--6
+insert into departments(deptname,hod) values ('Nephrology', '24243-1009440-4');--7
+insert into departments(deptname,hod) values ('Gynae', '20193-1872451-0');--8
+insert into departments(deptname) values ('Urology');--9
+insert into departments(deptname,hod) values ('Surgery','19820-0174516-2');--10
+insert into departments(deptname) values ('Psychiatry');--11
 
 --works in
 create table worksIn(dept_id int, d_id varchar(30));
@@ -42,6 +48,10 @@ insert into worksIn values (2,'35202-7555101-1');
 insert into worksIn values (3,'32910-1927181-7');
 insert into worksIn values (4,'34212-3810353-4');
 insert into worksIn values (5,'32019-8917101-6');
+insert into worksIn values (6,'25754-1021678-5');
+insert into worksIn values (7,'24243-1009440-4');
+insert into worksIn values (8,'20193-1872451-0');
+insert into worksIn values (10,'19820-0174516-2');
 
 --rooms information
 create table rooms(id int, dept_id int,occ int,totalBeds int, perDay float);
@@ -90,12 +100,12 @@ insert into rooms(id, dept_id, occ, totalBeds, perDay) values(11,11,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,11,0,1,15000);
 
 --patients that ever visited the hospital
-create table patients(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,status varchar(10),r_id int, dept_id int);
+create table patients(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,status varchar(10) CHECK (status = "Discharged" or status = "Admit" or status ="Deceased"),r_id int, dept_id int);
 alter table patients add constraint F_r_id foreign key (r_id, dept_id) references rooms (id,dept_id);
-insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14','Not Admit', NULL, NULL);
-insert into patients values('Samin','35100-1839103-8','03202132231','1948-10-25','Not Admit',NULL, NULL);
-insert into patients values('Muntaha','35192-2837181-3','03228190326','1997-01-10','Not Admit',NULL, NULL);
-insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-24','Not Admit',NULL, NULL);
+insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14','Discharged', NULL, NULL);
+insert into patients values('Samin','35100-1839103-8','03202132231','1948-10-25','Deceased',NULL, NULL);
+insert into patients values('Muntaha','35192-2837181-3','03228190326','1997-01-10','Discharged',NULL, NULL);
+insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-24','Discharged',NULL, NULL);
 insert into patients values('Adeel','35142-8193038-5','03351627002','1990-06-03','Admit', 2,4);
 
 --hospital staff
@@ -108,12 +118,12 @@ insert into staff values('Abdullah Sheikh','30102-2849041-2','03337482910','1990
 
 --online web app users
 create table users(username varchar(30) PRIMARY KEY,password varchar(30),level int,id varchar(30));
-insert into users values('admin','341e72004200005c',2, NULL);
-insert into users values('shahryar','190ed442e0219ab9',2, NULL);
-insert into users values('doc1', 'b8000000b80a2121', 3, '35202-7555101-1');
-insert into users values('recep', 'a24d1600d11e1600', 1, NULL);
-insert into users values('doc2', '02b8000a4202b800', 3,'32019-8917101-6');
-insert into users values('asa','2c00d100160016d1',3,'32019-8917101-7');
+insert into users values('admin','341e72004200005c',2, NULL); --admin
+insert into users values('shahryar','190ed442e0219ab9',2, NULL); --plutoniumrocks
+insert into users values('doc1', 'b8000000b80a2121', 3, '35202-7555101-1'); --doc
+insert into users values('recep', 'a24d1600d11e1600', 1, NULL); --pass
+insert into users values('doc2', '02b8000a4202b800', 3,'32019-8917101-6'); --doc2
+insert into users values('asa','2c00d100160016d1',3,'32019-8917101-7'); --asa
 
 --inventory
 create table inventory(id int AUTO_INCREMENT PRIMARY KEY, type varchar(30), no_of_units int, price_per_unit float(24));
@@ -186,6 +196,65 @@ insert into attendance VALUES('32019-8917101-7','2023-3-8','P',2);
 insert into attendance VALUES('32019-8917101-7','2023-3-9','P',2);
 insert into attendance VALUES('32019-8917101-7','2023-3-10','P',2);
 insert into attendance VALUES('32019-8917101-7','2023-3-11','P',2);
+
+insert into attendance VALUES('19820-0174516-2','2023-3-1','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-2','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-3','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-4','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-5','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-6','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-7','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-8','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-9','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-10','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-11','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-12','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-13','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-14','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-15','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-16','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-17','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-18','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-20','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-21','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-22','P',2);
+insert into attendance VALUES('19820-0174516-2','2023-3-23','P',2);
+
+insert into attendance VALUES('20193-1872451-0','2023-3-1','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-2','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-3','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-4','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-5','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-6','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-7','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-8','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-9','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-10','P',2);
+insert into attendance VALUES('20193-1872451-0','2023-3-11','P',2);
+
+insert into attendance VALUES('25754-1021678-5','2023-3-1','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-2','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-3','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-4','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-5','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-6','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-7','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-8','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-9','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-10','P',2);
+insert into attendance VALUES('25754-1021678-5','2023-3-11','P',2);
+
+insert into attendance VALUES('24243-1009440-4','2023-3-1','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-2','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-3','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-4','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-5','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-6','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-7','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-8','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-9','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-10','P',2);
+insert into attendance VALUES('24243-1009440-4','2023-3-11','P',2);
 
 insert into attendance VALUES('32910-1927181-7','2023-3-1','P',1);
 insert into attendance VALUES('32910-1927181-7','2023-3-2','P',1);
