@@ -6,7 +6,7 @@ var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHi
 function addPatient(var form)
 {
   if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob") or !form.hasKey("status") or !form.hasKey("phone"))
-    println("INVALID REQUEST! Insuffcient parameters!")
+    printf(errAlert,"Bad Request")
   try
   {
     var name = form["name"]
@@ -60,14 +60,14 @@ function searchPatient(var form)
 {
   if(!form.hasKey("keyval") or !form.hasKey("keyname"))
   {
-    print("Insufficient parameters!")
+    print(errAlert,"Bad Request")
     return nil
   }
   var val = form["keyval"]
   var name = form["keyname"]
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT * FROM patients where "+name+" = "+" '"+val+"'"
+  var query = "SELECT name,cnic,phone,dob,status FROM patients where "+name+" = "+" '"+val+"'"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
@@ -91,7 +91,7 @@ function deletePatient(var form)
   #deletion is done by cnic(primary key)
   if(!form.hasKey("cnic"))
   {
-    print("Insufficient parameters")
+    print(errAlert,"Bad Request")
     return nil
   }
   #there are SQL injection vulnerabilities
@@ -103,7 +103,7 @@ function deletePatient(var form)
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
     mysql.close(conn)
-    printf(successAlert,"Delete QUERY executed.")
+    printf(successAlert,"Delete Query executed.")
     viewall() #view changed table
   }
   catch(err)
@@ -117,7 +117,7 @@ function update(var form)
 {
   if(!form.hasKey("cnic") or !form.hasKey("name") or !form.hasKey("dob") or !form.hasKey("status"))
   {
-    print("Insuffcient parameters!")
+    print(errAlert,"Bad Request")
     return nil
   }
   var cnic = form["cnic"] 
@@ -131,7 +131,7 @@ function update(var form)
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
-    printf(successAlert,"Update QUERY executed.")
+    printf(successAlert,"Update Query executed.")
   }
   catch(err)
   {
@@ -139,12 +139,11 @@ function update(var form)
     return nil
   }
 }
-
 function getHistory(var f)
 {
     if(!f.hasKey("cnic"))
     {
-      printf(errAlert,"Insufficient Parameters received")
+      printf(errAlert,"Bad Request")
       return nil
     }
     try{
@@ -195,7 +194,7 @@ function getHistory(var f)
 
 #main starts from here
 checkSignin()
-print("Content-type: text/html\r\n\r\n")
+htmlHeader()
 ## VALIDATE REQUEST ##
 var form = cgi.FormData()
 if(!form.hasKey("operation"))

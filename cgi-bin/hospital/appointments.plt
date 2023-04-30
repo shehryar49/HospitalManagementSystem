@@ -1,6 +1,7 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"cancelAppointment(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
+var booknow = "<button class=\"btn btn-outline-dark btn-sm mt-2\" onclick=\"addAppointment(this)\">Book Now</button>"
 function searchApp(var start,var end,var all,var doc)
 {
     var k = 0
@@ -50,7 +51,7 @@ function showAvailable(var f)
           all.push(row)
         }
         print("<br>")
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th>")
+        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th><th>Doctor CNIC</th><th></th>")
         foreach(var row: all)
         {
             var start = 9
@@ -58,7 +59,7 @@ function showAvailable(var f)
             {
                 var k = searchApp(start,start+1,all,row[4]) #check if this doctor has the slot free
                 if(!k)
-                    printf("<tr><td>%</td><td>%</td><td>%</td></tr>",row[0],start,start+1)
+                    printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td><td>%</td></tr>",row[0],start,start+1,row[4],booknow)
                 start+=1
             }
         }
@@ -66,13 +67,13 @@ function showAvailable(var f)
     }
     else #we have the doctor but no appointment on given date
     {
-      print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th>")
+      print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th><th>Doctor CNIC</th><th></th>")
       foreach(var doc: docs)
       {
         var start = 9
         while(start<=16)
         {
-          printf("<tr><td>%</td><td>%</td><td>%</td></tr>",doc[0],start,start+1)
+          printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td><td>%</td></tr>",doc[0],start,start+1,doc[1],booknow)
           start+=1
         }
       }
@@ -81,30 +82,55 @@ function showAvailable(var f)
 }
 function addAppointment(var f)
 {
-    if(!f.hasKey("p_id") or !f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("end") or !f.hasKey("app_date"))
+    if(!f.hasKey("name") or !f.hasKey("p_id") or !f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("dob") or !f.hasKey("app_date") or !f.hasKey("phone") or !f.hasKey("dept") or !f.hasKey("endtime"))
     {   
-        printf(errAlert,"Insfficient Parameters")
+        printf(errAlert,"Bad Request")
         return nil
     }
+    var cnic = f["p_id"]
+    var dept = f["dept"]
     var app_date = f["app_date"]
-    var d_id = f["d_id"]
-    var start = f["start"]
-
-    var admit = app_date+" "+start
-    ##println(admit,"<br>")
-    if(app_date == "" or d_id == "" or start == "")
-    {
-        printf(errAlert,"doctor cnic, app_date, start time cannot be NULL")
+    if(cnic == "" or dept == "" or app_date == ""){
+        print(errAlert, "Insufficient Parameters")
         return nil
     }
-    var p_id = f["p_id"]
-    var end =f["end"]
-    var expire = app_date+" "+end
     try
     {
         var connection = mysql.init()
+        mysql.real_connect(connection, "localhost", "root", "password", "hospital")
+        ##to see if patient is entered in database
+        var sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+        mysql.query(connection,sqlquery)
+        var result = mysql.store_result(connection)
+        var row = mysql.fetch_row_as_str(result)
+        
+        if(row == nil)
+        {
+           var dob = f["dob"]
+           var phone = f["phone"]
+           var name = f["name"] 
+           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','not admit');"
+           mysql.query(connection,sqlquery)
+        }
+
+        sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+        mysql.query(connection,sqlquery)
+        result = mysql.store_result(connection)
+        row = mysql.fetch_row_as_str(result)
+        if(row[0] == "deceased")
+        {
+            printf("Invalid! Patient records states patient has passed away")
+            return nil
+        }
+
+        var start = f["start"]
+        var admit = app_date+" "+start ##datetime
+        ##println(admit,"<br>")
+        var end = f["endtime"]
+        var d_id = f["d_id"]
+        connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query = format("INSERT INTO records VALUES(0,'%','%','%', NULL ,'%',NULL)",p_id, admit, expire, d_id)
+        var query = format("INSERT INTO records VALUES(0,'%','%','%', NULL ,'%',NULL,%)",cnic, admit, end, d_id,dept)
         mysql.query(connection,query)
         printf(successAlert,"Success")
     }
@@ -114,12 +140,11 @@ function addAppointment(var f)
         return nil
     }
 }
-
 function cancelAppointment(var f)
 {
     if(!f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("app_date"))
     {   
-        print("Insufficient Parameters")
+        print("Bad Request")
         return nil
     }
     var app_date = f["app_date"]
@@ -127,7 +152,7 @@ function cancelAppointment(var f)
     var start = f["start"]
     if(app_date == "" or d_id == "" or start == "")
     {
-        print("doctor cnic, app_date, start time cannot be NULL")
+        print(errAlert,"Insufficient Parameters")
         return nil
     }
     else
@@ -140,20 +165,19 @@ function cancelAppointment(var f)
             mysql.query(connection,query)
             printf(successAlert,"Success")
         }
-    catch(err)
-    {
-        print(errAlert,"Operation Failed")
-        return nil
-    }
+        catch(err)
+        {
+            print(errAlert,"Operation Failed")
+            return nil
         }
+    }
 }
-
 function viewkeyAppointment(var f)
 {  
     try{
         if(!f.hasKey("keyval") or !f.hasKey("keyname"))
         {
-            printf(errAlert,"Insufficient Parameters Passed!")
+            printf(errAlert,"Bad request")
             return nil
         }
         var keyval = f["keyval"]
@@ -285,4 +309,4 @@ else if(request == "viewspecific")
 else if(request == "showAvailable")
   showAvailable(formData)
 else
-    print("Unknown Operation")
+    print("INVALID REQUEST! Unknown operation!")

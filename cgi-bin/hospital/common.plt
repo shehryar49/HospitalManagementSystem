@@ -51,7 +51,6 @@ function checkSignin()
     exit()
   }
 }
-
 var map = {"0": 0," ": 0,",": 11,".": 111,"?": 1111,"!": 11111,"1": 1,"2": 2,"3": 3,"4": 4,"5": 5,"6": 6,"7": 7,"8": 8,"9": 9,"a": 22,"b": 222,"c": 2222,"d": 33,"e": 333,"f": 3333,"g": 44,"h": 444,"i": 4444,"j": 55,"k": 555,"l": 5555,"m": 66,"n": 666,"o": 6666,"p": 77,"q": 777,"r": 7777,"s": 77777,"t": 88,"u": 888,"v": 8888,"w": 99,"x": 999,"y": 9999,"z": 99999}
 function hexEncode(var bytes)
 {
@@ -110,8 +109,7 @@ function boomerHash(var str)
             for(var j=1 to p step 1)
               rotateLeft(res)
             k+=1
-        }
-        
+        }      
     }
     return hexEncode(res)
 }

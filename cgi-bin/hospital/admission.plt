@@ -49,7 +49,6 @@ function show(var f)
         return nil
     }
 }
-
 function admit(var f)
 {
     if(!f.hasKey("cnic") or !f.hasKey("name") or !f.hasKey("phone") or !f.hasKey("dob") or !f.hasKey("room")){
@@ -57,13 +56,9 @@ function admit(var f)
         return nil
     }
     var cnic = f["cnic"]
-    if(cnic == ""){
-        print("CNIC cannot be blank")
-        return nil
-    }
     var room = f["room"]
-    if(room == ""){
-        print("Room ID cannot be blank")
+    if(cnic == "" or room == ""){
+        print(errAlert, "Insufficient Parameters")
         return nil
     }
     try
@@ -80,7 +75,7 @@ function admit(var f)
            var dob = f["dob"]
            var phone = f["phone"]
            var name = f["name"] 
-           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','not admit');"
+           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Discharged');"
            mysql.query(connection,sqlquery)
         }
 
@@ -89,9 +84,9 @@ function admit(var f)
         result = mysql.store_result(connection)
         row = mysql.fetch_row_as_str(result)
 
-        if(row[0] == "deceased")
+        if(row[0] == "Deceased")
         {
-            printf("Invalid! Patient records states patient has passed away")
+            printf(errAlert,"Invalid! Patient records states patient has passed away")
             return nil
         }
         ##to check availability of room
@@ -124,7 +119,6 @@ function admit(var f)
         return nil
     }
 }
-
 function discharge(var f)
 {
     if(!f.hasKey("cnic") or !f.hasKey("status")){
@@ -175,18 +169,15 @@ function discharge(var f)
         printf(successAlert,"Success!")
     }
     catch(thrownerror){
-        printf(errAlert,"Operation failed:"+thrownerror.msg)
+        printf(errAlert,"Operation failed: Make sure patient status is set correctly")
         return nil
     }
 }
 
 
-
 checkSignin()
-print("Content-type: text/html\r\n\r\n")
-
+htmlHeader()
 var receivedform = cgi.FormData()
-
 if(!receivedform.hasKey("operation"))
 {
     print("Error! operation undefined")
@@ -200,4 +191,4 @@ else if(definedoperation == "admit")
 else if(definedoperation == "discharge")
     discharge(receivedform)
 else
-    print("Unknown operation")
+    print("INVALID REQUEST! Unknown operation!")

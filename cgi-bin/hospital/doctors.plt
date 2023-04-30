@@ -48,7 +48,7 @@ function viewall(var form)
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
+  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where b.cnic = a.cnic)t on
 st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id;"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
@@ -138,18 +138,28 @@ function fireDoctor(var form)
   }
   if(!form.hasKey("cnic"))
   {
-    print("Insufficient parameters")
+    print("Bad Request")
     return nil
   }
   #there are SQL injection vulnerabilities
   #to be fixed later
-  var query = format("DELETE FROM doctors WHERE cnic='%';",form["cnic"])
+  var query = format("Select * from appointments where d_id = '%' and start >= CURDATE();", form["cnic"]) #checks if doctor has any pending appointments
   try
   {
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
-    printf(successAlert,"Delete QUERY executed.")
+    var res = mysql.store_result(conn)
+    var row = mysql.fetch_row_as_str(res)
+
+    if(row == nil)
+    {
+      query = format("DELETE FROM doctors WHERE cnic='%';",form["cnic"])
+      mysql.query(conn,query)
+      printf(successAlert,"Delete QUERY executed.")
+    }
+    else
+      printf(errAlert, "Doctor has pending appointments!")
   }
   catch(err)
   {
