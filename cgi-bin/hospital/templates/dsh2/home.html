@@ -17,7 +17,7 @@
       fetch('/cgi-bin/hospital/stats.plt')
     .then(function(response) {return response.json()})
     .then(function(json) {
-      if(json["code"]!=200) //api error
+      if(json["code"]!=500) //api error
       {
         throw "Stats API failed.";
       }
