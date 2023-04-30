@@ -80,5 +80,5 @@ try
 }
 catch(err)
 {
-    printf("{\"code\": 100}")
+    printf("{\"code\": 500}")
 }
