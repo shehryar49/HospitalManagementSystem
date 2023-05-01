@@ -6,7 +6,7 @@ function addinventory(var f)
 {
     if(!f.hasKey("id") or !f.hasKey("type") or !f.hasKey("nou") or !f.hasKey("ppu"))
     {   
-        print("Insufficient Parameters")
+        print("Insfficient Parameters")
         return nil
     }
     var id = f["id"]
@@ -77,7 +77,7 @@ function viewinventory(var f)
     mysql.query(connection,query)
     var res = mysql.store_result(connection)
     var total = mysql.num_rows(res)
-    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Type</th><th>Occupied Beds</th><th>Total Beds</th><th></th><th></th></tr>")
+    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Type</th><th>Units in Stock</th><th>Price</th><th></th><th></th></tr>")
     for(var i=1 to total step 1)
     {
         var fields = mysql.fetch_row_as_str(res)

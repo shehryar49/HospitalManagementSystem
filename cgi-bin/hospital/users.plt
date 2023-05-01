@@ -14,7 +14,7 @@ function addUser(var form)
     var password = form["password"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = format("INSERT INTO users VALUES('%','%','%','%');",username,password,level,cnic)
+    var query = format("INSERT INTO users VALUES('%','%','%','%');",username,boomerHash(password),level,cnic)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")

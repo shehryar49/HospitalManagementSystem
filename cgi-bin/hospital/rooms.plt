@@ -23,7 +23,7 @@ function show(var f)
                     print("</table>")
                 deptname = fields[0]
                 print("<h2>", deptname,"</h2>")
-                print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Room No.</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
+                print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
             }
             printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td></tr>",fields[1],fields[2],fields[3],fields[4])
         }
@@ -92,17 +92,17 @@ function search(var f)
 print("Content-type: text/html\r\n\r\n")
 checkSignin()
 
-var form = cgi.FormData()
-if(!form.hasKey("operation"))
+var sentdata = cgi.FormData()
+if(!sentdata.hasKey("operation"))
 {
     printf("operation undefined!")
     exit()
 }
-var torun = form["operation"]
+var torun = sentdata["operation"]
 if(torun == "show")
-    show(form)
+    show(sentdata)
 else if(torun == "search")
-    search(form)
+    search(sentdata)
 else
     printf("undefined operation")
 

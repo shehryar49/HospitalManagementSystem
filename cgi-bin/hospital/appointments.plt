@@ -82,7 +82,7 @@ function showAvailable(var f)
 }
 function addAppointment(var f)
 {
-    if(!f.hasKey("name") or !f.hasKey("p_id") or !f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("dob") or !f.hasKey("app_date") or !f.hasKey("phone") or !f.hasKey("dept") or !f.hasKey("endtime"))
+    if(!f.hasKey("name") or !f.hasKey("p_id") or !f.hasKey("start") or !f.hasKey("dob") or !f.hasKey("app_date") or !f.hasKey("phone") or !f.hasKey("dept") or !f.hasKey("end"))
     {   
         printf(errAlert,"Bad Request")
         return nil
@@ -99,24 +99,25 @@ function addAppointment(var f)
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
         ##to see if patient is entered in database
+        
         var sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+        println(sqlquery,"<br>")
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
-        
+        println(row,"<br>")
         if(row == nil)
         {
            var dob = f["dob"]
            var phone = f["phone"]
            var name = f["name"] 
-           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','not admit');"
+           sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Not Admit');"
            mysql.query(connection,sqlquery)
+           sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+           mysql.query(connection,sqlquery)
+           result = mysql.store_result(connection)
+           row = mysql.fetch_row_as_str(result)
         }
-
-        sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
-        mysql.query(connection,sqlquery)
-        result = mysql.store_result(connection)
-        row = mysql.fetch_row_as_str(result)
         if(row[0] == "deceased")
         {
             printf("Invalid! Patient records states patient has passed away")
@@ -126,7 +127,7 @@ function addAppointment(var f)
         var start = f["start"]
         var admit = app_date+" "+start ##datetime
         ##println(admit,"<br>")
-        var end = f["endtime"]
+        var end = f["end"]
         var d_id = f["d_id"]
         connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
@@ -136,7 +137,7 @@ function addAppointment(var f)
     }
     catch(err)
     {
-        printf(errAlert,"Operation Failed")
+        printf(errAlert,"Operation Failed"+err.msg)
         return nil
     }
 }
