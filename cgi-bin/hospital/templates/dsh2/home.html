@@ -17,7 +17,7 @@
       fetch('/cgi-bin/hospital/stats.plt')
     .then(function(response) {return response.json()})
     .then(function(json) {
-      if(json["code"]!=500) //api error
+      if(json["code"]!=200) //api error
       {
         throw "Stats API failed.";
       }
@@ -532,14 +532,18 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-    function addAppointment()
+    function addAppointment(elem)
     {
-      var cnic = document.getElementById('cnicDoc').value;
-      var date = document.getElementById('DateAppointment').value;
-      var starttime = document.getElementById('Appstart').value;
-      var endtime = document.getElementById('Append').value;
-      var cnicpatient = document.getElementById('cnicPatients').value;
-      var query_string = "d_id="+cnic+"&app_date="+date+"&start="+starttime+"&end="+endtime+"&p_id="+cnicpatient;
+      var date = document.getElementById('appDate').value;
+      var cnicpatient = document.getElementById('appPatCnic').value;
+      var dept = document.getElementById('appDeptSelect').value;
+      var name = document.getElementById('appPatName').value;
+      var dob = document.getElementById('appPatDob').value;
+      var phone = document.getElementById('appPatPhone').value;
+      var docCnic = elem.parentElement.parentElement.children[3].innerHTML;
+      var starttime = elem.parentElement.parentElement.children[1].innerHTML;
+      var endtime = elem.parentElement.parentElement.children[2].innerHTML;
+      var query_string ="app_date="+date+"&start="+starttime+"&end="+endtime+"&p_id="+cnicpatient+"&dept="+dept+"&name="+name+"&dob="+dob+"&phone="+phone+"&d_id="+docCnic;
       query_string = encodeURI(query_string);
       fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=add&'+query_string)
     .then(function(response) {
@@ -555,7 +559,27 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-////ITEM CODE
+    function showAvailable()
+    {
+      var dept = document.getElementById('appDeptSelect').value;
+      var date = document.getElementById('appDate').value;
+      var query_string = "dept="+encodeURIComponent(dept)+"&date="+encodeURIComponent(date)+"&operation=showAvailable";
+      
+      fetch('http://localhost/cgi-bin/hospital/appointments.plt?'+query_string)
+    .then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text()
+    })
+    .then(function(html) {
+        var k=document.getElementById("responseAppointments");
+        k.innerHTML = html;
+        //setTimeout(hideAlerts,3000);
+    })
+    .catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+    }
+    ////ITEM CODE
     function showItem()
     {
         fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=view')
@@ -794,7 +818,7 @@ function showUsers()
   }
   .table td,
 .table th {
-  word-break: break-word;
+
 }
 .search_select_box{
   max-width: 400px;
@@ -858,18 +882,25 @@ function showUsers()
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
     </div>
     <br>
-    Key:
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Key
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <input class="ml-1" type="radio" id="patKeyCNIC" name="patKey" value="CNIC" checked="checked">
+        <label>CNIC</label><br>
+        <input class="ml-1" type="radio" id="patKeyName" name="patKey" value="Name">
+        <label>Name</label><br>
+        <input class="ml-1" type="radio" id="patKeyDOB" name="patKey" value="DOB">
+        <label>DOB</label><br>
+        <input class="ml-1" type="radio" id="patKeyStatus" name="patKey" value="Status">
+        <label>Status</label><br>
+        <input class="ml-1" type="radio" id="patKeyPhone" name="patKey" value="Phone">
+        <label>Phone</label>
+    
+      </div>
+    </div>
     <br>
-    <input type="radio" id="patKeyCNIC" name="patKey" value="CNIC" checked="checked">
-    <label>CNIC</label>
-    <input type="radio" id="patKeyName" name="patKey" value="Name">
-    <label>Name</label>
-    <input type="radio" id="patKeyDOB" name="patKey" value="DOB">
-    <label>DOB</label>
-    <input type="radio" id="patKeyStatus" name="patKey" value="Status">
-    <label>Status</label>
-    <input type="radio" id="patKeyPhone" name="patKey" value="Phone">
-    <label>Phone</label>
         <br>
         <div id="accordion">
             <div id="idkwutitmeantagain">
@@ -955,24 +986,30 @@ function showUsers()
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="showStaff()">View all</button>
     </div>
     <br>
-        Key:
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+       Key
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <input class="ml-1" type="radio" id="staffKeyCNIC" name="staffKey" value="CNIC" checked="checked">
+        <label>CNIC</label><br>
+        <input class="ml-1" type="radio" id="staffKeyName" name="staffKey" value="Name">
+        <label>Name</label><br>
+        <input class="ml-1" type="radio" id="staffKeyDOB" name="staffKey" value="DOB">
+        <label>DOB</label><br>
+        <input class="ml-1" type="radio" id="staffKeySalary" name="staffKey" value="Salary">
+        <label>Salary</label><br>
+        <input class="ml-1" type="radio" id="staffKeyPhone" name="staffKey" value="Phone">
+        <label>Phone</label><br>
+        <input class="ml-1" type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
+        <label>Designation</label><br>
+        <input class="ml-1" type="radio" id="staffKeyBeg" name="staffKey" value="Shfit End">
+        <label>Shfit begin</label><br>
+        <input class="ml-1" type="radio" id="staffKeyEnd" name="staffKey" value="Shift Begin">
+        <label>Shift end</label><br>
+      </div>
+    </div>
         <br>
-        <input type="radio" id="staffKeyCNIC" name="staffKey" value="CNIC" checked="checked">
-        <label>CNIC</label>
-        <input type="radio" id="staffKeyName" name="staffKey" value="Name">
-        <label>Name</label>
-        <input type="radio" id="staffKeyDOB" name="staffKey" value="DOB">
-        <label>DOB</label>
-        <input type="radio" id="staffKeySalary" name="staffKey" value="Salary">
-        <label>Salary</label>
-        <input type="radio" id="staffKeyPhone" name="staffKey" value="Phone">
-        <label>Phone</label>
-        <input type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
-        <label>Designation</label>
-        <input type="radio" id="staffKeyBeg" name="staffKey" value="Shfit End">
-        <label>Shfit begin</label>
-        <input type="radio" id="staffKeyEnd" name="staffKey" value="Shift Begin">
-        <label>Shift end</label>
         <br>
         <div id="notaccordion">
 
@@ -1056,24 +1093,31 @@ function showUsers()
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="showDoctors()">View all</button>
         </div>
         <br>
-        Key:
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input class="ml-1" type="radio" id="docKeyCNIC" name="docKey" value="CNIC" checked="checked">
+            <label>CNIC</label><br>
+            <input class="ml-1" type="radio" id="docKeyName" name="docKey" value="Name">
+            <label>Name</label><br>
+            <input class="ml-1" type="radio" id="docKeyDOB" name="docKey" value="DOB">
+            <label>DOB</label><br>
+            <input class="ml-1" type="radio" id="docKeySalary" name="docKey" value="Salary">
+            <label>Salary</label><br>
+            <input class="ml-1" type="radio" id="docKeyPhone" name="docKey" value="Phone">
+            <label>Phone</label><br>
+            <input class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
+            <label>Specialization</label><br>
+            <input class="ml-1" type="radio" id="docKeyBeg" name="docKey" value="Shfit End">
+            <label>Shfit begin</label><br>
+            <input class="ml-1" type="radio" id="docKeyEnd" name="docKey" value="Shift Begin">
+            <label>Shift end</label>            
+          </div>
+        </div>
         <br>
-        <input type="radio" id="docKeyCNIC" name="docKey" value="CNIC" checked="checked">
-        <label>CNIC</label>
-        <input type="radio" id="docKeyName" name="docKey" value="Name">
-        <label>Name</label>
-        <input type="radio" id="docKeyDOB" name="docKey" value="DOB">
-        <label>DOB</label>
-        <input type="radio" id="docKeySalary" name="docKey" value="Salary">
-        <label>Salary</label>
-        <input type="radio" id="docKeyPhone" name="docKey" value="Phone">
-        <label>Phone</label>
-        <input type="radio" id="docKeySpec" name="docKey" value="Spec">
-        <label>Specialization</label>
-        <input type="radio" id="docKeyBeg" name="docKey" value="Shfit End">
-        <label>Shfit begin</label>
-        <input type="radio" id="docKeyEnd" name="docKey" value="Shift Begin">
-        <label>Shift end</label>
+
         <br>
         <div id="accordion1">
 
@@ -1121,22 +1165,30 @@ function showUsers()
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchAppointments()">Search</button>
     <button class="btn btn-outline-primary btn-sm ml-2" onclick="showAppointments()">View all</button>
       </div>
-      Key:
-        <br>
-        <input type="radio" id="didk" name="ak" value="d_id" checked="checked">
-        <label>Doctor CNIC</label>
-        <input type="radio" id="pidk" name="ak" value="p_id">
-        <label>Patient CNIC</label>
-        <input type="radio" id="stk" name="ak" value="starttime">
-        <label>Start Time</label>
-        <input type="radio" id="etk" name="ak" value="endtime">
-        <label>End Time</label>
-        <input type="radio" id="dk" name="ak" value="app_date">
-        <label>Date</label>
-        <input type="radio" id="dnk" name="ak" value="d.name">
-        <label>Doctor Name</label>
-        <input type="radio" id="pnk" name="ak" value="p.name">
-        <label>Patient Name</label>
+      <br>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Key
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <input class="ml-1" type="radio" id="didk" name="ak" value="d_id" checked="checked">
+          <label>Doctor CNIC</label><br>
+          <input class="ml-1" type="radio" id="pidk" name="ak" value="p_id">
+          <label>Patient CNIC</label><br>
+          <input class="ml-1" type="radio" id="stk" name="ak" value="starttime">
+          <label>Start Time</label><br>
+          <input class="ml-1" type="radio" id="etk" name="ak" value="endtime">
+          <label>End Time</label><br>
+          <input class="ml-1" type="radio" id="dk" name="ak" value="app_date">
+          <label>Date</label><br>
+          <input class="ml-1" type="radio" id="dnk" name="ak" value="d.name">
+          <label>Doctor Name</label><br>
+          <input class="ml-1" type="radio" id="pnk" name="ak" value="p.name">
+          <label>Patient Name</label>  
+        </div>
+      </div>
+        
+        
         <br>
       <br>
       <div id="idekwutitmeant">
@@ -1144,26 +1196,37 @@ function showUsers()
           <div class="card">
             <div class="card-header">
               <a class="card-link" data-toggle="collapse" href="#collapsethispane">
-               Add Record
+               Book Appointment
               </a>
             </div>
             <div id="collapsethispane" class="collapse" data-parent="#idekwutitmeant">
               <div class="card-body">
-                  <h4>Add Appointment</h4>
+                  <h4>Appointment Details</h4>
 
-                  <input class="form-control w-25" type="text" id="Name" placeholder="Name">
-                  <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
-                  <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
+                  <input class="form-control w-25" type="text" id="appPatName" placeholder="Name">
+                  <input class="form-control w-25 mt-2" type="text" id="appPatCnic" placeholder="CNIC">
+                  <input class="form-control w-25 mt-2" type="text" id="appPatPhone" placeholder="Phone">
                   Date of birth
-                  <input class="form-control mt-2 w-25" type="date" id="dob">
+                  <input class="form-control mt-2 w-25" type="date" id="appPatDob">
                   Date of Appointment
-                  <input class="form-control w-25 mt-2" type="date" id="DateAppointment">
-                  Start Time
-                  <input class="form-control mt-2 w-25" type="time" id="Appstart">
-                  End Time
-                  <input class="form-control mt-2 w-25" type="time" id="Append">
-
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addAppointment()">Add</button>
+                  <input class="form-control w-25 mt-2" type="date" id="appDate">
+                  <select class="form-select form-select-sm" id="appDeptSelect" aria-label="Default select example">
+                    <option selected>Department</option>
+                    <option value="1">Cardiology</option>
+                    <option value="2">Neurosurgery</option>
+                    <option value="3">Plastic surgery</option>
+                    <option value="4">ENT</option>
+                    <option value="5">Eye</option>
+                    <option value="6">Paediatric</option>
+                    <option value="7">Nephrology</option>
+                    <option value="8">Gynae</option>
+                    <option value="9">Urology</option>
+                    <option value="10">Medicine</option>
+                    <option value="11">Surgery</option>
+                    <option value="12">Psychiatry</option>
+                  </select>
+                  <br>
+                  <button class="btn btn-outline-success btn-sm mt-2" onclick="showAvailable()">Show Available</button>
                   
               </div>
             </div>
@@ -1221,14 +1284,21 @@ function showUsers()
     <button class="btn btn-outline-primary btn-sm ml-2" onclick="showUsers()">View all</button>
   </div>
   <br>
-  Key:
+  <div class="dropdown show">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Key
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <input class="ml-1" type="radio" id="userKeyCNIC" name="userKey" value="CNIC" checked="checked">
+      <label>CNIC</label><br>
+      <input class="ml-1" type="radio" id="userKeyUsername" name="userKey" value="Username">
+      <label>Username</label><br>
+      <input class="ml-1" type="radio" id="userKeyLevel" name="userKey" value="Level">
+      <label>Level</label>
+    </div>
+  </div>
   <br>
-  <input type="radio" id="userKeyCNIC" name="userKey" value="CNIC" checked="checked">
-  <label>CNIC</label>
-  <input type="radio" id="userKeyUsername" name="userKey" value="Username">
-  <label>Username</label>
-  <input type="radio" id="userKeyLevel" name="userKey" value="Level">
-  <label>Level</label>
+
       <br>
       <div id="accordion">
 
