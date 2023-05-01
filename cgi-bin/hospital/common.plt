@@ -1,3 +1,4 @@
+#!C:\plutonium\plutonium.exe
 import regex
 import cgi
 import mysql
