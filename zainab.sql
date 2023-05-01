@@ -1,4 +1,3 @@
-
 use hospital;
 --drop view appointments;24243-1009440-4ttendance;
 --drop table records;
@@ -100,7 +99,8 @@ insert into rooms(id, dept_id, occ, totalBeds, perDay) values(11,11,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,11,0,1,15000);
 
 --patients that ever visited the hospital
-create table patients(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,status varchar(10) CHECK (status = "Discharged" or status = "Admit" or status ="Deceased"),r_id int, dept_id int);
+--Not Admit means the idiot came for an appointment
+create table patients(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,status varchar(10) CHECK (status = "Discharged" or status = "Admit" or status ="Deceased" or status='Not Admit'),r_id int, dept_id int);
 alter table patients add constraint F_r_id foreign key (r_id, dept_id) references rooms (id,dept_id);
 insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14','Discharged', NULL, NULL);
 insert into patients values('Samin','35100-1839103-8','03202132231','1948-10-25','Deceased',NULL, NULL);
