@@ -32,6 +32,8 @@ try
   mysql.query(conn,query)
   res = mysql.store_result(conn)
   var revenue = mysql.fetch_row_as_str(res)[0]
+  if(revenue == nil)
+    revenue = 0
   query = "select COUNT(*) from rooms;"
   mysql.query(conn,query)
   res = mysql.store_result(conn)

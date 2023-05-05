@@ -33,7 +33,7 @@ function viewall(var form)
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th><th></th></tr>")
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
@@ -42,10 +42,9 @@ function viewall(var form)
     {
       if(field == nil)
         field = "-"
-      printf("<td contentEditable=\"true\">%</td>",field)
+      printf("<td>%</td>",field)
     }
     print(trashIcon)
-    print(updateIcon)
     print("</tr>")
   }
   print("</table>")
@@ -104,32 +103,6 @@ function deleteUser(var form)
     return nil
   }
 }
-function update(var form)
-{
-  if(!form.hasKey("cnic") or !form.hasKey("username") or !form.hasKey("password") or !form.hasKey("level"))
-  {
-    print("Insuffcient parameters!")
-    return nil
-  }
-  var cnic = form["cnic"] 
-  var username = form["username"] 
-  var level = form["level"]
-  var password = form["password"]
-  var query = format("update users set username='%',id='%',password='%',level='%' WHERE username='%';",username,cnic,password,level,username)
-  try
-  {
-    var conn = mysql.init()
-    mysql.real_connect(conn,"localhost","root","password","hospital")
-    mysql.query(conn,query)
-    printf(successAlert,"Update QUERY executed.")
-  }
-  catch(err)
-  {
-    printf(errAlert,"Deletion failed.")
-    return nil
-  }
-}
-
 #main starts from here
 checkSignin()
 print("Content-type: text/html\r\n\r\n")
@@ -149,7 +122,5 @@ else if(operation == "view")
   viewall(form)
 else if(operation == "search")
   searchUser(form)
-else if(operation == "update")
-  update(form)
 else
   println("INVALID REQUEST! Unknown operation!")

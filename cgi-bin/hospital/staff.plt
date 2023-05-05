@@ -2,7 +2,7 @@
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteStaff(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updatestaff(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
-##Funtions##
+##Functions##
 function addNewStaff(var f)
 {
     if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("start") or!f.hasKey("end") or !f.hasKey("dob"))
@@ -99,8 +99,7 @@ function viewStaff(var f)
 {
     var connection = mysql.init()
     mysql.real_connect(connection,"localhost","root","password","hospital")
-    var query = "SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc from staff as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
-st.cnic = t.cnic;"
+    var query = "select * from staffView;"
     mysql.query(connection,query)
     var res = mysql.store_result(connection)
     var total = mysql.num_rows(res)

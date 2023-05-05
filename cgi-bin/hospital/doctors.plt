@@ -1,4 +1,6 @@
 #!C:\plutonium\plutonium.exe
+var isbah = false # change to true
+#when running on Isbah's computer upload path becomes D:\Database\....
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteDoctor(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateDoctor(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
@@ -27,20 +29,25 @@ function addDoctor(var form)
     var salary = form["salary"]
     var start = form["start"]
     var end = form["end"]
-    var spec = form["spec"]
+    var dept = form["dept"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var file = open("D:\\Database\\xampp\\htdocs\\hospital\\Doctors"+cnic+"."+substr(find("/",img.type)+1,len(img.type)-1,img.type),"wb")
+    var upload_path = "c:\\xampp\\htdocs\\hospital\\Doctors\\"
+    if(isbah)
+      upload_path = "D:\\Database\\xampp\\htdocs\\hospital\\Doctors\\"
+    var file = open(upload_path+cnic+"."+substr(find("/",img.type)+1,len(img.type)-1,img.type),"wb")
     fwrite(img.content,file)
     close(file)
-    var query = format("INSERT INTO doctors VALUES('%','%','%','%','%','%','%',%);",name,cnic,phone,dob,spec,start,end,salary)
+    var query = format("INSERT INTO doctors VALUES('%','%','%','%','%','%',%);",name,cnic,phone,dob,start,end,salary)
+    mysql.query(conn,query)
+    query = format("insert into worksIn VALUES(%,'%');",dept,cnic)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")
   }
   catch(err)
   {
-    printf(errAlert,"Insertion failed.")
+    printf(errAlert,"Insertion failed."+err.msg)
     return nil
   }
 }
@@ -163,7 +170,7 @@ function fireDoctor(var form)
   }
   catch(err)
   {
-    printf(errAlert,"DELETION failed. Make sure the doctor has no appointment.")
+    printf(errAlert,"InternalError occurred")
     return nil
   }
 }
@@ -327,7 +334,7 @@ if(!form.hasKey("operation"))
     exit()
 }
 var operation = form["operation"]
-if(operation == "add")
+if(operation == "Add")
   addDoctor(form)
 else if(operation == "delete")
   fireDoctor(form)
