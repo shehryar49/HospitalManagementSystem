@@ -73,9 +73,9 @@ var myBarChart = new Chart(ctxB, {
     ///////////////////////////////////////////////SUCCESS/ERR ALERTS/////////////////////////////
     function hideAlerts()
     {
-      //var k = document.getElementsByClassName("alert");
-      //if(k.length >= 1)//close alert at the end
-      //  k[k.length-1].children[0].click();
+      var k = document.getElementsByClassName("alert");
+      if(k.length >= 1)//close alert at the end
+        k[k.length-1].children[0].click();
     }
     ///////////////////////////////////////////////////PATIENT SCRIPT////////////////////////////////
     function showPatients()
@@ -130,7 +130,7 @@ var myBarChart = new Chart(ctxB, {
     })
     .then(function(html) {
         var k = document.getElementById('response');
-        k.innerHTML=html+k.innerHTML;
+        k.innerHTML=html;
         setTimeout(hideAlerts,3000);
     })
     .catch(function(err) {
@@ -695,6 +695,7 @@ var myBarChart = new Chart(ctxB, {
         .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
     }
 ///Users
+
 function showUsers()
     {
         fetch('/cgi-bin/hospital/users.plt?operation=view')
@@ -779,26 +780,49 @@ function showUsers()
     }
     function updateUser(elem)
     {
-      var row = elem.parentElement.parentElement;
-      var pass = row.children[1].innerHTML;
-      var username = row.children[0].innerHTML;
-      var level = row.children[2].innerHTML;
-      var cnic = row.children[3].innerHTML;
-      var query_string = "username="+username+"&cnic="+cnic+"&level="+level+"&password="+pass;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/users.plt?operation=update&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseUsers");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      if(elem.children[0].className == "fa fa-edit")
+      {
+        elem.children[0].className = "fa fa-check";
+        var row = elem.parentElement.parentElement;
+        for(var i=0;i<row.children.length;i++)
+        {
+          var p = row.children[i];
+          if(p == elem)
+            break;
+          if(p.contentEditable == "true")
+          {
+            var range = document.createRange();
+            range.selectNodeContents(p);  
+            var sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            break;
+          }
+        }
+        return null;
+      }
+      else
+      {
+          var row = elem.parentElement.parentElement;
+          var username = row.children[0].innerHTML;
+          var level = row.children[1].innerHTML;
+          var cnic = row.children[2].innerHTML;
+          var query_string = "username="+username+"&cnic="+cnic+"&level="+level;
+          query_string = encodeURI(query_string);
+            fetch('http://localhost/cgi-bin/hospital/users.plt?operation=update&'+query_string)
+        .then(function(response) {
+            // When the page is loaded convert it to text
+            return response.text()
+        })
+        .then(function(html) {
+            var k = document.getElementById("responseUsers");
+            k.innerHTML = html+k.innerHTML;
+            setTimeout(hideAlerts,3000);
+        })
+        .catch(function(err) {
+            console.log('Failed to fetch page: ', err);
+        });
+      }
     }
 </script>
 </head>
@@ -1109,7 +1133,8 @@ function showUsers()
             <input class="ml-1" type="radio" id="docKeyPhone" name="docKey" value="Phone">
             <label>Phone</label><br>
             <input class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
-            <label>Specialization</label><br>
+            <label>Specialization</label>
+            <br>
             <input class="ml-1" type="radio" id="docKeyBeg" name="docKey" value="Shfit End">
             <label>Shfit begin</label><br>
             <input class="ml-1" type="radio" id="docKeyEnd" name="docKey" value="Shift Begin">
@@ -1143,9 +1168,27 @@ function showUsers()
                     <input name="end" class="form-control mt-2 w-25" type="time" id="shiftend1">
                 
                     <input name="salary" class="form-control form-control-sm w-25 mt-2"  type="text" id="salary1" placeholder="Salary">
-                    <input name="spec" class="form-control form-control-sm w-25 mt-2"  type="text" id="spec" placeholder="Specialization">
+                    <select class="form-select form-select-sm" id="docDeptSelect" name="dept" aria-label="Default select example">
+                      <option selected>Department</option>
+                      <option value="1">Cardiology</option>
+                      <option value="2">Neurosurgery</option>
+                      <option value="3">Plastic surgery</option>
+                      <option value="4">ENT</option>
+                      <option value="5">Eye</option>
+                      <option value="6">Paediatric</option>
+                      <option value="7">Nephrology</option>
+                      <option value="8">Gynae</option>
+                      <option value="9">Urology</option>
+                      <option value="10">Medicine</option>
+                      <option value="11">Surgery</option>
+                      <option value="12">Psychiatry</option>
+                    </select>
+                    <br>
+                    Image:
+                    <br>
                     <input type="file" name="img">
-                    <input type="submit" class="btn btn-outline-success btn-sm mt-2" name="operation" value="add">
+                    <br>
+                    <input type="submit" class="btn btn-outline-success btn-sm mt-2" name="operation" value="Add">
                     </form>
                   </div>
               </div>
