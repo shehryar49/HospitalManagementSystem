@@ -137,9 +137,35 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-    function updatePatient(elem)
+    function updatePatient(row,push=true)
     {
-      var row = elem.parentElement.parentElement;
+      var updateBtn = row.children[row.children.length-2].children[0].children[0];
+      
+      if(updateBtn.className == "fa fa-edit")
+      {
+        updateBtn.className = "fa fa-check";
+        for(var i=0;i<row.children.length;i++)
+        {
+          var p = row.children[i];
+          if(p == updateBtn)
+            break;
+          if(p.contentEditable == "true")
+          {
+            var range = document.createRange();
+            range.selectNodeContents(p);  
+            var sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            break;
+          }
+        }
+        return null;
+      }
+      else
+      {
+        if(!push)
+        return null;
+        updateBtn.className = "fa fa-edit";
       var cnic = row.children[1].innerHTML;
       var name = row.children[0].innerHTML;
       var dob = row.children[3].innerHTML;
@@ -160,6 +186,7 @@ var myBarChart = new Chart(ctxB, {
     .catch(function(err) {
         console.log('Failed to fetch page: ', err);
     });
+  }
     }
     function admit()
     {
@@ -272,18 +299,40 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-    function updateDoctor(elem)
+    function updateDoctor(row,push = true)
     {
-      var row = elem.parentElement.parentElement;
+      var updateBtn = row.children[row.children.length-1].children[0].children[0];
+      if(updateBtn.className == "fa fa-edit")
+      {
+        updateBtn.className = "fa fa-check";
+        for(var i=0;i<row.children.length;i++)
+        {
+          var p = row.children[i];
+          if(p == updateBtn)
+            break;
+          if(p.contentEditable == "true")
+          {
+            var range = document.createRange();
+            range.selectNodeContents(p);  
+            var sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            break;
+          }
+        }
+        return null;
+      }
+      else
+      {
+        if(!push)
+        return null;
+      updateBtn.className = "fa fa-edit";
       var cnic = row.children[1].innerHTML;
       var phone = row.children[2].innerHTML;
       var dob = row.children[3].innerHTML;
-      var salary= row.children[7].innerHTML
+      var salary= row.children[5].innerHTML
       var name = row.children[0].innerHTML;
-      var spec = row.children[4].innerHTML;
-      var beg = row.children[5].innerHTML;
-      var end = row.children[6].innerHTML;
-      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&salary="+salary+"&phone="+phone+"&start="+beg+"&end="+end+"&spec="+spec;
+      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&salary="+salary+"&phone="+phone;
       query_string = encodeURI(query_string);
         fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=update&'+query_string)
     .then(function(response) {
@@ -298,6 +347,7 @@ var myBarChart = new Chart(ctxB, {
     .catch(function(err) {
         console.log('Failed to fetch page: ', err);
     });
+     }
     }
     function deleteDoctor(elem)
     {
@@ -408,11 +458,9 @@ var myBarChart = new Chart(ctxB, {
       var dob = document.getElementById('staffdob').value;
       var desig = document.getElementById('staffdesig').value;
       var phone = document.getElementById('staffphone').value;
-      var start = document.getElementById('starttime').value;
-      var end = document.getElementById('endtime').value;
       var salary = document.getElementById('staffsalary').value;
       
-      var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&start="+start+"&end="+end+"&salary="+salary;
+      var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&salary="+salary;
       query_string = encodeURI(query_string);
         fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=add&'+query_string)
     .then(function(response) {
@@ -426,33 +474,57 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-    function updatestaff(elem)
+    function updatestaff(row,push=true)
     {
-      var row = elem.parentElement.parentElement;
-      var cnic = row.children[1].innerHTML;
-      var name = row.children[0].innerHTML;
-      var dob = row.children[3].innerHTML;
-      var desig = row.children[4].innerHTML;
-      var phone = row.children[2].innerHTML;
-      var start = row.children[5].innerHTML;
-      var end = row.children[6].innerHTML;
-      var salary = row.children[7].innerHTML;
-      
-      var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&start="+start+"&end="+end+"&salary="+salary;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=update&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("responseStaff");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      var updateBtn = row.children[row.children.length-1].children[0].children[0];
+      if(updateBtn.className == "fa fa-edit")
+      {
+        updateBtn.className = "fa fa-check";
+        for(var i=0;i<row.children.length;i++)
+        {
+          var p = row.children[i];
+          if(p == updateBtn)
+            break;
+          if(p.contentEditable == "true")
+          {
+            var range = document.createRange();
+            range.selectNodeContents(p);  
+            var sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            break;
+          }
+        }
+        return null;
+      }
+      else
+      {
+        if(!push)
+        return null;
+        updateBtn.className = "fa fa-edit";
+        var cnic = row.children[1].innerHTML;
+        var name = row.children[0].innerHTML;
+        var dob = row.children[3].innerHTML;
+        var desig = row.children[4].innerHTML;
+        var phone = row.children[2].innerHTML;
+        var salary = row.children[5].innerHTML;
+        
+        var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&salary="+salary;
+        query_string = encodeURI(query_string);
+          fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=update&'+query_string)
+      .then(function(response) {
+          // When the page is loaded convert it to text
+          return response.text()
+      })
+      .then(function(html) {
+          var k=document.getElementById("responseStaff");
+          k.innerHTML = html+k.innerHTML;
+          setTimeout(hideAlerts,3000);
+      })
+      .catch(function(err) {
+          console.log('Failed to fetch page: ', err);
+      });
+  }
 }
     //Appointment handler
     function showAppointments()
@@ -650,9 +722,34 @@ var myBarChart = new Chart(ctxB, {
         console.log('Failed to fetch page: ', err);
     });
     }
-    function updateItem(elem)
+    function updateItem(row,push = true)
     {
-      var row = elem.parentElement.parentElement;
+      var updateBtn = row.children[row.children.length-1].children[0].children[0];
+      if(updateBtn.className == "fa fa-edit")
+      {
+        updateBtn.className = "fa fa-check";
+        for(var i=0;i<row.children.length;i++)
+        {
+          var p = row.children[i];
+          if(p == updateBtn)
+            break;
+          if(p.contentEditable == "true")
+          {
+            var range = document.createRange();
+            range.selectNodeContents(p);  
+            var sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            break;
+          }
+        }
+        return null;
+      }
+      else
+      {
+        if(!push)
+        return null;
+      updateBtn.className = "fa fa-edit";
       var id = row.children[0].innerHTML;
       var type = row.children[1].innerHTML;
       var noofunits = row.children[2].innerHTML;
@@ -673,6 +770,7 @@ var myBarChart = new Chart(ctxB, {
     .catch(function(err) {
         console.log('Failed to fetch page: ', err);
     });
+    }
     }
 //ROOM QUERIES
     function showallrooms()
@@ -1027,10 +1125,6 @@ function showUsers()
         <label>Phone</label><br>
         <input class="ml-1" type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
         <label>Designation</label><br>
-        <input class="ml-1" type="radio" id="staffKeyBeg" name="staffKey" value="Shfit End">
-        <label>Shfit begin</label><br>
-        <input class="ml-1" type="radio" id="staffKeyEnd" name="staffKey" value="Shift Begin">
-        <label>Shift end</label><br>
       </div>
     </div>
         <br>
@@ -1054,8 +1148,6 @@ function showUsers()
                     <input class="form-control mt-2 w-25" type="date" id="staffdob">
                 
                     <input class="form-control form-control-sm w-25 mt-2"  type="text" id="staffdesig" placeholder="Designation">
-                    <input class="form-control form-control-sm w-25 mt-2"  type="time" id="starttime" placeholder="Start Time">
-                    <input class="form-control form-control-sm w-25 mt-2"  type="time" id="endtime" placeholder="End Time">
                     <input class="form-control form-control-sm w-25 mt-2"  type="text" id="staffsalary" placeholder="Rupees">
                     <button class="btn btn-outline-success btn-sm mt-2" onclick="addstaff()">Add</button>
                     <br><br>
@@ -1135,10 +1227,7 @@ function showUsers()
             <input class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
             <label>Specialization</label>
             <br>
-            <input class="ml-1" type="radio" id="docKeyBeg" name="docKey" value="Shfit End">
-            <label>Shfit begin</label><br>
-            <input class="ml-1" type="radio" id="docKeyEnd" name="docKey" value="Shift Begin">
-            <label>Shift end</label>            
+         
           </div>
         </div>
         <br>
@@ -1162,10 +1251,7 @@ function showUsers()
                 
                     Date of birth
                     <input name="dob" class="form-control mt-2 w-25" type="date" id="dob1">
-                    Shift Start
-                    <input name="start" class="form-control mt-2 w-25" type="time" id="shiftbeg1">
-                    Shift End
-                    <input name="end" class="form-control mt-2 w-25" type="time" id="shiftend1">
+                
                 
                     <input name="salary" class="form-control form-control-sm w-25 mt-2"  type="text" id="salary1" placeholder="Salary">
                     <select class="form-select form-select-sm" id="docDeptSelect" name="dept" aria-label="Default select example">
