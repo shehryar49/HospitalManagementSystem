@@ -1,11 +1,11 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteStaff(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
-var updateIcon = "<td><button onclick=\"updatestaff(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var updateIcon = "<td><button onclick=\"updatestaff(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 ##Functions##
 function addNewStaff(var f)
 {
-    if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("start") or!f.hasKey("end") or !f.hasKey("dob"))
+    if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("dob"))
     {   
         print("Insfficient Parameters")
         return nil
@@ -20,14 +20,12 @@ function addNewStaff(var f)
     var phone = f["phone"]
     var date_of_birth = f["dob"]
     var designation = f["desig"]
-    var shift_start = f["start"]
-    var shift_end =f["end"]
     var salary = f["salary"]
     try
     {
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query = format("INSERT INTO staff VALUES('%','%','%','%','%','%','%',%)",name, cnic, phone, date_of_birth, designation, shift_start, shift_end, salary)
+        var query = format("INSERT INTO staff VALUES('%','%','%','%','%',%)",name, cnic, phone, date_of_birth, designation, salary)
         mysql.query(connection,query)
         printf(successAlert,"Success")
     }
@@ -39,7 +37,7 @@ function addNewStaff(var f)
 }
 function updateExistingStaff(var f)
 {
-    if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("start") or!f.hasKey("end") or!f.hasKey("dob"))
+    if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("dob"))
     {   
         print("Insfficient Parameters")
         return nil
@@ -51,18 +49,15 @@ function updateExistingStaff(var f)
         print("cnic cannot be NULL")
         return nil
     }
-    
     var phone = f["phone"]
     var date_of_birth = f["dob"]
     var designation = f["desig"]
-    var shift_start = f["start"]
-    var shift_end =f["end"]
     var salary = f["salary"]
     try
     {
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query = format("UPDATE staff SET name = '%', cnic = '%', phone = '%',dob = '%', desig = '%', start = '%', end = '%', salary = % where cnic='%';",name, cnic, phone, date_of_birth, designation, shift_start, shift_end, salary,cnic)
+        var query = format("UPDATE staff SET name = '%', cnic = '%', phone = '%',dob = '%', desig = '%',  salary = % where cnic='%';",name, cnic, phone, date_of_birth, designation, salary,cnic)
         mysql.query(connection,query)
         printf(successAlert,"Success")
     }
@@ -103,7 +98,7 @@ function viewStaff(var f)
     mysql.query(connection,query)
     var res = mysql.store_result(connection)
     var total = mysql.num_rows(res)
-    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Start Time</th><th>End Time</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
+    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
     var all = []
     for(var i=1 to total step 1)
     {
@@ -111,7 +106,7 @@ function viewStaff(var f)
         print("<tr>")
         foreach(var field: fields)
         {
-          printf("<td contentEditable=\"true\">%</td>",field)
+          printf("<td onclick=\"updatestaff(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
         }
         print(trashIcon)
         print(updateIcon)

@@ -1,7 +1,7 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
-var updateIcon = "<td><button onclick=\"updatePatient(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var updateIcon = "<td><button onclick=\"updatePatient(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHistory(this)\">Records</button></td>"
 function addPatient(var form)
 {
@@ -44,7 +44,7 @@ function viewall()
     foreach(var field: fields)
     {
       if(k!= len(fields)-1)
-        printf("<td contentEditable=\"true\">%</td>",field)
+        printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td >%</td>",field)
       k+=1

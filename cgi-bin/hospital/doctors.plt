@@ -3,7 +3,7 @@ var isbah = false # change to true
 #when running on Isbah's computer upload path becomes D:\Database\....
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteDoctor(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
-var updateIcon = "<td><button onclick=\"updateDoctor(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var updateIcon = "<td><button onclick=\"updateDoctor(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 var level = nil # level of access to give
 function addDoctor(var form)
 {
@@ -12,7 +12,7 @@ function addDoctor(var form)
     printf(errAlert,"Access Denied")
     return nil
   }
-  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob") or !form.hasKey("start") or !form.hasKey("phone") or !form.hasKey("end") or !form.hasKey("salary"))
+  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob")  or !form.hasKey("phone") or !form.hasKey("salary"))
     printf(errAlert,"INVALID REQUEST! Insuffcient parameters!")
   var img = form["img"]
   if(!isInstanceOf(img,cgi.File) or (img.type!="image/jpeg" and img.type!="image/jpg" and img.type!="image/png"))
@@ -27,8 +27,6 @@ function addDoctor(var form)
     var dob = form["dob"]
     var phone = form["phone"]
     var salary = form["salary"]
-    var start = form["start"]
-    var end = form["end"]
     var dept = form["dept"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
@@ -38,7 +36,7 @@ function addDoctor(var form)
     var file = open(upload_path+cnic+"."+substr(find("/",img.type)+1,len(img.type)-1,img.type),"wb")
     fwrite(img.content,file)
     close(file)
-    var query = format("INSERT INTO doctors VALUES('%','%','%','%','%','%',%);",name,cnic,phone,dob,start,end,salary)
+    var query = format("INSERT INTO doctors VALUES('%','%','%','%',%);",name,cnic,phone,dob,salary)
     mysql.query(conn,query)
     query = format("insert into worksIn VALUES(%,'%');",dept,cnic)
     mysql.query(conn,query)
@@ -55,12 +53,12 @@ function viewall(var form)
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where b.cnic = a.cnic)t on
+  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where b.cnic = a.cnic)t on
 st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id;"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Shift Start</th><th>Shift End</th><th>Salary</th><th>Att(%)</th>")
+  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Salary</th><th>Att(%)</th>")
   if(level == 2)
     print("<th></th><th></th>")
   print("</tr>")
@@ -72,7 +70,7 @@ st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksi
     foreach(var field: fields)
     {
       if(level == 2)
-        printf("<td contentEditable=\"true\">%</td>",field)
+        printf("<td onclick=\"updateDoctor(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td>%</td>",field)
     }
@@ -98,7 +96,7 @@ function searchDoctor(var form)
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
   if(name == "salary")
-   query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.start,st.end,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
+   query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
        st.cnic = t.cnic and st.salary="+val+";"
   else
     query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.start,st.end,
@@ -181,7 +179,7 @@ function updateDoctor(var form)
     print("Access Denied")
     return nil
   }
-  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob") or !form.hasKey("start") or !form.hasKey("phone") or !form.hasKey("end") or !form.hasKey("salary"))
+  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob")  or !form.hasKey("phone")  or !form.hasKey("salary"))
   {
     printf(errAlert,"INVALID REQUEST! Insuffcient parameters!")
     return nil
@@ -191,10 +189,7 @@ function updateDoctor(var form)
   var dob = form["dob"]
   var phone = form["phone"]
   var salary = form["salary"]
-  var start = form["start"]
-  var end = form["end"]
-  var spec = form["spec"]
-  var query = format("update doctors set name='%',cnic='%',dob='%',salary=%,phone='%',spec='%',start='%',end='%' WHERE cnic='%';",name,cnic,dob,salary,phone,spec,start,end,cnic)
+  var query = format("update doctors set name='%',cnic='%',dob='%',salary=%,phone='%' WHERE cnic='%';",name,cnic,dob,salary,phone,cnic)
   try
   {
     var conn = mysql.init()
@@ -205,7 +200,7 @@ function updateDoctor(var form)
   }
   catch(err)
   {
-    printf(errAlert,"Updation failed.")
+    printf(errAlert,"Updation failed."+err.msg)
     return nil
   }
 }

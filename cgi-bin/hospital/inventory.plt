@@ -1,7 +1,7 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteItem(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
-var updateIcon = "<td><button onclick=\"updateItem(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var updateIcon = "<td><button onclick=\"updateItem(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 function addinventory(var f)
 {
     if(!f.hasKey("id") or !f.hasKey("type") or !f.hasKey("nou") or !f.hasKey("ppu"))
@@ -83,7 +83,7 @@ function viewinventory(var f)
         var fields = mysql.fetch_row_as_str(res)
         print("<tr>")
         foreach(var field: fields)
-          printf("<td contentEditable=\"true\">%</td>",field)
+          printf("<td onclick=\"updateItem(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
         print(trashIcon)
         print(updateIcon)
         print("</tr>")
