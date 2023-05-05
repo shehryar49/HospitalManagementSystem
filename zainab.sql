@@ -40,6 +40,7 @@ insert into departments(deptname) values ('Psychiatry');--11
 
 --works in
 create table worksIn(dept_id int, d_id varchar(30));
+alter table worksIn add constraint W_PK PRIMARY KEY(d_id);
 alter table worksIn add constraint FK_W_doctor foreign key (d_id) references doctors(cnic) on delete cascade on update cascade;
 alter table worksIn add constraint FK_W_dept foreign key (dept_id) references departments(dept_id);
 insert into worksIn values (1,'32019-8917101-7');
@@ -135,7 +136,7 @@ insert into inventory (type, no_of_units, price_per_unit) values ('cloth bandage
 --normal staff(receptionists,sweepers etc) type=1
 --doctors type=2
 create table attendance(cnic varchar(30),date date,status char(1),type int);
-alter table attendance add constraint at_pk PRIMARY KEY(cnic,date,type);
+alter table attendance add constraint at_pk PRIMARY KEY(cnic,date);
 
 insert into attendance VALUES('35202-7555101-1','2023-3-1','P',2);
 insert into attendance VALUES('35202-7555101-1','2023-3-2','P',2);
@@ -274,7 +275,7 @@ create table records(type int, cnic varchar(30),admitDate datetime,expiryDate da
 
 alter table records add constraint UNIQUE (d_id, cnic, admitDate);
 
-alter table records add constraint F_rp_id foreign key (cnic) references patients (cnic) on update cascade on delete cascade;
+alter table records add constraint F_rp_id foreign key (cnic) references patients (cnic) on update cascade on delete cascade;--patient lost records lost
 alter table records add constraint F_room_id foreign key (r_id, dept_id) references rooms(id, dept_id);
 
 --doctorid + starttime + cnic
@@ -301,7 +302,12 @@ insert into records values (0,'24153-2819301-9', '2022-12-10 15:00:00', '2022-12
 
 --appointments
 create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
-
+create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc
+     from staff as st join 
+     (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from 
+       (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic)
+        as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where a.cnic=b.cnic)t on
+st.cnic = t.cnic);
 --procedure for deletion
 --DELIMETER $$
 --CREATE PROCEDURE deleteDoctor(nic varchar(30))
