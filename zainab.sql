@@ -9,18 +9,18 @@ use hospital;
 --drop table users;
 
 --doctors that currently work at hospital
-create table doctors(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,start time,end time,salary int);
-insert into doctors values('Dr. Zabago','32910-1927181-7','03253416969','1987-09-09','9:00','17:00',690000);
-insert into doctors values('Dr. Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', '9:00', '17:00', 900000);
-insert into doctors values('Dr. Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21','9:00', '17:00', 1000000);
-insert into doctors values('Dr. Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10', '9:00', '17:00', 850000);
-insert into doctors values('Dr. Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10','9:00','17:00',231220);
+create table doctors(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,salary int);
+insert into doctors values('Dr. Zabago','32910-1927181-7','03253416969','1987-09-09',690000);
+insert into doctors values('Dr. Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', 900000);
+insert into doctors values('Dr. Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21', 1000000);
+insert into doctors values('Dr. Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10',  850000);
+insert into doctors values('Dr. Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10',231220);
 
 
-insert into doctors values('Dr. Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', '9:00', '17:00', 950000);
-insert into doctors values('Dr. Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', '9:00', '17:00', 700000);
-insert into doctors values('Dr. Kabir Mujtaba', '25754-1021678-5','0317-1020603','1992-8-24','9:00', '17:00', 850000);
-insert into doctors values('Dr. Ahmed Hussain', '24243-1009440-4', '0311-1001758','1965-9-2','9:00', '17:00', 200000);
+insert into doctors values('Dr. Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', 950000);
+insert into doctors values('Dr. Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', 700000);
+insert into doctors values('Dr. Kabir Mujtaba', '25754-1021678-5','0317-1020603','1992-8-24',850000);
+insert into doctors values('Dr. Ahmed Hussain', '24243-1009440-4', '0311-1001758','1965-9-2', 200000);
 
 
 --department table
@@ -110,12 +110,11 @@ insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-
 insert into patients values('Adeel','35142-8193038-5','03351627002','1990-06-03','Admit', 2,4);
 
 --hospital staff
-create table staff(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,desig varchar(30),start time,end time
-,salary int);
-insert into staff values('Nawaz','30102-10289101-2','03164436563','1995-01-02','Sweeper','9:00','17:00',25000);
-insert into staff values('Amin Dar','20184-6174013-0','03078278103','1998-01-13','Nurse','9:00','17:00',70000);
-insert into staff values('Haider Sarfraz','30102-4801342-2','03326173892','2000-10-25','Receptionist','9:00','17:00',50000);
-insert into staff values('Abdullah Sheikh','30102-2849041-2','03337482910','1990-06-05','Nurse','9:00','17:00',70000);
+create table staff(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,desig varchar(30),salary int);
+insert into staff values('Nawaz','30102-10289101-2','03164436563','1995-01-02','Sweeper',25000);
+insert into staff values('Amin Dar','20184-6174013-0','03078278103','1998-01-13','Nurse',70000);
+insert into staff values('Haider Sarfraz','30102-4801342-2','03326173892','2000-10-25','Receptionist',50000);
+insert into staff values('Abdullah Sheikh','30102-2849041-2','03337482910','1990-06-05','Nurse',70000);
 
 --online web app users
 create table users(username varchar(30) PRIMARY KEY,password varchar(30),level int,id varchar(30));
@@ -302,7 +301,7 @@ insert into records values (0,'24153-2819301-9', '2022-12-10 15:00:00', '2022-12
 
 --appointments
 create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
-create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc
+create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.salary,t.perc
      from staff as st join 
      (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from 
        (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic)
