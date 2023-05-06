@@ -307,6 +307,14 @@ create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.sal
        (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic)
         as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where a.cnic=b.cnic)t on
 st.cnic = t.cnic);
+
+create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.salary,t.perc
+ from doctors as st join 
+   (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from 
+          (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a
+          ,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b
+           where b.cnic = a.cnic)t
+   on st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id);
 --procedure for deletion
 --DELIMETER $$
 --CREATE PROCEDURE deleteDoctor(nic varchar(30))
