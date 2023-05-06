@@ -1,6 +1,6 @@
 #!C:\plutonium\plutonium.exe
-var isbah = false # change to true
-#when running on Isbah's computer upload path becomes D:\Database\....
+var theeti = false # change to true
+#when running on theeti's computer upload path becomes D:\Database\....
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteDoctor(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateDoctor(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
@@ -31,7 +31,7 @@ function addDoctor(var form)
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     var upload_path = "c:\\xampp\\htdocs\\hospital\\Doctors\\"
-    if(isbah)
+    if(theeti)
       upload_path = "D:\\Database\\xampp\\htdocs\\hospital\\Doctors\\"
     var file = open(upload_path+cnic+"."+substr(find("/",img.type)+1,len(img.type)-1,img.type),"wb")
     fwrite(img.content,file)
@@ -53,8 +53,7 @@ function viewall(var form)
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where b.cnic = a.cnic)t on
-st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id;"
+  var query = "select * from docView;"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
@@ -96,16 +95,9 @@ function searchDoctor(var form)
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
   if(name == "salary")
-   query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
-       st.cnic = t.cnic and st.salary="+val+";"
+   query = "select * from docView where salary="+val+";"
   else
-    query = "SELECT st.name,st.cnic,st.phone,st.dob,st.spec,st.start,st.end,
-             st.salary,t.perc from doctors as st
-             join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc 
-             from (SELECT cnic,COUNT(*) as total from attendance
-             where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) 
-             as total from attendance group by cnic) as b)t on
-             st.cnic = t.cnic and st."+name+"='"+val+"';"
+    query = "SELECT * from docView where "+name+"='"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
