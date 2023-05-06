@@ -265,9 +265,6 @@ var myBarChart = new Chart(ctxB, {
       var salary= document.getElementById('docKeySalary');
       var name = document.getElementById('docKeyName');
       var spec = document.getElementById('docKeySpec');
-      
-      var beg = document.getElementById('docKeyBeg');
-      var end = document.getElementById('docKeyEnd');
       var url ;
       if(cnic.checked)
         url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=cnic";
@@ -279,12 +276,8 @@ var myBarChart = new Chart(ctxB, {
         url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=salary";
       else if(name.checked)
         url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=name";
-      else if(beg.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=start";
-      else if(end.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=end";
       else if(spec.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=spec";
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=deptname";
 
         url = encodeURI(url);
         fetch(url)
@@ -396,9 +389,6 @@ var myBarChart = new Chart(ctxB, {
       var salary= document.getElementById('staffKeySalary');
       var name = document.getElementById('staffKeyName');
       var desig = document.getElementById('staffKeyDesig');
-      
-      var beg = document.getElementById('staffKeyBeg');
-      var end = document.getElementById('staffKeyEnd');
       var url ;
       if(cnic.checked)
         url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=cnic";
@@ -410,10 +400,6 @@ var myBarChart = new Chart(ctxB, {
         url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=salary";
       else if(name.checked)
         url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=name";
-      else if(beg.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=start";
-      else if(end.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=end";
       else if(desig.checked)
         url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=desig";
 
@@ -922,6 +908,11 @@ function showUsers()
         });
       }
     }
+//Misc
+function setPlaceholder(id,val)
+{
+  document.getElementById(id).placeholder = val;
+}
 </script>
 </head>
 <style>
@@ -945,6 +936,7 @@ function showUsers()
 .search_select_box{
   max-width: 400px;
 }
+
 </style>
 <body onload="showOverview()">
 
@@ -996,10 +988,9 @@ function showUsers()
       <h2 id="bloodMoney">Blood Money💀 earned: </h2>
      </div>
     <div id="patients" class="container tab-pane fade"><br>
-        <h1 >Manage Patient Records</h1>
         <br>
         <div class="row">
-        <input class="form-control w-25 ml-2" type="text" id="patKeyVal" placeholder="Key Value">
+        <input class="form-control w-25 ml-2" type="text" id="patKeyVal" placeholder="CNIC">
         <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchPatients()">Search</button>
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
     </div>
@@ -1009,21 +1000,20 @@ function showUsers()
         Key
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <input class="ml-1" type="radio" id="patKeyCNIC" name="patKey" value="CNIC" checked="checked">
+        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyCNIC" name="patKey" value="CNIC" checked="checked">
         <label>CNIC</label><br>
-        <input class="ml-1" type="radio" id="patKeyName" name="patKey" value="Name">
+        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyName" name="patKey" value="Name">
         <label>Name</label><br>
-        <input class="ml-1" type="radio" id="patKeyDOB" name="patKey" value="DOB">
+        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyDOB" name="patKey" value="DOB">
         <label>DOB</label><br>
-        <input class="ml-1" type="radio" id="patKeyStatus" name="patKey" value="Status">
+        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyStatus" name="patKey" value="Status">
         <label>Status</label><br>
-        <input class="ml-1" type="radio" id="patKeyPhone" name="patKey" value="Phone">
+        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyPhone" name="patKey" value="Phone">
         <label>Phone</label>
     
       </div>
     </div>
     <br>
-        <br>
         <div id="accordion">
             <div id="idkwutitmeantagain">
               <div class="card">
@@ -1100,7 +1090,6 @@ function showUsers()
         </div>
     </div>
     <div id="staff" class="container tab-pane fade"><br>
-      <h1 >Manage Staff Records</h1>
       <br>
         <div class="row">
         <input class="form-control w-25 ml-2" type="text" id="staffKeyVal" placeholder="CNIC">
@@ -1113,17 +1102,17 @@ function showUsers()
        Key
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <input class="ml-1" type="radio" id="staffKeyCNIC" name="staffKey" value="CNIC" checked="checked">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyCNIC" name="staffKey" value="CNIC" checked="checked">
         <label>CNIC</label><br>
-        <input class="ml-1" type="radio" id="staffKeyName" name="staffKey" value="Name">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyName" name="staffKey" value="Name">
         <label>Name</label><br>
-        <input class="ml-1" type="radio" id="staffKeyDOB" name="staffKey" value="DOB">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDOB" name="staffKey" value="DOB">
         <label>DOB</label><br>
-        <input class="ml-1" type="radio" id="staffKeySalary" name="staffKey" value="Salary">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeySalary" name="staffKey" value="Salary">
         <label>Salary</label><br>
-        <input class="ml-1" type="radio" id="staffKeyPhone" name="staffKey" value="Phone">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyPhone" name="staffKey" value="Phone">
         <label>Phone</label><br>
-        <input class="ml-1" type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
+        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
         <label>Designation</label><br>
       </div>
     </div>
@@ -1163,7 +1152,6 @@ function showUsers()
         </div>
     </div>
     <div id="inventory" class="container tab-pane fade"><br>
-      <h1 >Manage Inventory</h1>
       <div class="row">
       <input class="form-control w-25 ml-2" type="text" id="idinvent" placeholder="ID">
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchItem()">Search</button>
@@ -1201,7 +1189,6 @@ function showUsers()
       </div>
     </div>
     <div id="menu3" class="container tab-pane fade"><br>
-        <h1 >Manage Doctor Records</h1>
         <br>
         <div class="row">
         <input class="form-control w-25 ml-2" type="text" id="docKeyVal" placeholder="CNIC">
@@ -1214,17 +1201,17 @@ function showUsers()
             Key
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <input class="ml-1" type="radio" id="docKeyCNIC" name="docKey" value="CNIC" checked="checked">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyCNIC" name="docKey" value="CNIC" checked="checked">
             <label>CNIC</label><br>
-            <input class="ml-1" type="radio" id="docKeyName" name="docKey" value="Name">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyName" name="docKey" value="Name">
             <label>Name</label><br>
-            <input class="ml-1" type="radio" id="docKeyDOB" name="docKey" value="DOB">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyDOB" name="docKey" value="DOB">
             <label>DOB</label><br>
-            <input class="ml-1" type="radio" id="docKeySalary" name="docKey" value="Salary">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySalary" name="docKey" value="Salary">
             <label>Salary</label><br>
-            <input class="ml-1" type="radio" id="docKeyPhone" name="docKey" value="Phone">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyPhone" name="docKey" value="Phone">
             <label>Phone</label><br>
-            <input class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
             <label>Specialization</label>
             <br>
          
@@ -1288,7 +1275,6 @@ function showUsers()
         </div>
     </div>
     <div id="appointments" class="container tab-pane fade"><br>
-      <h1 >Manage Appointments</h1>
       <div class="row">
       <input class="form-control w-25 ml-2" type="text" id="SearchByDoctorID" placeholder="Doctor CNIC">
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchAppointments()">Search</button>
@@ -1300,19 +1286,19 @@ function showUsers()
           Key
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <input class="ml-1" type="radio" id="didk" name="ak" value="d_id" checked="checked">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="didk" name="ak" value="Doctor CNIC" checked="checked">
           <label>Doctor CNIC</label><br>
-          <input class="ml-1" type="radio" id="pidk" name="ak" value="p_id">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pidk" name="ak" value="Patient CNIC">
           <label>Patient CNIC</label><br>
-          <input class="ml-1" type="radio" id="stk" name="ak" value="starttime">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="stk" name="ak" value="Start time">
           <label>Start Time</label><br>
-          <input class="ml-1" type="radio" id="etk" name="ak" value="endtime">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="etk" name="ak" value="End time">
           <label>End Time</label><br>
-          <input class="ml-1" type="radio" id="dk" name="ak" value="app_date">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dk" name="ak" value="Date">
           <label>Date</label><br>
-          <input class="ml-1" type="radio" id="dnk" name="ak" value="d.name">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dnk" name="ak" value="Doctor Name">
           <label>Doctor Name</label><br>
-          <input class="ml-1" type="radio" id="pnk" name="ak" value="p.name">
+          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pnk" name="ak" value="Patient Name">
           <label>Patient Name</label>  
         </div>
       </div>
@@ -1368,7 +1354,6 @@ function showUsers()
       </div>
     </div>
     <div id="rooms" class="container tab-pane fade"><br>
-      <h1 >Manage Rooms</h1>
       <div class="row">
       <input class="form-control w-25 ml-2" type="text" id="rid" placeholder="ID">
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchroom()">Search</button>
@@ -1405,10 +1390,9 @@ function showUsers()
       </div>
     </div>
     <div id="users" class="container tab-pane fade"><br>
-      <h1 >Manage Users</h1>
       <br>
       <div class="row">
-      <input class="form-control w-25 ml-2" type="text" id="userKeyVal" placeholder="Key Value">
+      <input class="form-control w-25 ml-2" type="text" id="userKeyVal" placeholder="CNIC">
       <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchUsers()">Search</button>
     <button class="btn btn-outline-primary btn-sm ml-2" onclick="showUsers()">View all</button>
   </div>
@@ -1418,11 +1402,11 @@ function showUsers()
       Key
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <input class="ml-1" type="radio" id="userKeyCNIC" name="userKey" value="CNIC" checked="checked">
+      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyCNIC" name="userKey" value="CNIC" checked="checked">
       <label>CNIC</label><br>
-      <input class="ml-1" type="radio" id="userKeyUsername" name="userKey" value="Username">
+      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyUsername" name="userKey" value="Username">
       <label>Username</label><br>
-      <input class="ml-1" type="radio" id="userKeyLevel" name="userKey" value="Level">
+      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyLevel" name="userKey" value="Level">
       <label>Level</label>
     </div>
   </div>
