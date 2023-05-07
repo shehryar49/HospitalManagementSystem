@@ -62,17 +62,21 @@ function searchUser(var form)
     name = "id" #thanks to Isbah,gotta remap this
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT * FROM users where "+name+" = "+" '"+val+"'"
+  var query = "SELECT username, level, id FROM users where "+name+" = "+" '"+val+"'"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Password</th><th>Level</th><th>CNIC</th><th></th><th></th></tr>")
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th><th></th></tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
     print("<tr>")
-    foreach(var field: fields)
-      printf("<td contentEditable=\"true\">%</td>",field)
+     foreach(var field: fields)
+    {
+      if(field == nil)
+        field = "-"
+      printf("<td>%</td>",field)
+    }
     print(trashIcon)
     print(updateIcon)
     print("</tr>")
