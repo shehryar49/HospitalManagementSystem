@@ -5,7 +5,7 @@ var updateIcon = "<td><button onclick=\"updateUser(this)\" class=\"updateBtn\"><
 function addUser(var form)
 {
   if(!form.hasKey("username") or !form.hasKey("cnic") or !form.hasKey("level") or !form.hasKey("password"))
-    println("INVALID REQUEST! Insuffcient parameters!")
+    print(errAlert,"Bad Request")
   try
   {
     var username = form["username"]
@@ -21,11 +21,11 @@ function addUser(var form)
   }
   catch(err)
   {
-    printf(errAlert,"Insertion failed."+err.msg)
+    print(errAlert,"Insertion failed."+err.msg)
     return nil
   }
 }
-function viewall(var form)
+function viewall()
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
@@ -53,7 +53,7 @@ function searchUser(var form)
 {
   if(!form.hasKey("keyval") or !form.hasKey("keyname"))
   {
-    print("Insufficient parameters!")
+    print(errAlert,"Bad Request")
     return nil
   }
   var val = form["keyval"]
@@ -99,11 +99,14 @@ function deleteUser(var form)
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
-    printf(successAlert,"Delete QUERY executed.")
+    mysql.close(conn)
+    printf(successAlert,"Delete Query executed.")
+    viewall()
   }
   catch(err)
   {
     printf(errAlert,"Deletion failed.")
+    viewall()
     return nil
   }
 }
@@ -123,7 +126,7 @@ if(operation == "add")
 else if(operation == "delete")
   deleteUser(form)
 else if(operation == "view")
-  viewall(form)
+  viewall()
 else if(operation == "search")
   searchUser(form)
 else
