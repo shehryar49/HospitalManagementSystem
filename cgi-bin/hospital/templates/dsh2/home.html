@@ -783,16 +783,9 @@ var myBarChart = new Chart(ctxB, {
 function showUsers()
     {
         fetch('/cgi-bin/hospital/users.plt?operation=view')
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseUsers").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+    .then(function(response) {return response.text()})
+    .then(function(html) {document.getElementById("responseUsers").innerHTML = html;})
+    .catch(function(err) {console.log('Failed to fetch page: ', err);});
     }
     function searchUsers()
     {
@@ -833,7 +826,7 @@ function showUsers()
     })
     .then(function(html) {
         var k = document.getElementById('responseUsers');
-        k.innerHTML=html+k.innerHTML;
+        k.innerHTML=html;
         setTimeout(hideAlerts,3000);
     })
     .catch(function(err) {
@@ -855,7 +848,7 @@ function showUsers()
     })
     .then(function(html) {
         var k = document.getElementById("responseUsers");
-        k.innerHTML = html+k.innerHTML;
+        k.innerHTML = html;
         setTimeout(hideAlerts,3000);
     })
     .catch(function(err) {
