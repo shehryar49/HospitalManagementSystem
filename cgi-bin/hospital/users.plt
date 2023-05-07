@@ -2,6 +2,30 @@
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteUser(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateUser(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+function viewall()
+{
+  var conn = mysql.init()
+  mysql.real_connect(conn,"localhost","root","password","hospital")
+  var query = "SELECT username,level,id FROM users;"
+  mysql.query(conn,query)
+  var res = mysql.store_result(conn)
+  var total = mysql.num_rows(res)
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
+  for(var i=1 to total step 1)
+  {
+    var fields = mysql.fetch_row_as_str(res)
+    print("<tr>")
+    foreach(var field: fields)
+    {
+      if(field == nil)
+        field = "-"
+      printf("<td>%</td>",field)
+    }
+    print(trashIcon)
+    print("</tr>")
+  }
+  print("</table>")
+}
 function addUser(var form)
 {
   if(!form.hasKey("username") or !form.hasKey("cnic") or !form.hasKey("level") or !form.hasKey("password"))
@@ -26,30 +50,6 @@ function addUser(var form)
     viewall()
     return nil
   }
-}
-function viewall()
-{
-  var conn = mysql.init()
-  mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT username,level,id FROM users;"
-  mysql.query(conn,query)
-  var res = mysql.store_result(conn)
-  var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
-  for(var i=1 to total step 1)
-  {
-    var fields = mysql.fetch_row_as_str(res)
-    print("<tr>")
-    foreach(var field: fields)
-    {
-      if(field == nil)
-        field = "-"
-      printf("<td>%</td>",field)
-    }
-    print(trashIcon)
-    print("</tr>")
-  }
-  print("</table>")
 }
 function searchUser(var form)
 {
