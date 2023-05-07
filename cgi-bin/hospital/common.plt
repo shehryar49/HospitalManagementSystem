@@ -34,10 +34,19 @@ function redirect(var url = "https://plutonium-lang.000webhostapp.com")
     printf("location: %\r\n\r\n",url)
     exit()
 }
+function hasFields(var fields,var dict)
+{
+  foreach(var field: fields)
+  {
+    if(!dict.hasKey(field))
+       return false
+  }
+  return true
+}
 function checkSignin()
 {
   var cookies = cgi.cookies()
-  if(!cookies.hasKey("user") or !cookies.hasKey("pass") or !cookies.hasKey("level"))
+  if(!hasFields(["user","pass","level"],cookies))
   {
     #user is not signed In
     #redirect to login page
