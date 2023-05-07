@@ -18,10 +18,12 @@ function addUser(var form)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")
+    viewall()
   }
   catch(err)
   {
     print(errAlert,"Insertion failed."+err.msg)
+    viewall()
     return nil
   }
 }
