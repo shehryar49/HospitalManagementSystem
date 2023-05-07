@@ -64,7 +64,7 @@ function searchUser(var form)
     name = "id" #thanks to Isbah,gotta remap this
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT username, level, id FROM users where "+name+" = "+" '"+val+"'"
+  var query = format("SELECT username,level,id from users where % = '%';",name,val)
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
