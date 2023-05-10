@@ -110,7 +110,6 @@ function admit(var f)
         mysql.query(connection,sqlquery)
     
         sqlquery = "Insert into records values (1,'"+ cnic +"',NOW(), NULL, NULL,NULL,"+roomid+","+room+");"
-        println(sqlquery)
         mysql.query(connection,sqlquery)
         printf(successAlert,"Success!")
     }
