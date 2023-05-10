@@ -96,15 +96,18 @@ function searchDoctor(var form)
   var query = ""
   if(name == "salary")
    query = "select * from docView where salary="+val+";"
+  else if(name == "name")
+      query = "select * from docView where name like '%"+val+"%';"
   else
     query = "SELECT * from docView where "+name+"='"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Shift Start</th><th>Shift End</th><th>Salary</th><th>Att(%)</th>")
+  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Salary</th><th>Att(%)</th>")
   if(level == 2)
     print("<th></th><th></th>")
   print("</tr>")
+  
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
@@ -112,16 +115,15 @@ function searchDoctor(var form)
     foreach(var field: fields)
     {
       if(level == 2)
-        printf("<td contentEditable=\"true\">%</td>",field)
+        printf("<td onclick=\"updateDoctor(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td>%</td>",field)
-          
     }
     if(level == 2)
     {
       print(trashIcon)
       print(updateIcon)
-    }  
+    }
     print("</tr>")
   }
   print("</table>")
