@@ -61,7 +61,7 @@ alter table rooms add constraint FK_primaryroom PRIMARY KEY (id, dept_id);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,3,0,12,800);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,4,0,6,2000);
-insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,4,1,6,2000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,4,0,6,2000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,5,0,2,5000);
 
@@ -72,7 +72,7 @@ insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,8,0,1,20000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,10,0,1,18000);
-insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,10,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,10,1,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,10,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,10,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,10,0,1,18000);
@@ -103,17 +103,17 @@ insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,11,0,1,15000);
 --Not Admit means the idiot came for an appointment
 create table patients(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,status varchar(10) CHECK (status = "Discharged" or status = "Admit" or status ="Deceased" or status='Not Admit'),r_id int, dept_id int);
 alter table patients add constraint F_r_id foreign key (r_id, dept_id) references rooms (id,dept_id);
-insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14','Discharged', NULL, NULL);
+insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14','Not Admit', NULL, NULL);
 insert into patients values('Samin','35100-1839103-8','03202132231','1948-10-25','Deceased',NULL, NULL);
-insert into patients values('Muntaha','35192-2837181-3','03228190326','1997-01-10','Discharged',NULL, NULL);
-insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-24','Discharged',NULL, NULL);
+insert into patients values('Muntaha','35192-2837181-3','03228190326','1997-01-10','Not Admit',NULL, NULL);
+insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-24','Not Admit',NULL, NULL);
 insert into patients values('Adeel','35142-8193038-5','03351627002','1990-06-03','Admit', 2,4);
 
 --hospital staff
 create table staff(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,desig varchar(30),salary int);
 insert into staff values('Nawaz','30102-10289101-2','03164436563','1995-01-02','Sweeper',25000);
 insert into staff values('Amin Dar','20184-6174013-0','03078278103','1998-01-13','Nurse',70000);
-insert into staff values('Haider Sarfraz','30102-4801342-2','03326173892','2000-10-25','Receptionist',50000);
+insert into staff values('Haider Sarfraz','30102-4801342-2','03078278104','2000-10-25','Receptionist',50000);
 insert into staff values('Abdullah Sheikh','30102-2849041-2','03337482910','1990-06-05','Nurse',70000);
 
 --online web app users
@@ -267,6 +267,31 @@ insert into attendance VALUES('32910-1927181-7','2023-3-8','P',1);
 insert into attendance VALUES('32910-1927181-7','2023-3-9','P',1);
 insert into attendance VALUES('32910-1927181-7','2023-3-10','P',1);
 insert into attendance VALUES('32910-1927181-7','2023-3-11','P',1);
+
+insert into attendance VALUES('20184-6174013-0','2023-3-1','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-2','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-3','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-4','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-5','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-6','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-7','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-8','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-9','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-10','P',2);
+insert into attendance VALUES('20184-6174013-0','2023-3-11','P',2);
+
+insert into attendance VALUES('30102-4801342-2','2023-3-1','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-2','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-3','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-4','A',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-5','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-6','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-7','A',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-8','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-9','P',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-10','A',2);
+insert into attendance VALUES('30102-4801342-2','2023-3-11','A',2);
+
 
 --patient records 
 --type 0 = appointment, type 1 = admission
