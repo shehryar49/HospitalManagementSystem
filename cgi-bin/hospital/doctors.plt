@@ -49,7 +49,7 @@ function addDoctor(var form)
     return nil
   }
 }
-function viewall(var form)
+function viewall()
 {
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
@@ -154,6 +154,7 @@ function fireDoctor(var form)
       query = format("DELETE FROM doctors WHERE cnic='%';",form["cnic"])
       mysql.query(conn,query)
       printf(successAlert,"Delete QUERY executed.")
+      viewall()
     }
     else
       printf(errAlert, "Doctor has pending appointments!")
@@ -326,7 +327,7 @@ if(operation == "Add")
 else if(operation == "delete")
   fireDoctor(form)
 else if(operation == "view")
-  viewall(form)
+  viewall()
 else if(operation == "search")
   searchDoctor(form)
 else if(operation == "update")

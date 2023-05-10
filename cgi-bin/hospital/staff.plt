@@ -3,6 +3,34 @@ import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteStaff(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updatestaff(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 ##Functions##
+function viewStaff()
+{
+    var connection = mysql.init()
+    mysql.real_connect(connection,"localhost","root","password","hospital")
+    var query = "select * from staffView;"
+    mysql.query(connection,query)
+    var res = mysql.store_result(connection)
+    var total = mysql.num_rows(res)
+    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
+    for(var i=1 to total step 1)
+    {
+      var fields = mysql.fetch_row_as_str(res)
+      print("<tr>")
+      var k = 0
+      foreach(var field: fields)
+      {
+        if(k!= 1)
+          printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+        else
+          printf("<td >%</td>",field)
+        k+=1
+      }
+      print(trashIcon)
+      print(updateIcon)
+      print("</tr>")
+    }
+  print("</table>")
+}
 function addNewStaff(var f)
 {
     if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("dob"))
@@ -28,6 +56,7 @@ function addNewStaff(var f)
         var query = format("INSERT INTO staff VALUES('%','%','%','%','%',%)",name, cnic, phone, date_of_birth, designation, salary)
         mysql.query(connection,query)
         printf(successAlert,"Success")
+        viewStaff()
     }
     catch(err)
     {
@@ -83,36 +112,13 @@ function deleteExistingStaff(var form)
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
     printf(successAlert,"Delete QUERY executed.")
+    viewStaff()
   }
   catch(err)
   {
     printf(errAlert,"DELETION failed.")
     return nil
   }
-}
-function viewStaff(var f)
-{
-    var connection = mysql.init()
-    mysql.real_connect(connection,"localhost","root","password","hospital")
-    var query = "select * from staffView;"
-    mysql.query(connection,query)
-    var res = mysql.store_result(connection)
-    var total = mysql.num_rows(res)
-    print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
-    var all = []
-    for(var i=1 to total step 1)
-    {
-        var fields = mysql.fetch_row_as_str(res)
-        print("<tr>")
-        foreach(var field: fields)
-        {
-          printf("<td onclick=\"updatestaff(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
-        }
-        print(trashIcon)
-        print(updateIcon)
-        print("</tr>")
-    }
-    print("</table>")
 }
 function searchStaff(var form)
 {
@@ -166,7 +172,7 @@ else if(request == "update")
 else if(request == "delete")
   deleteExistingStaff(formData)
 else if(request == "view")
-  viewStaff(formData)
+  viewStaff()
 else if(request == "search")
   searchStaff(formData)
 else

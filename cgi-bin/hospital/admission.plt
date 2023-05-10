@@ -1,6 +1,37 @@
 #!C:/plutonium/plutonium.exe
 import "common.plt"
-
+var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
+var updateIcon = "<td><button onclick=\"updatePatient(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHistory(this)\">Records</button></td>"
+function viewall()
+{
+  var conn = mysql.init()
+  mysql.real_connect(conn,"localhost","root","password","hospital")
+  var query = "SELECT name,cnic,phone,dob,status FROM patients;"
+  mysql.query(conn,query)
+  var res = mysql.store_result(conn)
+  var total = mysql.num_rows(res)
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th><th></th><th></th></tr>")
+  for(var i=1 to total step 1)
+  {
+    var fields = mysql.fetch_row_as_str(res)
+    print("<tr>")
+    var k = 0
+    foreach(var field: fields)
+    {
+      if(k!= len(fields)-1 and k != 1)
+        printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+      else
+        printf("<td >%</td>",field)
+      k+=1
+    }
+    print(trashIcon)
+    print(updateIcon)
+    print(history)
+    print("</tr>")
+  }
+  print("</table>")
+}
 function show(var f)
 {
     if(!f.hasKey("cnic"))
@@ -89,6 +120,11 @@ function admit(var f)
             printf(errAlert,"Invalid! Patient records states patient has passed away")
             return nil
         }
+        if(row[0] == "Admit")
+        {
+            printf(errAlert,"Patient already admit")
+            return nil
+        }
         ##to check availability of room
         sqlquery = "select id from rooms where dept_id = " + room + " and totalBeds != occ;"
         
@@ -112,6 +148,7 @@ function admit(var f)
         sqlquery = "Insert into records values (1,'"+ cnic +"',NOW(), NULL, NULL,NULL,"+roomid+","+room+");"
         mysql.query(connection,sqlquery)
         printf(successAlert,"Success!")
+        viewall()
     }
     catch(thrownerror){
         printf(errAlert,"Operation failed: "+thrownerror.msg)
@@ -136,9 +173,11 @@ function discharge(var f)
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
 
         var sqlquery = "Select status from patients where cnic = '"+cnic+"';"
+        print(sqlquery)
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var patstatus = mysql.fetch_row_as_str(result)
+        print(patstatus)
         if(patstatus[0] != "Admit")
         {
             printf(errAlert,"Patient is not admitted, cannot set status as "+status)
@@ -147,6 +186,7 @@ function discharge(var f)
 
         ##get total charges
         sqlquery = "select id, dept_id, perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
+        print(sqlquery)
         mysql.query(connection,sqlquery)
         result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
@@ -156,6 +196,7 @@ function discharge(var f)
 
         #update tables
         sqlquery = "Update records Set expiryDate = NOW(), fee = CEILING((TIMESTAMPDIFF(SECOND,'23/4/18 00:00:00', NOW()))/86400)*"+totalcharges+" where r_id = "+id+" and dept_id = "+dept_id+" and cnic = '"+cnic+"' ;"
+        print(sqlquery)       
         mysql.query(connection,sqlquery)
 
         sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';"
@@ -164,11 +205,11 @@ function discharge(var f)
         sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
         mysql.query(connection,sqlquery)
         
-
         printf(successAlert,"Success!")
+        viewall()
     }
     catch(thrownerror){
-        printf(errAlert,"Operation failed: Make sure patient status is set correctly")
+        printf(errAlert,thrownerror.msg)#"Operation failed: Make sure patient status is set correctly")
         return nil
     }
 }

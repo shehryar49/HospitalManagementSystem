@@ -53,8 +53,6 @@ function login(var uname,var pass)
   
   print("location: dashboard.plt\r\n\r\n") #redirect to dashboard
 }
-
-
 #main starts here
 if(getenv("HTTP_COOKIE")!=nil)
 {

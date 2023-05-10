@@ -43,7 +43,7 @@ function viewall()
     var k = 0
     foreach(var field: fields)
     {
-      if(k!= len(fields)-1)
+      if(k!= len(fields)-1 and k != 1)
         printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td >%</td>",field)
@@ -96,11 +96,21 @@ function deletePatient(var form)
   }
   #there are SQL injection vulnerabilities
   #to be fixed later
-  var query = format("DELETE FROM patients WHERE cnic='%';",form["cnic"])
+  var query = format("SELECT status FROM patients WHERE cnic='%';", form["cnic"])
   try
   {
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
+     mysql.query(conn,query)
+    var res = mysql.store_result(conn)
+    var patstatus = mysql.fetch_row_as_str(res)
+    if(patstatus[0] == "Admit")
+    {
+      printf(errAlert, "Patient is Admit, record cannot be deleted")
+      viewall()
+      return nil
+    }
+    query = format("DELETE FROM patients WHERE cnic='%';",form["cnic"])
     mysql.query(conn,query)
     mysql.close(conn)
     printf(successAlert,"Delete Query executed.")
