@@ -10,6 +10,16 @@ function renderLoginPage(var msg="")
 }
 function login(var uname,var pass)
 {
+  if(uname == "")
+  {
+    renderLoginPage("UserName cannot be empty")
+    return nil
+  }
+  if(pass == "")
+  {
+    renderLoginPage("Password cannot be empty")
+    return nil
+  }
   if(!isAlphanum(uname) or !isAlphanum(pass))
   {
     renderLoginPage("SQL INJECTION not allowed! You stupid!")
