@@ -355,7 +355,7 @@ var myBarChart = new Chart(ctxB, {
     })
     .then(function(html) {
         var k=document.getElementById("response1");
-        k.innerHTML = html+k.innerHTML;
+        k.innerHTML = html;
         setTimeout(hideAlerts,3000);
     })
     .catch(function(err) {
@@ -430,7 +430,7 @@ var myBarChart = new Chart(ctxB, {
     })
     .then(function(html) {
         var k = document.getElementById("responseStaff");
-        k.innerHTML = html+k.innerHTML;
+        k.innerHTML = html;
         setTimeout(hideAlerts,3000);
     })
     .catch(function(err) {
@@ -779,7 +779,6 @@ var myBarChart = new Chart(ctxB, {
         .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
     }
 ///Users
-
 function showUsers()
     {
         fetch('/cgi-bin/hospital/users.plt?operation=view')
@@ -1365,12 +1364,28 @@ function setPlaceholder(id,val)
               <div class="card-body">
                   <h4>Add Room</h4>
 
-                  <input class="form-control w-25" type="text" id="roomtype" placeholder="Type">
+                    <br>
+                  <select class="form-select form-select-sm" id="roomSelectAdd" aria-label="Default select example">
+                    <option selected>Room</option>
+                    <option value="1">Cardiology</option>
+                    <option value="2">Neurosurgery</option>
+                    <option value="3">Plastic surgery</option>
+                    <option value="4">ENT</option>
+                    <option value="5">Eye</option>
+                    <option value="6">Paediatric</option>
+                    <option value="7">Nephrology</option>
+                    <option value="8">Gynae</option>
+                    <option value="9">Urology</option>
+                    <option value="10">Medicine</option>
+                    <option value="11">Surgery</option>
+                    <option value="12">Psychiatry</option>
+                  </select>
+                  <br>
                   <input class="form-control w-25 mt-2" type="text" id="TotalBeds" placeholder="TotalBeds">
                   <input class="form-control w-25 mt-2" type="text" id="perDay" placeholder="Per Day charges">
       
                   
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addItem()">Add</button>
+                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addRoom()">Add</button>
               </div>
             </div>
           </div>
