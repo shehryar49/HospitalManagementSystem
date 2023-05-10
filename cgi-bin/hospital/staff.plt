@@ -42,7 +42,7 @@ function addNewStaff(var f)
     var cnic = f["cnic"]
     if(cnic == "")
     {
-        print("cnic cannot be NULL")
+        print("cnic field cannot be empty")
         return nil
     }
     var phone = f["phone"]
@@ -54,6 +54,8 @@ function addNewStaff(var f)
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
         var query = format("INSERT INTO staff VALUES('%','%','%','%','%',%)",name, cnic, phone, date_of_birth, designation, salary)
+        mysql.query(connection,query)
+        query = format("insert into attendance values('%',CURDATE(),'P',1);",cnic)
         mysql.query(connection,query)
         printf(successAlert,"Success")
         viewStaff()
