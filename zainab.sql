@@ -340,6 +340,10 @@ create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptn
           ,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b
            where b.cnic = a.cnic)t
    on st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id);
+
+create view deptView as Select departments.dept_id, departments.deptname, departments.hod, doctors.name
+from departments left join doctors on departments.hod = doctors.cnic;
+
 --procedure for deletion
 --DELIMETER $$
 --CREATE PROCEDURE deleteDoctor(nic varchar(30))
@@ -350,3 +354,4 @@ create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptn
 --        DELETE FROM doctors WHERE cnic = nic;
 --    END IF;
 --END $$
+select v.dept_id, v.deptname, COUNT(w.d_id), v.hod, v.name from deptView as v, worksIn as w  where v.dept_id = w.dept_id group by dept_id;
