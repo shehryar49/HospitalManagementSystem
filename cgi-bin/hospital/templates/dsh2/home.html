@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Admin Dashboard</title>
   <meta charset="utf-8">
@@ -11,482 +12,451 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script>
-    
-    function showOverview()
-    {
+
+    function showOverview() {
       fetch('/cgi-bin/hospital/stats.plt')
-    .then(function(response) {return response.json()})
-    .then(function(json) {
-      if(json["code"]!=200) //api error
-      {
-        throw "Stats API failed.";
-      }
-      document.getElementById('bloodMoney').innerHTML += "<span style=\"color:red\"> "+json["revenue"]+" PKR</span>";
-var ctxB = document.getElementById("barChart").getContext('2d');
-var myBarChart = new Chart(ctxB, {
-  type: 'bar',
-  data: {
-    labels: json["labels"],
-    datasets: [{
-      data: json["data"],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-        'rgba(123, 102, 55, 0.2)',
-        'rgba(103, 202, 5, 0.2)',
-        'rgba(253, 132, 255, 0.2)'
-      ],
-      borderColor: [
-        'rgba(255,99,132,1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)',
-        'rgba(123, 102, 55, 1)',
-        'rgba(103, 202, 5, 1)',
-        'rgba(253, 132, 255, 1)'
-      ],
-      borderWidth: 1
-    }]
-  },
-  options: {
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
-    },
-    legend: {display: false}
-  }
-});
-    })
-    .catch(function(err) {console.log('Failed to fetch page: ', err);});
+        .then(function (response) { return response.json() })
+        .then(function (json) {
+          if (json["code"] != 200) //api error
+          {
+            throw "Stats API failed.";
+          }
+          document.getElementById('bloodMoney').innerHTML += "<span style=\"color:red\"> " + json["revenue"] + " PKR</span>";
+          var ctxB = document.getElementById("barChart").getContext('2d');
+          var myBarChart = new Chart(ctxB, {
+            type: 'bar',
+            data: {
+              labels: json["labels"],
+              datasets: [{
+                data: json["data"],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(123, 102, 55, 0.2)',
+                  'rgba(103, 202, 5, 0.2)',
+                  'rgba(253, 132, 255, 0.2)'
+                ],
+                borderColor: [
+                  'rgba(255,99,132,1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)',
+                  'rgba(123, 102, 55, 1)',
+                  'rgba(103, 202, 5, 1)',
+                  'rgba(253, 132, 255, 1)'
+                ],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }]
+              },
+              legend: { display: false }
+            }
+          });
+        })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
     /////////////////////////////////////////////////LOGOUT BUTTON///////////////////////////////////
-    function logout(){window.location.href = "logout.plt";}
+    function logout() { window.location.href = "logout.plt"; }
     ///////////////////////////////////////////////SUCCESS/ERR ALERTS/////////////////////////////
-    function hideAlerts()
-    {
+    function hideAlerts() {
       var k = document.getElementsByClassName("alert");
-      if(k.length >= 1)//close alert at the end
-        k[k.length-1].children[0].click();
+      if (k.length >= 1)//close alert at the end
+        k[k.length - 1].children[0].click();
     }
     ///////////////////////////////////////////////////PATIENT SCRIPT////////////////////////////////
-    function showPatients()
-    {
+    function showPatients() {
       fetch('/cgi-bin/hospital/patients.plt?operation=view')
-    .then(function(response) {return response.text()})
-    .then(function(html) {document.getElementById("response").innerHTML = html;})
-    .catch(function(err) {console.log('Failed to fetch page: ', err);});
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("response").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
-    function searchPatients()
-    {
+    function searchPatients() {
       var key = document.getElementById("patKeyVal").value;
       var cnic = document.getElementById('patKeyCNIC');
       var phone = document.getElementById('patKeyPhone');
       var dob = document.getElementById('patKeyDOB');
       var stat = document.getElementById('patKeyStatus');
       var name = document.getElementById('patKeyName');
-      var url ;
-      if(cnic.checked)
-      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval='+key+"&keyname=cnic";
-      else if(phone.checked)
-      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval='+key+"&keyname=phone";
-      else if(dob.checked)
-      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval='+key+"&keyname=dob";
-      else if(stat.checked)
-      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval='+key+"&keyname=status";
-      else if(name.checked)
-        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval='+key+"&keyname=name";
+      var url;
+      if (cnic.checked)
+        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval=' + key + "&keyname=cnic";
+      else if (phone.checked)
+        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval=' + key + "&keyname=phone";
+      else if (dob.checked)
+        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval=' + key + "&keyname=dob";
+      else if (stat.checked)
+        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval=' + key + "&keyname=status";
+      else if (name.checked)
+        url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=search&keyval=' + key + "&keyname=name";
       url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("response").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("response").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function deletePatient(elem)
-    {
+    function deletePatient(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[1].innerHTML; //first column of patient row is cnic
       cnic = encodeURIComponent(cnic);
-      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=delete&cnic='+cnic;
+      url = 'http://localhost/cgi-bin/hospital/patients.plt?operation=delete&cnic=' + cnic;
       fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById('response');
-        k.innerHTML=html;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById('response');
+          k.innerHTML = html;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function updatePatient(row,push=true)
-    {
-      var updateBtn = row.children[row.children.length-2].children[0].children[0];
-      
-      if(updateBtn.className == "fa fa-edit")
-      {
+    function updatePatient(row, push = true) {
+      var updateBtn = row.children[row.children.length - 2].children[0].children[0];
+
+      if (updateBtn.className == "fa fa-edit") {
         updateBtn.className = "fa fa-check";
-        for(var i=0;i<row.children.length;i++)
-        {
+        for (var i = 0; i < row.children.length; i++) {
           var p = row.children[i];
-          if(p == updateBtn)
+          if (p == updateBtn)
             break;
-          if(p.contentEditable == "true")
-          {
+          if (p.contentEditable == "true") {
             var range = document.createRange();
-            range.selectNodeContents(p);  
-            var sel = window.getSelection(); 
-            sel.removeAllRanges(); 
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
             sel.addRange(range);
             break;
           }
         }
         return null;
       }
-      else
-      {
-        if(!push)
-        return null;
+      else {
+        if (!push)
+          return null;
         updateBtn.className = "fa fa-edit";
-      var cnic = row.children[1].innerHTML;
-      var name = row.children[0].innerHTML;
-      var dob = row.children[3].innerHTML;
-      var status = row.children[4].innerHTML;
-      var phone = row.children[2].innerHTML;;
-      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&status="+status+"&phone="+phone;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/patients.plt?operation=update&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k =document.getElementById("response");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
-  }
+        var cnic = row.children[1].innerHTML;
+        var name = row.children[0].innerHTML;
+        var dob = row.children[3].innerHTML;
+        var status = row.children[4].innerHTML;
+        var phone = row.children[2].innerHTML;;
+        var query_string = "name=" + name + "&cnic=" + cnic + "&dob=" + dob + "&status=" + status + "&phone=" + phone;
+        query_string = encodeURI(query_string);
+        fetch('http://localhost/cgi-bin/hospital/patients.plt?operation=update&' + query_string)
+          .then(function (response) {
+            // When the page is loaded convert it to text
+            return response.text()
+          })
+          .then(function (html) {
+            var k = document.getElementById("response");
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
+            console.log('Failed to fetch page: ', err);
+          });
+      }
     }
-    function admit()
-    {
+    function admit() {
 
       var name = document.getElementById('Name').value;
       var cnic = document.getElementById('cnic2').value;
-      var phone = document.getElementById('phone').value; 
+      var phone = document.getElementById('phone').value;
       var dob = document.getElementById('dob').value;
       var room = document.getElementById('roomSelect').value
-      
-      
-      var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=admit&cnic='+cnic+"&name="+name+"&phone="+phone+"&dob="+dob+"&room="+room;
+
+
+      var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=admit&cnic=' + cnic + "&name=" + name + "&phone=" + phone + "&dob=" + dob + "&room=" + room;
       string_url = encodeURI(string_url);
       fetch(string_url)
-      .then(function(response){ return response.text()})
-      .then(function(html){
-      var whytho = document.getElementById("response").innerHTML = html;
-      whytho.innerHTML = html+whytho.innerHTML;
-      setTimeout(hideAlerts,3000); //is this to hide the success/err alerts after some time?
-      })
-      .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
-    }
-    function discharge()
-    {
-        var status = document.getElementById('statusSelect').value
-        var cnic = document.getElementById('toDischarge').value
-        
-        var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=discharge&cnic='+cnic+"&status="+status;
-        string_url = encodeURI(string_url);
-        fetch(string_url)
-        .then(function(response){ return response.text()})
-        .then(function(html){
+        .then(function (response) { return response.text() })
+        .then(function (html) {
           var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html+whytho.innerHTML;
-          setTimeout(hideAlerts,3000); //is this to hide the success/err alerts after some time?
+          whytho.innerHTML = html + whytho.innerHTML;
+          setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
         })
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
-        
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
     }
-    function getHistory(elem)
-    {
+    function discharge() {
+      var status = document.getElementById('statusSelect').value
+      var cnic = document.getElementById('toDischarge').value
+
+      var string_url = 'http://localhost/cgi-bin/hospital/admission.plt?operation=discharge&cnic=' + cnic + "&status=" + status;
+      string_url = encodeURI(string_url);
+      fetch(string_url)
+        .then(function (response) { return response.text() })
+        .then(function (html) {
+          var whytho = document.getElementById("response").innerHTML = html;
+          whytho.innerHTML = html + whytho.innerHTML;
+          setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
+        })
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+
+    }
+    function getHistory(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[1].innerHTML;
-      var query = "http://localhost/cgi-bin/hospital/patients.plt?operation=history&cnic="+cnic;
+      var query = "http://localhost/cgi-bin/hospital/patients.plt?operation=history&cnic=" + cnic;
       query = encodeURI(query)
       fetch(query)
-      .then(function(response){ return response.text()})
-        .then(function(html){
+        .then(function (response) { return response.text() })
+        .then(function (html) {
           var a = document.getElementById("pathistory").innerHTML = html;
-          a.innerHTML = html+a.innerHTML;
-          setTimeout(hideAlerts,3000);
+          a.innerHTML = html + a.innerHTML;
+          setTimeout(hideAlerts, 3000);
         })
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
     }
     /////////////////////////////////////DOCTOR SCRIPT//////////////////////////////////////////////
-    function showDoctors()
-    {
-        fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=view')
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("response1").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+    function showDoctors() {
+      fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=view')
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("response1").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function searchDoctors()
-    {
+    function searchDoctors() {
       var key = document.getElementById("docKeyVal").value;
       var cnic = document.getElementById('docKeyCNIC');
       var phone = document.getElementById('docKeyPhone');
       var dob = document.getElementById('docKeyDOB');
-      var salary= document.getElementById('docKeySalary');
+      var salary = document.getElementById('docKeySalary');
       var name = document.getElementById('docKeyName');
       var spec = document.getElementById('docKeySpec');
-      var url ;
-      if(cnic.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=cnic";
-      else if(phone.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=phone";
-      else if(dob.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=dob";
-      else if(salary.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=salary";
-      else if(name.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=name";
-      else if(spec.checked)
-        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval='+key+"&keyname=deptname";
+      var url;
+      if (cnic.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=cnic";
+      else if (phone.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=phone";
+      else if (dob.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=dob";
+      else if (salary.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=salary";
+      else if (name.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=name";
+      else if (spec.checked)
+        url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=search&keyval=' + key + "&keyname=deptname";
 
-        url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("response1").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("response1").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function updateDoctor(row,push = true)
-    {
-      var updateBtn = row.children[row.children.length-1].children[0].children[0];
-      if(updateBtn.className == "fa fa-edit")
-      {
+    function updateDoctor(row, push = true) {
+      var updateBtn = row.children[row.children.length - 1].children[0].children[0];
+      if (updateBtn.className == "fa fa-edit") {
         updateBtn.className = "fa fa-check";
-        for(var i=0;i<row.children.length;i++)
-        {
+        for (var i = 0; i < row.children.length; i++) {
           var p = row.children[i];
-          if(p == updateBtn)
+          if (p == updateBtn)
             break;
-          if(p.contentEditable == "true")
-          {
+          if (p.contentEditable == "true") {
             var range = document.createRange();
-            range.selectNodeContents(p);  
-            var sel = window.getSelection(); 
-            sel.removeAllRanges(); 
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
             sel.addRange(range);
             break;
           }
         }
         return null;
       }
-      else
-      {
-        if(!push)
-        return null;
-      updateBtn.className = "fa fa-edit";
-      var cnic = row.children[1].innerHTML;
-      var phone = row.children[2].innerHTML;
-      var dob = row.children[3].innerHTML;
-      var salary= row.children[5].innerHTML
-      var name = row.children[0].innerHTML;
-      var query_string = "name="+name+"&cnic="+cnic+"&dob="+dob+"&salary="+salary+"&phone="+phone;
-      query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=update&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("response1");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
-     }
+      else {
+        if (!push)
+          return null;
+        updateBtn.className = "fa fa-edit";
+        var cnic = row.children[1].innerHTML;
+        var phone = row.children[2].innerHTML;
+        var dob = row.children[3].innerHTML;
+        var salary = row.children[5].innerHTML
+        var name = row.children[0].innerHTML;
+        var query_string = "name=" + name + "&cnic=" + cnic + "&dob=" + dob + "&salary=" + salary + "&phone=" + phone;
+        query_string = encodeURI(query_string);
+        fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=update&' + query_string)
+          .then(function (response) {
+            // When the page is loaded convert it to text
+            return response.text()
+          })
+          .then(function (html) {
+            var k = document.getElementById("response1");
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
+            console.log('Failed to fetch page: ', err);
+          });
+      }
     }
-    function deleteDoctor(elem)
-    {
+    function deleteDoctor(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[1].innerHTML;
-      var url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=delete&cnic='+cnic;
-        url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("response1");
-        k.innerHTML = html;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      var url = 'http://localhost/cgi-bin/hospital/doctors.plt?operation=delete&cnic=' + cnic;
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("response1");
+          k.innerHTML = html;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-
-////Staff Code/////
+    ////Staff Code/////
     //Fixed by Shahryar Ahmad
     //Hence Copyright 2023 All rights reserved.
-    function showStaff()
-    {
-        fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=view')
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseStaff").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+    function showStaff() {
+      fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=view')
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseStaff").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function searchStaff()
-    {
+    function searchStaff() {
       var key = document.getElementById("staffKeyVal").value;
       var cnic = document.getElementById('staffKeyCNIC');
       var phone = document.getElementById('staffKeyPhone');
       var dob = document.getElementById('staffKeyDOB');
-      var salary= document.getElementById('staffKeySalary');
+      var salary = document.getElementById('staffKeySalary');
       var name = document.getElementById('staffKeyName');
       var desig = document.getElementById('staffKeyDesig');
-      var url ;
-      if(cnic.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=cnic";
-      else if(phone.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=phone";
-      else if(dob.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=dob";
-      else if(salary.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=salary";
-      else if(name.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=name";
-      else if(desig.checked)
-        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval='+key+"&keyname=desig";
+      var url;
+      if (cnic.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=cnic";
+      else if (phone.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=phone";
+      else if (dob.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=dob";
+      else if (salary.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=salary";
+      else if (name.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=name";
+      else if (desig.checked)
+        url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=search&keyval=' + key + "&keyname=desig";
 
-        url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseStaff").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseStaff").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function deleteStaff(elem)
-    {
+    function deleteStaff(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[1].innerHTML;
-      var url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=delete&cnic='+cnic;
-  
-        url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseStaff");
-        k.innerHTML = html;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      var url = 'http://localhost/cgi-bin/hospital/staff.plt?operation=delete&cnic=' + cnic;
+
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseStaff");
+          k.innerHTML = html;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function addstaff()
-    {
+    function addstaff() {
       var cnic = document.getElementById('cnicstaffsecondary').value;
       var name = document.getElementById('staffname').value;
       var dob = document.getElementById('staffdob').value;
       var desig = document.getElementById('staffdesig').value;
       var phone = document.getElementById('staffphone').value;
       var salary = document.getElementById('staffsalary').value;
-      
-      var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&salary="+salary;
+
+      var query_string = "name=" + name + "&cnic=" + cnic + "&phone=" + phone + "&dob=" + dob + "&desig=" + desig + "&salary=" + salary;
       query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseStaff").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=add&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseStaff").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function updatestaff(row,push=true)
-    {
-      var updateBtn = row.children[row.children.length-1].children[0].children[0];
-      if(updateBtn.className == "fa fa-edit")
-      {
+    function updatestaff(row, push = true) {
+      var updateBtn = row.children[row.children.length - 1].children[0].children[0];
+      if (updateBtn.className == "fa fa-edit") {
         updateBtn.className = "fa fa-check";
-        for(var i=0;i<row.children.length;i++)
-        {
+        for (var i = 0; i < row.children.length; i++) {
           var p = row.children[i];
-          if(p == updateBtn)
+          if (p == updateBtn)
             break;
-          if(p.contentEditable == "true")
-          {
+          if (p.contentEditable == "true") {
             var range = document.createRange();
-            range.selectNodeContents(p);  
-            var sel = window.getSelection(); 
-            sel.removeAllRanges(); 
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
             sel.addRange(range);
             break;
           }
         }
         return null;
       }
-      else
-      {
-        if(!push)
-        return null;
+      else {
+        if (!push)
+          return null;
         updateBtn.className = "fa fa-edit";
         var cnic = row.children[1].innerHTML;
         var name = row.children[0].innerHTML;
@@ -494,41 +464,39 @@ var myBarChart = new Chart(ctxB, {
         var desig = row.children[4].innerHTML;
         var phone = row.children[2].innerHTML;
         var salary = row.children[5].innerHTML;
-        
-        var query_string = "name="+name+"&cnic="+cnic+"&phone="+phone+"&dob="+dob+"&desig="+desig+"&salary="+salary;
+
+        var query_string = "name=" + name + "&cnic=" + cnic + "&phone=" + phone + "&dob=" + dob + "&desig=" + desig + "&salary=" + salary;
         query_string = encodeURI(query_string);
-          fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=update&'+query_string)
-      .then(function(response) {
+        fetch('http://localhost/cgi-bin/hospital/staff.plt?operation=update&' + query_string)
+          .then(function (response) {
+            // When the page is loaded convert it to text
+            return response.text()
+          })
+          .then(function (html) {
+            var k = document.getElementById("responseStaff");
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
+            console.log('Failed to fetch page: ', err);
+          });
+      }
+    }
+    //Appointment handler
+    function showAppointments() {
+      fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=view')
+        .then(function (response) {
           // When the page is loaded convert it to text
           return response.text()
-      })
-      .then(function(html) {
-          var k=document.getElementById("responseStaff");
-          k.innerHTML = html+k.innerHTML;
-          setTimeout(hideAlerts,3000);
-      })
-      .catch(function(err) {
+        })
+        .then(function (html) {
+          document.getElementById("responseAppointments").innerHTML = html;
+        })
+        .catch(function (err) {
           console.log('Failed to fetch page: ', err);
-      });
-  }
-}
-    //Appointment handler
-    function showAppointments()
-    {
-        fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=view')
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseAppointments").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+        });
     }
-    function searchAppointments()
-    {
+    function searchAppointments() {
       var keyval = document.getElementById("SearchByDoctorID").value;
 
       var d_id = document.getElementById("didk");
@@ -539,59 +507,57 @@ var myBarChart = new Chart(ctxB, {
       var pname = document.getElementById("pnk");
       var dname = document.getElementById("dnk");
       var myquery;
-      if(d_id.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=a.d_id";
-      else if(starttime.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=a.start";
-      else if(endtime.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=a.end";
-      else if(p_id.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=a.p_id";
-      else if(app_date.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=a.app_date";
-      else if(pname.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=p.name";
-      else if(dname.checked)
-        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval='+keyval+"&keyname=d.name";
-    myquery = encodeURI(myquery);
-    fetch(myquery)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k= document.getElementById("responseAppointments");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      if (d_id.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.d_id";
+      else if (starttime.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.start";
+      else if (endtime.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.end";
+      else if (p_id.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.p_id";
+      else if (app_date.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.app_date";
+      else if (pname.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=p.name";
+      else if (dname.checked)
+        myquery = 'http://localhost/cgi-bin/hospital/appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=d.name";
+      myquery = encodeURI(myquery);
+      fetch(myquery)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseAppointments");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function cancelAppointment(elem)
-    {
+    function cancelAppointment(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[5].innerHTML;
       var date = row.children[4].innerHTML;
       var starttime = row.children[2].innerHTML;
-      var query_string = "d_id="+cnic+"&app_date="+date+"&start="+starttime;
+      var query_string = "d_id=" + cnic + "&app_date=" + date + "&start=" + starttime;
       query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=delete&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseAppointments");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=delete&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseAppointments");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function addAppointment(elem)
-    {
+    function addAppointment(elem) {
       var date = document.getElementById('appDate').value;
       var cnicpatient = document.getElementById('appPatCnic').value;
       var dept = document.getElementById('appDeptSelect').value;
@@ -601,364 +567,438 @@ var myBarChart = new Chart(ctxB, {
       var docCnic = elem.parentElement.parentElement.children[3].innerHTML;
       var starttime = elem.parentElement.parentElement.children[1].innerHTML;
       var endtime = elem.parentElement.parentElement.children[2].innerHTML;
-      var query_string ="app_date="+date+"&start="+starttime+"&end="+endtime+"&p_id="+cnicpatient+"&dept="+dept+"&name="+name+"&dob="+dob+"&phone="+phone+"&d_id="+docCnic;
+      var query_string = "app_date=" + date + "&start=" + starttime + "&end=" + endtime + "&p_id=" + cnicpatient + "&dept=" + dept + "&name=" + name + "&dob=" + dob + "&phone=" + phone + "&d_id=" + docCnic;
       query_string = encodeURI(query_string);
-      fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("responseAppointments");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=add&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseAppointments");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function showAvailable()
-    {
+    function showAvailable() {
       var dept = document.getElementById('appDeptSelect').value;
       var date = document.getElementById('appDate').value;
-      var query_string = "dept="+encodeURIComponent(dept)+"&date="+encodeURIComponent(date)+"&operation=showAvailable";
-      
-      fetch('http://localhost/cgi-bin/hospital/appointments.plt?'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k=document.getElementById("responseAppointments");
-        k.innerHTML = html;
-        //setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      var query_string = "dept=" + encodeURIComponent(dept) + "&date=" + encodeURIComponent(date) + "&operation=showAvailable";
+
+      fetch('http://localhost/cgi-bin/hospital/appointments.plt?' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseAppointments");
+          k.innerHTML = html;
+          //setTimeout(hideAlerts,3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
     ////ITEM CODE
-    function showItem()
-    {
-        fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=view')
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseinventory").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+    function showItem() {
+      fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=view')
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseinventory").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function searchItem()
-    {
+    function searchItem() {
       var id = document.getElementById('idinvent').value;
-        fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=view&id='+id)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseinventory").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=view&id=' + id)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseinventory").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function deleteItem(elem)
-    {
+    function deleteItem(elem) {
       var row = elem.parentElement.parentElement;
       var id = row.children[0].innerHTML; //id
-        fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=delete&id='+id)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseinventory");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=delete&id=' + id)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseinventory");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function addItem()
-    {
+    function addItem() {
       var id = document.getElementById('idtwo').value;
       var type = document.getElementById('type').value;
       var noofunits = document.getElementById('noofunits').value;
       var priceperunit = document.getElementById('priceperunit').value;
-      
-      var query_string = "id="+id+"&type="+type+"&nou="+noofunits+"&ppu="+priceperunit;
+
+      var query_string = "id=" + id + "&type=" + type + "&nou=" + noofunits + "&ppu=" + priceperunit;
       query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseinventory");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/inventory.plt?operation=add&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseinventory");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function updateItem(row,push = true)
-    {
-      var updateBtn = row.children[row.children.length-1].children[0].children[0];
-      if(updateBtn.className == "fa fa-edit")
-      {
+    function updateItem(row, push = true) {
+      var updateBtn = row.children[row.children.length - 1].children[0].children[0];
+      if (updateBtn.className == "fa fa-edit") {
         updateBtn.className = "fa fa-check";
-        for(var i=0;i<row.children.length;i++)
-        {
+        for (var i = 0; i < row.children.length; i++) {
           var p = row.children[i];
-          if(p == updateBtn)
+          if (p == updateBtn)
             break;
-          if(p.contentEditable == "true")
-          {
+          if (p.contentEditable == "true") {
             var range = document.createRange();
-            range.selectNodeContents(p);  
-            var sel = window.getSelection(); 
-            sel.removeAllRanges(); 
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
             sel.addRange(range);
             break;
           }
         }
         return null;
       }
-      else
-      {
-        if(!push)
+      else {
+        if (!push)
+          return null;
+        updateBtn.className = "fa fa-edit";
+        var id = row.children[0].innerHTML;
+        var type = row.children[1].innerHTML;
+        var noofunits = row.children[2].innerHTML;
+        var priceperunit = row.children[3].innerHTML;
+
+        var query_string = "id=" + id + "&type=" + type + "&nou=" + noofunits + "&ppu=" + priceperunit;
+        query_string = encodeURI(query_string);
+        fetch('inventory.plt?operation=update&' + query_string)
+          .then(function (response) {
+            // When the page is loaded convert it to text
+            return response.text()
+          })
+          .then(function (html) {
+            var k = document.getElementById("responseinventory");
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
+            console.log('Failed to fetch page: ', err);
+          });
+      }
+    }
+    /////////////////////////////////////////////////ROOM QUERIES////////////////////////////////////////
+    function showallrooms() {
+      var string_url = 'http://localhost/cgi-bin/hospital/rooms.plt?operation=show';
+      string_url = encodeURI(string_url);
+      fetch(string_url)
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("responseroom").innerHTML = html; })
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+    }
+    function searchroom() {
+      var id = document.getElementById('rid').value
+      var string_url = 'http://localhost/cgi-bin/hospital/rooms.plt?operation=search&id=' + id;
+      string_url = encodeURI(string_url);
+      fetch(string_url)
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("responseroom").innerHTML = html; })
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+    }
+    /////////////////////////////////////////////////DEPARTMENTS////////////////////////////////////////
+    function showalldepts() {
+      var string_url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=show';
+      string_url = encodeURI(string_url);
+      fetch(string_url)
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("responsedept").innerHTML = html; })
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+    }
+    function searchdept() {
+      var key = document.getElementById("deptKeyVal").value;
+      var ID = document.getElementById('deptKeyID');
+      var name = document.getElementById('deptKeyName');
+      var HODname = document.getElementById('deptKeyHODname');
+      var HODCnic = document.getElementById('deptKeyHODcnic');
+      var url;
+      if (ID.checked)
+        url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=search&keyval=' + key + "&keyname=dept_id";
+      else if (name.checked)
+        url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=search&keyval=' + key + "&keyname=deptname";
+      else if (HODname.checked)
+        url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=search&keyval=' + key + "&keyname=name";
+      else if (HODCnic.checked)
+        url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=search&keyval=' + key + "&keyname=hod";
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responsedept").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
+    }
+    function updatedept(row, push = true) {
+      var updateBtn = row.children[row.children.length - 1].children[0].children[0];
+      if (updateBtn.className == "fa fa-edit") {
+        updateBtn.className = "fa fa-check";
+        for (var i = 0; i < row.children.length; i++) {
+          var p = row.children[i];
+          if (p == updateBtn)
+            break;
+          if (p.contentEditable == "true") {
+            var range = document.createRange();
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            break;
+          }
+        }
         return null;
-      updateBtn.className = "fa fa-edit";
-      var id = row.children[0].innerHTML;
-      var type = row.children[1].innerHTML;
-      var noofunits = row.children[2].innerHTML;
-      var priceperunit = row.children[3].innerHTML;
-      
-      var query_string = "id="+id+"&type="+type+"&nou="+noofunits+"&ppu="+priceperunit;
-      query_string = encodeURI(query_string);
-        fetch('inventory.plt?operation=update&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k= document.getElementById("responseinventory");
-        k.innerHTML = html+k.innerHTML;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      }
+      else {
+        if (!push)
+          return null;
+        updateBtn.className = "fa fa-edit";
+        var ID = row.children[0].innerHTML;
+        var hod = row.children[4].innerHTML;
+        var deptname = row.children[1].innerHTML;
+        var query_string = "ID=" + ID + "&deptname=" + deptname + "&hod=" + hod;
+        query_string = encodeURI(query_string);
+        fetch('http://localhost/cgi-bin/hospital/depts.plt?operation=update&' + query_string)
+          .then(function (response) {
+            // When the page is loaded convert it to text
+            return response.text()
+          })
+          .then(function (html) {
+            var k = document.getElementById("responsedept");
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
+            console.log('Failed to fetch page: ', err);
+          });
+      }
     }
-    }
-//ROOM QUERIES
-    function showallrooms()
+    function adddept()
     {
-        var string_url = 'http://localhost/cgi-bin/hospital/rooms.plt?operation=show';
-        string_url = encodeURI(string_url);
-        fetch(string_url)
-        .then(function(response){ return response.text()})
-        .then(function(html){document.getElementById("responseroom").innerHTML = html;})
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
+      var name = document.getElementById('deptname').value;
+      var url = 'http://localhost/cgi-bin/hospital/depts.plt?operation=add&name='+name;
+      url = encodeURI(url);
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responsedept").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function searchroom()
-    {
-        var id = document.getElementById('rid').value
-        var string_url = 'http://localhost/cgi-bin/hospital/rooms.plt?operation=search&id='+id;
-        string_url = encodeURI(string_url);
-        fetch(string_url)
-        .then(function(response){ return response.text()})
-        .then(function(html){document.getElementById("responseroom").innerHTML = html;})
-        .catch(function(thrownerror){console.log('Page not Found: ', thrownerr);});
+    //////////////////////////////////////////////////////Users//////////////////////////////////////////
+    function showUsers() {
+      fetch('/cgi-bin/hospital/users.plt?operation=view')
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("responseUsers").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
-///Users
-function showUsers()
-    {
-        fetch('/cgi-bin/hospital/users.plt?operation=view')
-    .then(function(response) {return response.text()})
-    .then(function(html) {document.getElementById("responseUsers").innerHTML = html;})
-    .catch(function(err) {console.log('Failed to fetch page: ', err);});
-    }
-    function searchUsers()
-    {
+    function searchUsers() {
       var key = document.getElementById("userKeyVal").value;
       var cnic = document.getElementById('userKeyCNIC');
       var username = document.getElementById('userKeyUsername');
       var level = document.getElementById('userKeyLevel');
-      var url ;
-      if(cnic.checked)
-      url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval='+key+"&keyname=cnic";
-      else if(username.checked)
-      url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval='+key+"&keyname=username";
-      else if(level.checked)
-      url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval='+key+"&keyname=level";
+      var url;
+      if (cnic.checked)
+        url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval=' + key + "&keyname=cnic";
+      else if (username.checked)
+        url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval=' + key + "&keyname=username";
+      else if (level.checked)
+        url = 'http://localhost/cgi-bin/hospital/users.plt?operation=search&keyval=' + key + "&keyname=level";
       url = encodeURI(url);
-        fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        document.getElementById("responseUsers").innerHTML = html;
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch(url)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          document.getElementById("responseUsers").innerHTML = html;
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function deleteUser(elem)
-    {
+    function deleteUser(elem) {
       var row = elem.parentElement.parentElement;
       var username = row.children[0].innerHTML; //first column of patient row is cnic
       username = encodeURIComponent(username);
-      url = 'http://localhost/cgi-bin/hospital/users.plt?operation=delete&username='+username;
+      url = 'http://localhost/cgi-bin/hospital/users.plt?operation=delete&username=' + username;
       fetch(url)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById('responseUsers');
-        k.innerHTML=html;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById('responseUsers');
+          k.innerHTML = html;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-     function addUser()
-    {
+    function addUser() {
       var cnic = document.getElementById('usercnic').value;
       var username = document.getElementById('username').value;
       var level = document.getElementById('userLevel').value;
       var pass = document.getElementById('userPass').value;
-      var query_string = "username="+username+"&cnic="+cnic+"&level="+level+"&password="+pass;
+      var query_string = "username=" + username + "&cnic=" + cnic + "&level=" + level + "&password=" + pass;
       query_string = encodeURI(query_string);
-        fetch('http://localhost/cgi-bin/hospital/users.plt?operation=add&'+query_string)
-    .then(function(response) {
-        // When the page is loaded convert it to text
-        return response.text()
-    })
-    .then(function(html) {
-        var k = document.getElementById("responseUsers");
-        k.innerHTML = html;
-        setTimeout(hideAlerts,3000);
-    })
-    .catch(function(err) {
-        console.log('Failed to fetch page: ', err);
-    });
+      fetch('http://localhost/cgi-bin/hospital/users.plt?operation=add&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseUsers");
+          k.innerHTML = html;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
-    function updateUser(elem)
-    {
-      if(elem.children[0].className == "fa fa-edit")
-      {
+    function updateUser(elem) {
+      if (elem.children[0].className == "fa fa-edit") {
         elem.children[0].className = "fa fa-check";
         var row = elem.parentElement.parentElement;
-        for(var i=0;i<row.children.length;i++)
-        {
+        for (var i = 0; i < row.children.length; i++) {
           var p = row.children[i];
-          if(p == elem)
+          if (p == elem)
             break;
-          if(p.contentEditable == "true")
-          {
+          if (p.contentEditable == "true") {
             var range = document.createRange();
-            range.selectNodeContents(p);  
-            var sel = window.getSelection(); 
-            sel.removeAllRanges(); 
+            range.selectNodeContents(p);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
             sel.addRange(range);
             break;
           }
         }
         return null;
       }
-      else
-      {
-          var row = elem.parentElement.parentElement;
-          var username = row.children[0].innerHTML;
-          var level = row.children[1].innerHTML;
-          var cnic = row.children[2].innerHTML;
-          var query_string = "username="+username+"&cnic="+cnic+"&level="+level;
-          query_string = encodeURI(query_string);
-            fetch('http://localhost/cgi-bin/hospital/users.plt?operation=update&'+query_string)
-        .then(function(response) {
+      else {
+        var row = elem.parentElement.parentElement;
+        var username = row.children[0].innerHTML;
+        var level = row.children[1].innerHTML;
+        var cnic = row.children[2].innerHTML;
+        var query_string = "username=" + username + "&cnic=" + cnic + "&level=" + level;
+        query_string = encodeURI(query_string);
+        fetch('http://localhost/cgi-bin/hospital/users.plt?operation=update&' + query_string)
+          .then(function (response) {
             // When the page is loaded convert it to text
             return response.text()
-        })
-        .then(function(html) {
+          })
+          .then(function (html) {
             var k = document.getElementById("responseUsers");
-            k.innerHTML = html+k.innerHTML;
-            setTimeout(hideAlerts,3000);
-        })
-        .catch(function(err) {
+            k.innerHTML = html + k.innerHTML;
+            setTimeout(hideAlerts, 3000);
+          })
+          .catch(function (err) {
             console.log('Failed to fetch page: ', err);
-        });
+          });
       }
     }
-//Misc
-function setPlaceholder(id,val)
-{
-  document.getElementById(id).placeholder = val;
-}
-</script>
+    //Misc
+    function setPlaceholder(id, val) {
+      document.getElementById(id).placeholder = val;
+    }
+  </script>
 </head>
 <style>
-  .delBtn
-  {
+  .delBtn {
     border: none;
-    color: rgb(200,0,0);
+    color: rgb(200, 0, 0);
     background-color: transparent;
 
   }
-  .updateBtn
-  {
+
+  .updateBtn {
     border: none;
-    color:blue;
+    color: blue;
     background-color: transparent;
   }
+
   .table td,
-.table th {
+  .table th {}
 
-}
-.search_select_box{
-  max-width: 400px;
-}
-
+  .search_select_box {
+    max-width: 400px;
+  }
 </style>
+
 <body onload="showOverview()">
 
-<div class="container">
+  <div class="container">
     <br>
-  <div class="row">
-    <div class="col">
-      <h2>Admin Dashboard</h2>
+    <div class="row">
+      <div class="col">
+        <h2>Admin Dashboard</h2>
+      </div>
+      <div class="col"></div>
+      <div class="col">
+        <button class="btn btn-outline-danger float-right" onclick="logout()">Logout</button>
+      </div>
     </div>
-    <div class="col"></div>
-    <div class="col">
-    <button class="btn btn-outline-danger float-right" onclick="logout()">Logout</button>
-    </div>
-  </div>
-  <br>
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs text-dark" role="tablist">
-        <li class="nav-item">
-      <a class="nav-link active text-primary" data-toggle="tab" href="#overview">Overview</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-primary" data-toggle="tab" href="#patients">Patients</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-primary" data-toggle="tab" href="#staff">Staff</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link text-primary" data-toggle="tab" href="#inventory">Inventory</a>
-    </li>
-    <li class="nav-item">
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs text-dark" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active text-primary" data-toggle="tab" href="#overview">Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-primary" data-toggle="tab" href="#patients">Patients</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-primary" data-toggle="tab" href="#staff">Staff</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-primary" data-toggle="tab" href="#inventory">Inventory</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link text-primary" data-toggle="tab" href="#menu3">Doctors</a>
       </li>
       <li class="nav-item">
@@ -968,404 +1008,73 @@ function setPlaceholder(id,val)
         <a class="nav-link text-primary" data-toggle="tab" href="#rooms">Rooms</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link text-primary" data-toggle="tab" href="#dept">Departments</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#users">Users</a>
       </li>
-  </ul>
+    </ul>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
-      <div id="overview"  class="container tab-pane active"><br>
-      <canvas id="barChart"></canvas>
-      <br>
-      <h2 id="bloodMoney">Blood Money💀 earned: </h2>
-     </div>
-    <div id="patients" class="container tab-pane fade"><br>
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="overview" class="container tab-pane active"><br>
+        <canvas id="barChart"></canvas>
+        <br>
+        <h2 id="bloodMoney">Blood Money💀 earned: </h2>
+      </div>
+      <div id="patients" class="container tab-pane fade"><br>
         <br>
         <div class="row">
-        <input class="form-control w-25 ml-2" type="text" id="patKeyVal" placeholder="CNIC">
-        <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchPatients()">Search</button>
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
-    </div>
-    <br>
-    <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Key
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyCNIC" name="patKey" value="CNIC" checked="checked">
-        <label>CNIC</label><br>
-        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyName" name="patKey" value="Name">
-        <label>Name</label><br>
-        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyDOB" name="patKey" value="DOB">
-        <label>DOB</label><br>
-        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyStatus" name="patKey" value="Status">
-        <label>Status</label><br>
-        <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyPhone" name="patKey" value="Phone">
-        <label>Phone</label>
-    
-      </div>
-    </div>
-    <br>
-        <div id="accordion">
-            <div id="idkwutitmeantagain">
-              <div class="card">
-                <div class="card-header">
-                  <a class="card-link" data-toggle="collapse" href="#collapsibleAdmission">
-                   Admit Patient
-                  </a>
-                </div>
-                <div id="collapsibleAdmission" class="collapse" data-parent="#idekwutitmeant">
-                  <div class="card-body">
-                      <h4>Admission Details</h4>
-
-                      <input class="form-control w-25" type="text" id="Name" placeholder="Name">
-                    <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
-                    <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
-                
-                      Date of birth
-                      <input class="form-control mt-2 w-25" type="date" id="dob">
-                      Room<br>
-                    <select class="form-select form-select-sm" id="roomSelect" aria-label="Default select example">
-                      <option selected>Room</option>
-                      <option value="1">Cardiology</option>
-                      <option value="2">Neurosurgery</option>
-                      <option value="3">Plastic surgery</option>
-                      <option value="4">ENT</option>
-                      <option value="5">Eye</option>
-                      <option value="6">Paediatric</option>
-                      <option value="7">Nephrology</option>
-                      <option value="8">Gynae</option>
-                      <option value="9">Urology</option>
-                      <option value="10">Medicine</option>
-                      <option value="11">Surgery</option>
-                      <option value="12">Psychiatry</option>
-                    </select>
-                    <br>
-                      
-                      <button class="btn btn-outline-success btn-sm mt-2" onclick="admit()">Admit</button>
-                  </div>
-                </div>
-            </div> 
-    
-            <div class="card">
-              <div class="card-header">
-                <a class="card-link" data-toggle="collapse" href="#collapsibleDischarge">
-                 Discharge Patient
-                </a>
-              </div>
-              <div id="collapsibleDischarge" class="collapse" data-parent="#idekwutitmeant">
-                <div class="card-body">
-                    <h4>Discharge Details</h4>
-    
-                    <input class="form-control w-25" type="text" id="toDischarge" placeholder="Patient CNIC">
-    
-                    Status Change<br>
-                    <select class="form-select form-select-sm" id="statusSelect" aria-label="Default select example">
-                      <option selected>Status</option>
-                      <option value="Not Admit">Discharged</option>
-                      <option value="Deceased">Deceased</option>
-                    </select>
-                    <br>
-                    <button class="btn btn-outline-danger btn-sm mt-2" onclick="discharge()">Discharge</button>
-                </div>
-              </div>
-          </div> 
-          </div>
-          <br>
-          
-          
-          </div> 
-<br>
-        <div id="response">
-        </div>
-        <div id ="pathistory">
-        </div>
-    </div>
-    <div id="staff" class="container tab-pane fade"><br>
-      <br>
-        <div class="row">
-        <input class="form-control w-25 ml-2" type="text" id="staffKeyVal" placeholder="CNIC">
-        <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchStaff()">Search</button>
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="showStaff()">View all</button>
-    </div>
-    <br>
-    <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-       Key
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyCNIC" name="staffKey" value="CNIC" checked="checked">
-        <label>CNIC</label><br>
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyName" name="staffKey" value="Name">
-        <label>Name</label><br>
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDOB" name="staffKey" value="DOB">
-        <label>DOB</label><br>
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeySalary" name="staffKey" value="Salary">
-        <label>Salary</label><br>
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyPhone" name="staffKey" value="Phone">
-        <label>Phone</label><br>
-        <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDesig" name="staffKey" value="Designation">
-        <label>Designation</label><br>
-      </div>
-    </div>
-        <br>
-        <br>
-        <div id="notaccordion">
-
-            <div class="card">
-              <div class="card-header">
-                <a class="card-link" data-toggle="collapse" href="#collapseTwo">
-                 Add Record
-                </a>
-              </div>
-              <div id="collapseTwo" class="collapse" data-parent="#notaccordion">
-                <div class="card-body">
-                    <h4>Add record</h4>
-                    <input class="form-control w-25" type="text" id="staffname" placeholder="Name">
-                    <input class="form-control w-25 mt-2" type="text" id="cnicstaffsecondary" placeholder="CNIC">
-                    <input class="form-control w-25 mt-2" type="text" id="staffphone" placeholder="Phone">
-                
-                    Date of birth
-                    <input class="form-control mt-2 w-25" type="date" id="staffdob">
-                
-                    <input class="form-control form-control-sm w-25 mt-2"  type="text" id="staffdesig" placeholder="Designation">
-                    <input class="form-control form-control-sm w-25 mt-2"  type="text" id="staffsalary" placeholder="Rupees">
-                    <button class="btn btn-outline-success btn-sm mt-2" onclick="addstaff()">Add</button>
-                    <br><br>
-                </div>
-              </div>
-            </div>
-          
-          
-          </div> 
-<br><br>
-        <div id="responseStaff">
-    
-        </div>
-    </div>
-    <div id="inventory" class="container tab-pane fade"><br>
-      <div class="row">
-      <input class="form-control w-25 ml-2" type="text" id="idinvent" placeholder="ID">
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchItem()">Search</button>
-    <button class="btn btn-outline-primary btn-sm ml-2" onclick="showItem()">View all</button>
-  </div>
-      <br>
-      <div id="nameititem">
-
-          <div class="card">
-            <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapseitems">
-               Add Record
-              </a>
-            </div>
-            <div id="collapseitems" class="collapse" data-parent="#nameititem">
-              <div class="card-body">
-                  <h4>Add/Update Inventory</h4>
-
-                  <input class="form-control w-25" type="text" id="idtwo" placeholder="ID">
-                  <input class="form-control w-25 mt-2" type="text" id="type" placeholder="type">
-                  <input class="form-control w-25 mt-2" type="text" id="noofunits" placeholder="No of Units">
-                  <input class="form-control mt-2 w-25" type="text" id="priceperunit" placehoder="RsPerUnit">
-      
-                  
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addItem()">Add</button>
-              </div>
-            </div>
-          </div>
-        
-        
-        </div> 
-      <br><br>
-      <div id="responseinventory">
-  
-      </div>
-    </div>
-    <div id="menu3" class="container tab-pane fade"><br>
-        <br>
-        <div class="row">
-        <input class="form-control w-25 ml-2" type="text" id="docKeyVal" placeholder="CNIC">
-        <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchDoctors()">Search</button>
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="showDoctors()">View all</button>
+          <input class="form-control w-25 ml-2" type="text" id="patKeyVal" placeholder="CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchPatients()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
         </div>
         <br>
         <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
             Key
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyCNIC" name="docKey" value="CNIC" checked="checked">
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyCNIC"
+              name="patKey" value="CNIC" checked="checked">
             <label>CNIC</label><br>
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyName" name="docKey" value="Name">
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyName"
+              name="patKey" value="Name">
             <label>Name</label><br>
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyDOB" name="docKey" value="DOB">
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyDOB"
+              name="patKey" value="DOB">
             <label>DOB</label><br>
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySalary" name="docKey" value="Salary">
-            <label>Salary</label><br>
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyPhone" name="docKey" value="Phone">
-            <label>Phone</label><br>
-            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySpec" name="docKey" value="Spec">
-            <label>Specialization</label>
-            <br>
-         
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyStatus"
+              name="patKey" value="Status">
+            <label>Status</label><br>
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyPhone"
+              name="patKey" value="Phone">
+            <label>Phone</label>
+
           </div>
         </div>
         <br>
-
-        <br>
-        <div id="accordion1">
-
+        <div id="accordion">
+          <div id="idkwutitmeantagain">
             <div class="card">
               <div class="card-header">
-                <a class="card-link" data-toggle="collapse" href="#collapseOne1">
-                 Add Record
+                <a class="card-link" data-toggle="collapse" href="#collapsibleAdmission">
+                  Admit Patient
                 </a>
               </div>
-              <div id="collapseOne1" class="collapse" data-parent="#accordion1">
+              <div id="collapsibleAdmission" class="collapse" data-parent="#idekwutitmeant">
                 <div class="card-body">
-                    <h4>Add Doctor</h4>
-                    <form method="post" enctype="multipart/form-data" action="doctors.plt">
-                    <input name="name" class="form-control w-25" type="text" id="Name1" placeholder="Name">
-                    <input name="cnic" class="form-control w-25 mt-2" type="text" id="cnic3" placeholder="CNIC">
-                    <input name="phone" class="form-control w-25 mt-2" type="text" id="phone1" placeholder="Phone">
-                
-                    Date of birth
-                    <input name="dob" class="form-control mt-2 w-25" type="date" id="dob1">
-                
-                
-                    <input name="salary" class="form-control form-control-sm w-25 mt-2"  type="text" id="salary1" placeholder="Salary">
-                    <select class="form-select form-select-sm" id="docDeptSelect" name="dept" aria-label="Default select example">
-                      <option selected>Department</option>
-                      <option value="1">Cardiology</option>
-                      <option value="2">Neurosurgery</option>
-                      <option value="3">Plastic surgery</option>
-                      <option value="4">ENT</option>
-                      <option value="5">Eye</option>
-                      <option value="6">Paediatric</option>
-                      <option value="7">Nephrology</option>
-                      <option value="8">Gynae</option>
-                      <option value="9">Urology</option>
-                      <option value="10">Medicine</option>
-                      <option value="11">Surgery</option>
-                      <option value="12">Psychiatry</option>
-                    </select>
-                    <br>
-                    Image:
-                    <br>
-                    <input type="file" name="img">
-                    <br>
-                    <input type="submit" class="btn btn-outline-success btn-sm mt-2" name="operation" value="Add">
-                    </form>
-                  </div>
-              </div>
-            </div>
-          
-          
-          </div> 
-        <br><br>
-        <div id="response1">
-    
-        </div>
-    </div>
-    <div id="appointments" class="container tab-pane fade"><br>
-      <div class="row">
-      <input class="form-control w-25 ml-2" type="text" id="SearchByDoctorID" placeholder="Doctor CNIC">
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchAppointments()">Search</button>
-    <button class="btn btn-outline-primary btn-sm ml-2" onclick="showAppointments()">View all</button>
-      </div>
-      <br>
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Key
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="didk" name="ak" value="Doctor CNIC" checked="checked">
-          <label>Doctor CNIC</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pidk" name="ak" value="Patient CNIC">
-          <label>Patient CNIC</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="stk" name="ak" value="Start time">
-          <label>Start Time</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="etk" name="ak" value="End time">
-          <label>End Time</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dk" name="ak" value="Date">
-          <label>Date</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dnk" name="ak" value="Doctor Name">
-          <label>Doctor Name</label><br>
-          <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pnk" name="ak" value="Patient Name">
-          <label>Patient Name</label>  
-        </div>
-      </div>
-        
-        
-        <br>
-      <br>
-      <div id="idekwutitmeant">
+                  <h4>Admission Details</h4>
 
-          <div class="card">
-            <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapsethispane">
-               Book Appointment
-              </a>
-            </div>
-            <div id="collapsethispane" class="collapse" data-parent="#idekwutitmeant">
-              <div class="card-body">
-                  <h4>Appointment Details</h4>
+                  <input class="form-control w-25" type="text" id="Name" placeholder="Name">
+                  <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
+                  <input class="form-control w-25 mt-2" type="text" id="phone" placeholder="Phone">
 
-                  <input class="form-control w-25" type="text" id="appPatName" placeholder="Name">
-                  <input class="form-control w-25 mt-2" type="text" id="appPatCnic" placeholder="CNIC">
-                  <input class="form-control w-25 mt-2" type="text" id="appPatPhone" placeholder="Phone">
                   Date of birth
-                  <input class="form-control mt-2 w-25" type="date" id="appPatDob">
-                  Date of Appointment
-                  <input class="form-control w-25 mt-2" type="date" id="appDate">
-                  <select class="form-select form-select-sm" id="appDeptSelect" aria-label="Default select example">
-                    <option selected>Department</option>
-                    <option value="1">Cardiology</option>
-                    <option value="2">Neurosurgery</option>
-                    <option value="3">Plastic surgery</option>
-                    <option value="4">ENT</option>
-                    <option value="5">Eye</option>
-                    <option value="6">Paediatric</option>
-                    <option value="7">Nephrology</option>
-                    <option value="8">Gynae</option>
-                    <option value="9">Urology</option>
-                    <option value="10">Medicine</option>
-                    <option value="11">Surgery</option>
-                    <option value="12">Psychiatry</option>
-                  </select>
-                  <br>
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="showAvailable()">Show Available</button>
-                  
-              </div>
-            </div>
-          </div>
-        
-        </div> 
-      <br><br>
-      <div id="responseAppointments">
-  
-      </div>
-    </div>
-    <div id="rooms" class="container tab-pane fade"><br>
-      <div class="row">
-      <input class="form-control w-25 ml-2" type="text" id="rid" placeholder="ID">
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchroom()">Search</button>
-    <button class="btn btn-outline-primary btn-sm ml-2" onclick="showallrooms()">View all</button>
-  </div>
-      <br>
-      <div id="roomdiv">
-
-          <div class="card">
-            <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapserooms">
-               Add Room
-              </a>
-            </div>
-            <div id="collapserooms" class="collapse" data-parent="#roomdiv">
-              <div class="card-body">
-                  <h4>Add Room</h4>
-
-                    <br>
-                  <select class="form-select form-select-sm" id="roomSelectAdd" aria-label="Default select example">
+                  <input class="form-control mt-2 w-25" type="date" id="dob">
+                  Room<br>
+                  <select class="form-select form-select-sm" id="roomSelect" aria-label="Default select example">
                     <option selected>Room</option>
                     <option value="1">Cardiology</option>
                     <option value="2">Neurosurgery</option>
@@ -1381,86 +1090,507 @@ function setPlaceholder(id,val)
                     <option value="12">Psychiatry</option>
                   </select>
                   <br>
-                  <input class="form-control w-25 mt-2" type="text" id="TotalBeds" placeholder="TotalBeds">
-                  <input class="form-control w-25 mt-2" type="text" id="perDay" placeholder="Per Day charges">
-      
-                  
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addRoom()">Add</button>
+
+                  <button class="btn btn-outline-success btn-sm mt-2" onclick="admit()">Admit</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <a class="card-link" data-toggle="collapse" href="#collapsibleDischarge">
+                  Discharge Patient
+                </a>
+              </div>
+              <div id="collapsibleDischarge" class="collapse" data-parent="#idekwutitmeant">
+                <div class="card-body">
+                  <h4>Discharge Details</h4>
+
+                  <input class="form-control w-25" type="text" id="toDischarge" placeholder="Patient CNIC">
+
+                  Status Change<br>
+                  <select class="form-select form-select-sm" id="statusSelect" aria-label="Default select example">
+                    <option selected>Status</option>
+                    <option value="Not Admit">Discharged</option>
+                    <option value="Deceased">Deceased</option>
+                  </select>
+                  <br>
+                  <button class="btn btn-outline-danger btn-sm mt-2" onclick="discharge()">Discharge</button>
+                </div>
               </div>
             </div>
           </div>
-        
-        
-        </div> 
-      <br><br>
-      <div id="responseroom">
-  
-      </div>
-    </div>
-    <div id="users" class="container tab-pane fade"><br>
-      <br>
-      <div class="row">
-      <input class="form-control w-25 ml-2" type="text" id="userKeyVal" placeholder="CNIC">
-      <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchUsers()">Search</button>
-    <button class="btn btn-outline-primary btn-sm ml-2" onclick="showUsers()">View all</button>
-  </div>
-  <br>
-  <div class="dropdown show">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Key
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyCNIC" name="userKey" value="CNIC" checked="checked">
-      <label>CNIC</label><br>
-      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyUsername" name="userKey" value="Username">
-      <label>Username</label><br>
-      <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyLevel" name="userKey" value="Level">
-      <label>Level</label>
-    </div>
-  </div>
-  <br>
+          <br>
 
-      <br>
-      <div id="accordion">
+
+        </div>
+        <br>
+        <div id="response">
+        </div>
+        <div id="pathistory">
+        </div>
+      </div>
+      <div id="staff" class="container tab-pane fade"><br>
+        <br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="staffKeyVal" placeholder="CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchStaff()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showStaff()">View all</button>
+        </div>
+        <br>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyCNIC"
+              name="staffKey" value="CNIC" checked="checked">
+            <label>CNIC</label><br>
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyName"
+              name="staffKey" value="Name">
+            <label>Name</label><br>
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDOB"
+              name="staffKey" value="DOB">
+            <label>DOB</label><br>
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeySalary"
+              name="staffKey" value="Salary">
+            <label>Salary</label><br>
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyPhone"
+              name="staffKey" value="Phone">
+            <label>Phone</label><br>
+            <input onclick="setPlaceholder('staffKeyVal',this.value)" class="ml-1" type="radio" id="staffKeyDesig"
+              name="staffKey" value="Designation">
+            <label>Designation</label><br>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div id="notaccordion">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapseTwo">
+                Add Record
+              </a>
+            </div>
+            <div id="collapseTwo" class="collapse" data-parent="#notaccordion">
+              <div class="card-body">
+                <h4>Add record</h4>
+                <input class="form-control w-25" type="text" id="staffname" placeholder="Name">
+                <input class="form-control w-25 mt-2" type="text" id="cnicstaffsecondary" placeholder="CNIC">
+                <input class="form-control w-25 mt-2" type="text" id="staffphone" placeholder="Phone">
+
+                Date of birth
+                <input class="form-control mt-2 w-25" type="date" id="staffdob">
+
+                <input class="form-control form-control-sm w-25 mt-2" type="text" id="staffdesig"
+                  placeholder="Designation">
+                <input class="form-control form-control-sm w-25 mt-2" type="text" id="staffsalary" placeholder="Rupees">
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="addstaff()">Add</button>
+                <br><br>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <br><br>
+        <div id="responseStaff">
+
+        </div>
+      </div>
+      <div id="inventory" class="container tab-pane fade"><br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="idinvent" placeholder="ID">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchItem()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showItem()">View all</button>
+        </div>
+        <br>
+        <div id="nameititem">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapseitems">
+                Add Record
+              </a>
+            </div>
+            <div id="collapseitems" class="collapse" data-parent="#nameititem">
+              <div class="card-body">
+                <h4>Add/Update Inventory</h4>
+
+                <input class="form-control w-25" type="text" id="idtwo" placeholder="ID">
+                <input class="form-control w-25 mt-2" type="text" id="type" placeholder="type">
+                <input class="form-control w-25 mt-2" type="text" id="noofunits" placeholder="No of Units">
+                <input class="form-control mt-2 w-25" type="text" id="priceperunit" placehoder="RsPerUnit">
+
+
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="addItem()">Add</button>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <br><br>
+        <div id="responseinventory">
+
+        </div>
+      </div>
+      <div id="menu3" class="container tab-pane fade"><br>
+        <br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="docKeyVal" placeholder="CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchDoctors()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showDoctors()">View all</button>
+        </div>
+        <br>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyCNIC"
+              name="docKey" value="CNIC" checked="checked">
+            <label>CNIC</label><br>
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyName"
+              name="docKey" value="Name">
+            <label>Name</label><br>
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyDOB"
+              name="docKey" value="DOB">
+            <label>DOB</label><br>
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySalary"
+              name="docKey" value="Salary">
+            <label>Salary</label><br>
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeyPhone"
+              name="docKey" value="Phone">
+            <label>Phone</label><br>
+            <input onclick="setPlaceholder('docKeyVal',this.value)" class="ml-1" type="radio" id="docKeySpec"
+              name="docKey" value="Spec">
+            <label>Specialization</label>
+            <br>
+
+          </div>
+        </div>
+        <br>
+
+        <br>
+        <div id="accordion1">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapseOne1">
+                Add Record
+              </a>
+            </div>
+            <div id="collapseOne1" class="collapse" data-parent="#accordion1">
+              <div class="card-body">
+                <h4>Add Doctor</h4>
+                <form method="post" enctype="multipart/form-data" action="doctors.plt">
+                  <input name="name" class="form-control w-25" type="text" id="Name1" placeholder="Name">
+                  <input name="cnic" class="form-control w-25 mt-2" type="text" id="cnic3" placeholder="CNIC">
+                  <input name="phone" class="form-control w-25 mt-2" type="text" id="phone1" placeholder="Phone">
+
+                  Date of birth
+                  <input name="dob" class="form-control mt-2 w-25" type="date" id="dob1">
+
+
+                  <input name="salary" class="form-control form-control-sm w-25 mt-2" type="text" id="salary1"
+                    placeholder="Salary">
+                  <select class="form-select form-select-sm" id="docDeptSelect" name="dept"
+                    aria-label="Default select example">
+                    <option selected>Department</option>
+                    <option value="1">Cardiology</option>
+                    <option value="2">Neurosurgery</option>
+                    <option value="3">Plastic surgery</option>
+                    <option value="4">ENT</option>
+                    <option value="5">Eye</option>
+                    <option value="6">Paediatric</option>
+                    <option value="7">Nephrology</option>
+                    <option value="8">Gynae</option>
+                    <option value="9">Urology</option>
+                    <option value="10">Medicine</option>
+                    <option value="11">Surgery</option>
+                    <option value="12">Psychiatry</option>
+                  </select>
+                  <br>
+                  Image:
+                  <br>
+                  <input type="file" name="img">
+                  <br>
+                  <input type="submit" class="btn btn-outline-success btn-sm mt-2" name="operation" value="Add">
+                </form>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <br><br>
+        <div id="response1">
+
+        </div>
+      </div>
+      <div id="appointments" class="container tab-pane fade"><br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="SearchByDoctorID" placeholder="Doctor CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchAppointments()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showAppointments()">View all</button>
+        </div>
+        <br>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="didk" name="ak"
+              value="Doctor CNIC" checked="checked">
+            <label>Doctor CNIC</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pidk" name="ak"
+              value="Patient CNIC">
+            <label>Patient CNIC</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="stk" name="ak"
+              value="Start time">
+            <label>Start Time</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="etk" name="ak"
+              value="End time">
+            <label>End Time</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dk" name="ak"
+              value="Date">
+            <label>Date</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="dnk" name="ak"
+              value="Doctor Name">
+            <label>Doctor Name</label><br>
+            <input onclick="setPlaceholder('SearchByDoctorID',this.value)" class="ml-1" type="radio" id="pnk" name="ak"
+              value="Patient Name">
+            <label>Patient Name</label>
+          </div>
+        </div>
+
+
+        <br>
+        <br>
+        <div id="idekwutitmeant">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapsethispane">
+                Book Appointment
+              </a>
+            </div>
+            <div id="collapsethispane" class="collapse" data-parent="#idekwutitmeant">
+              <div class="card-body">
+                <h4>Appointment Details</h4>
+
+                <input class="form-control w-25" type="text" id="appPatName" placeholder="Name">
+                <input class="form-control w-25 mt-2" type="text" id="appPatCnic" placeholder="CNIC">
+                <input class="form-control w-25 mt-2" type="text" id="appPatPhone" placeholder="Phone">
+                Date of birth
+                <input class="form-control mt-2 w-25" type="date" id="appPatDob">
+                Date of Appointment
+                <input class="form-control w-25 mt-2" type="date" id="appDate">
+                <select class="form-select form-select-sm" id="appDeptSelect" aria-label="Default select example">
+                  <option selected>Department</option>
+                  <option value="1">Cardiology</option>
+                  <option value="2">Neurosurgery</option>
+                  <option value="3">Plastic surgery</option>
+                  <option value="4">ENT</option>
+                  <option value="5">Eye</option>
+                  <option value="6">Paediatric</option>
+                  <option value="7">Nephrology</option>
+                  <option value="8">Gynae</option>
+                  <option value="9">Urology</option>
+                  <option value="10">Medicine</option>
+                  <option value="11">Surgery</option>
+                  <option value="12">Psychiatry</option>
+                </select>
+                <br>
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="showAvailable()">Show Available</button>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <br><br>
+        <div id="responseAppointments">
+
+        </div>
+      </div>
+      <div id="rooms" class="container tab-pane fade"><br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="rid" placeholder="ID">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchroom()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showallrooms()">View all</button>
+        </div>
+        <br>
+        <div id="roomdiv">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapserooms">
+                Add Room
+              </a>
+            </div>
+            <div id="collapserooms" class="collapse" data-parent="#roomdiv">
+              <div class="card-body">
+                <h4>Add Room</h4>
+
+                <br>
+                <select class="form-select form-select-sm" id="roomSelectAdd" aria-label="Default select example">
+                  <option selected>Room</option>
+                  <option value="1">Cardiology</option>
+                  <option value="2">Neurosurgery</option>
+                  <option value="3">Plastic surgery</option>
+                  <option value="4">ENT</option>
+                  <option value="5">Eye</option>
+                  <option value="6">Paediatric</option>
+                  <option value="7">Nephrology</option>
+                  <option value="8">Gynae</option>
+                  <option value="9">Urology</option>
+                  <option value="10">Medicine</option>
+                  <option value="11">Surgery</option>
+                  <option value="12">Psychiatry</option>
+                </select>
+                <br>
+                <input class="form-control w-25 mt-2" type="text" id="TotalBeds" placeholder="TotalBeds">
+                <input class="form-control w-25 mt-2" type="text" id="perDay" placeholder="Per Day charges">
+
+
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="addRoom()">Add</button>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <br><br>
+        <div id="responseroom">
+
+        </div>
+      </div>
+      <div id="dept" class="container tab-pane fade"><br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="deptKeyVal" placeholder="ID">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchdept()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showalldepts()">View all</button>
+        </div>
+        <br>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('deptKeyVal',this.value)" class="ml-1" type="radio" id="deptKeyID"
+              name="deptKey" value="ID" checked="checked">
+            <label>ID</label><br>
+            <input onclick="setPlaceholder('deptKeyVal',this.value)" class="ml-1" type="radio" id="deptKeyName"
+              name="deptKey" value="Name">
+            <label>Name</label><br>
+            <input onclick="setPlaceholder('deptKeyVal',this.value)" class="ml-1" type="radio" id="deptKeyHODname"
+              name="deptKey" value="HOD Name">
+            <label>HOD Name</label><br>
+            <input onclick="setPlaceholder('deptKeyVal',this.value)" class="ml-1" type="radio" id="deptKeyHODcnic"
+              name="deptKey" value="HOD Cnic">
+            <label>HOD Cnic</label><br>
+          </div>
+        </div>
+        <br>
+        <div id="deptdiv">
+
+          <div class="card">
+            <div class="card-header">
+              <a class="card-link" data-toggle="collapse" href="#collapsedept">
+                Add Department
+              </a>
+            </div>
+            <div id="collapsedept" class="collapse" data-parent="#deptdiv">
+              <div class="card-body">
+                <h4>Add Department</h4>
+                <input class="form-control w-25 mt-2" type="text" id="deptname" placeholder="Name">
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="adddept()">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br><br>
+        <div id="responsedept">
+        </div>
+      </div>
+      <div id="users" class="container tab-pane fade"><br>
+        <br>
+        <div class="row">
+          <input class="form-control w-25 ml-2" type="text" id="userKeyVal" placeholder="CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchUsers()">Search</button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showUsers()">View all</button>
+        </div>
+        <br>
+        <div class="dropdown show">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyCNIC"
+              name="userKey" value="CNIC" checked="checked">
+            <label>CNIC</label><br>
+            <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyUsername"
+              name="userKey" value="Username">
+            <label>Username</label><br>
+            <input onclick="setPlaceholder('userKeyVal',this.value)" class="ml-1" type="radio" id="userKeyLevel"
+              name="userKey" value="Level">
+            <label>Level</label>
+          </div>
+        </div>
+        <br>
+
+        <br>
+        <div id="accordion">
 
           <div class="card">
             <div class="card-header">
               <a class="card-link" data-toggle="collapse" href="#collapseOne">
-               Add Record
+                Add Record
               </a>
             </div>
             <div id="collapseOne" class="collapse" data-parent="#accordion">
               <div class="card-body">
-                  <h4>Add record</h4>
-                  <input class="form-control w-25" type="text" id="username" placeholder="Username">
-                  <input class="form-control w-25 mt-2" type="text" id="usercnic" placeholder="CNIC(Leave blank for NULL)">
-                  <input class="form-control w-25 mt-2" type="text" id="userPass" placeholder="Password">
-                  <input class="form-control w-25 mt-2" type="text" id="userLevel" placeholder="Level">
-                  <button class="btn btn-outline-success btn-sm mt-2" onclick="addUser()">Add</button>
-                  <br><br>
+                <h4>Add record</h4>
+                <input class="form-control w-25" type="text" id="username" placeholder="Username">
+                <input class="form-control w-25 mt-2" type="text" id="usercnic"
+                  placeholder="CNIC(Leave blank for NULL)">
+                <input class="form-control w-25 mt-2" type="text" id="userPass" placeholder="Password">
+                <input class="form-control w-25 mt-2" type="text" id="userLevel" placeholder="Level">
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="addUser()">Add</button>
+                <br><br>
               </div>
             </div>
           </div>
-        
-        
-        </div> 
-<br><br>
-      <div id="responseUsers">
-  
+
+
+        </div>
+        <br><br>
+        <div id="responseUsers">
+
+        </div>
       </div>
+    </div>
   </div>
-</div>
-</div>
-<!-- Remove the container if you want to extend the Footer to full width. -->
-<div class="container" >
+  <!-- Remove the container if you want to extend the Footer to full width. -->
+  <div class="container">
     <!-- Copyright -->
     <div class="text-center text-white p-3" style="background-color: rgba(48, 48, 48, 0.9);">
-      Powered by 
-      <a class="text-white" title="Created by Shahryar Ahmad" href="https://plutonium-lang.000webhostapp.com/">Plutonium</a>
+      Powered by
+      <a class="text-white" title="Created by Shahryar Ahmad"
+        href="https://plutonium-lang.000webhostapp.com/">Plutonium</a>
     </div>
 
-  
-</div>
-<!-- End of .container -->
+
+  </div>
+  <!-- End of .container -->
 </body>
+
 </html>
