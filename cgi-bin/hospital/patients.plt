@@ -145,7 +145,7 @@ function update(var form)
   }
   catch(err)
   {
-    printf(errAlert,"Deletion failed.")
+    printf(errAlert,"Updation failed.")
     return nil
   }
 }
