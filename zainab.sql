@@ -107,7 +107,7 @@ insert into patients values('Saifu','24153-2819301-9', '03316372801','1947-08-14
 insert into patients values('Samin','35100-1839103-8','03202132231','1948-10-25','Deceased',NULL, NULL);
 insert into patients values('Muntaha','35192-2837181-3','03228190326','1997-01-10','Not Admit',NULL, NULL);
 insert into patients values('Fareeha','29103-38193010-4','03076782351','1999-11-24','Not Admit',NULL, NULL);
-insert into patients values('Adeel','35142-8193038-5','03351627002','1990-06-03','Admit', 2,4);
+insert into patients values('Adeel','35142-8193038-5','03351627002','1990-06-03','Admit', 2,10);
 
 --hospital staff
 create table staff(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,desig varchar(30),salary int);
