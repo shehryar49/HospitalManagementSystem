@@ -343,15 +343,8 @@ create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptn
 
 create view deptView as Select departments.dept_id, departments.deptname, departments.hod, doctors.name
 from departments left join doctors on departments.hod = doctors.cnic;
+ 
+create view roomView as select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from 
+  rooms as r join departments as dept on dept.dept_id = r.dept_id;
 
---procedure for deletion
---DELIMETER $$
---CREATE PROCEDURE deleteDoctor(nic varchar(30))
---BEGIN
---	IF EXISTS (SELECT *  FROM records WHERE d_id = nic and admitDate >= CURDATE()) THEN
---        SELECT 'Doctor has Appointments!';
---    ELSE
---        DELETE FROM doctors WHERE cnic = nic;
---    END IF;
---END $$
 select v.dept_id, v.deptname, COUNT(w.d_id), v.hod, v.name from deptView as v, worksIn as w  where v.dept_id = w.dept_id group by dept_id;
