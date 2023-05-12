@@ -77,6 +77,13 @@
         k[k.length - 1].children[0].click();
     }
     ///////////////////////////////////////////////////PATIENT SCRIPT////////////////////////////////
+    function updtpatselect()
+    {
+        fetch('/cgi-bin/hospital/patients.plt?operation=init')
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("admitinit").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
+    }
     function showPatients() {
       fetch('/cgi-bin/hospital/patients.plt?operation=view')
         .then(function (response) { return response.text() })
@@ -230,6 +237,13 @@
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
     }
     /////////////////////////////////////DOCTOR SCRIPT//////////////////////////////////////////////
+    function updtdocselect()
+    {
+        fetch('/cgi-bin/hospital/doctors.plt?operation=init')
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("docinit").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
+    }
     function showDoctors() {
       fetch('http://localhost/cgi-bin/hospital/doctors.plt?operation=view')
         .then(function (response) {
@@ -483,6 +497,13 @@
       }
     }
     //Appointment handler
+    function updtaptselect()
+    {
+        fetch('/cgi-bin/hospital/appointments.plt?operation=init')
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("aptinit").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
+    }
     function showAppointments() {
       fetch('http://localhost/cgi-bin/hospital/appointments.plt?operation=view')
         .then(function (response) {
@@ -715,6 +736,13 @@
       }
     }
     /////////////////////////////////////////////////ROOM QUERIES////////////////////////////////////////
+    function updtroomselect()
+    {
+        fetch('/cgi-bin/hospital/rooms.plt?operation=init')
+        .then(function (response) { return response.text() })
+        .then(function (html) { document.getElementById("initroom").innerHTML = html; })
+        .catch(function (err) { console.log('Failed to fetch page: ', err); });
+    }
     function showallrooms() {
       var string_url = 'http://localhost/cgi-bin/hospital/rooms.plt?operation=show';
       string_url = encodeURI(string_url);
@@ -731,6 +759,28 @@
         .then(function (response) { return response.text() })
         .then(function (html) { document.getElementById("responseroom").innerHTML = html; })
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+    }
+    function addRoom()
+    {
+      var dept = document.getElementById('roomDeptSelect').value;
+      var TotalBeds= document.getElementById('TotalBeds').value;
+      var perDay = document.getElementById('perDay').value;
+      
+      var query_string = "dept_id=" + dept + "&beds=" + TotalBeds + "&price=" + perDay;
+      query_string = encodeURI(query_string);
+      fetch('http://localhost/cgi-bin/hospital/rooms.plt?operation=add&' + query_string)
+        .then(function (response) {
+          // When the page is loaded convert it to text
+          return response.text()
+        })
+        .then(function (html) {
+          var k = document.getElementById("responseroom");
+          k.innerHTML = html + k.innerHTML;
+          setTimeout(hideAlerts, 3000);
+        })
+        .catch(function (err) {
+          console.log('Failed to fetch page: ', err);
+        });
     }
     /////////////////////////////////////////////////DEPARTMENTS////////////////////////////////////////
     function showalldepts() {
@@ -946,6 +996,14 @@
     function setPlaceholder(id, val) {
       document.getElementById(id).placeholder = val;
     }
+    function runmutiple()
+    {
+      adddept();
+      updtaptselect();
+      updtdocselect();
+      updtpatselect();
+      updtroomselect();
+    }
   </script>
 </head>
 <style>
@@ -1059,13 +1117,13 @@
           <div id="idkwutitmeantagain">
             <div class="card">
               <div class="card-header">
-                <a class="card-link" data-toggle="collapse" href="#collapsibleAdmission">
+                <a class="card-link" onclick="updtpatselect()" data-toggle="collapse" href="#collapsibleAdmission">
                   Admit Patient
                 </a>
               </div>
               <div id="collapsibleAdmission" class="collapse" data-parent="#idekwutitmeant">
                 <div class="card-body">
-                  <h4>Admission Details</h4>
+                  "<h4>Admission Details</h4>
 
                   <input class="form-control w-25" type="text" id="Name" placeholder="Name">
                   <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
@@ -1074,23 +1132,8 @@
                   Date of birth
                   <input class="form-control mt-2 w-25" type="date" id="dob">
                   Room<br>
-                  <select class="form-select form-select-sm" id="roomSelect" aria-label="Default select example">
-                    <option selected>Room</option>
-                    <option value="1">Cardiology</option>
-                    <option value="2">Neurosurgery</option>
-                    <option value="3">Plastic surgery</option>
-                    <option value="4">ENT</option>
-                    <option value="5">Eye</option>
-                    <option value="6">Paediatric</option>
-                    <option value="7">Nephrology</option>
-                    <option value="8">Gynae</option>
-                    <option value="9">Urology</option>
-                    <option value="10">Medicine</option>
-                    <option value="11">Surgery</option>
-                    <option value="12">Psychiatry</option>
-                  </select>
-                  <br>
-
+                  <div id="admitinit">
+                  </div>
                   <button class="btn btn-outline-success btn-sm mt-2" onclick="admit()">Admit</button>
                 </div>
               </div>
@@ -1280,7 +1323,7 @@
 
           <div class="card">
             <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapseOne1">
+              <a class="card-link" data-toggle="collapse" onclick="updtdocselect()" href="#collapseOne1">
                 Add Record
               </a>
             </div>
@@ -1294,27 +1337,10 @@
 
                   Date of birth
                   <input name="dob" class="form-control mt-2 w-25" type="date" id="dob1">
-
-
                   <input name="salary" class="form-control form-control-sm w-25 mt-2" type="text" id="salary1"
-                    placeholder="Salary">
-                  <select class="form-select form-select-sm" id="docDeptSelect" name="dept"
-                    aria-label="Default select example">
-                    <option selected>Department</option>
-                    <option value="1">Cardiology</option>
-                    <option value="2">Neurosurgery</option>
-                    <option value="3">Plastic surgery</option>
-                    <option value="4">ENT</option>
-                    <option value="5">Eye</option>
-                    <option value="6">Paediatric</option>
-                    <option value="7">Nephrology</option>
-                    <option value="8">Gynae</option>
-                    <option value="9">Urology</option>
-                    <option value="10">Medicine</option>
-                    <option value="11">Surgery</option>
-                    <option value="12">Psychiatry</option>
-                  </select>
-                  <br>
+                  placeholder="Salary">
+                  Department<br>
+                  <div id="docinit"></div>
                   Image:
                   <br>
                   <input type="file" name="img">
@@ -1376,7 +1402,7 @@
 
           <div class="card">
             <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapsethispane">
+              <a class="card-link" data-toggle="collapse" onclick="updtaptselect()" href="#collapsethispane">
                 Book Appointment
               </a>
             </div>
@@ -1391,22 +1417,8 @@
                 <input class="form-control mt-2 w-25" type="date" id="appPatDob">
                 Date of Appointment
                 <input class="form-control w-25 mt-2" type="date" id="appDate">
-                <select class="form-select form-select-sm" id="appDeptSelect" aria-label="Default select example">
-                  <option selected>Department</option>
-                  <option value="1">Cardiology</option>
-                  <option value="2">Neurosurgery</option>
-                  <option value="3">Plastic surgery</option>
-                  <option value="4">ENT</option>
-                  <option value="5">Eye</option>
-                  <option value="6">Paediatric</option>
-                  <option value="7">Nephrology</option>
-                  <option value="8">Gynae</option>
-                  <option value="9">Urology</option>
-                  <option value="10">Medicine</option>
-                  <option value="11">Surgery</option>
-                  <option value="12">Psychiatry</option>
-                </select>
-                <br>
+                Department
+                <div id="aptinit"></div>
                 <button class="btn btn-outline-success btn-sm mt-2" onclick="showAvailable()">Show Available</button>
 
               </div>
@@ -1430,41 +1442,21 @@
 
           <div class="card">
             <div class="card-header">
-              <a class="card-link" data-toggle="collapse" href="#collapserooms">
+              <a class="card-link" data-toggle="collapse" onclick="updtroomselect()" href="#collapserooms">
                 Add Room
               </a>
             </div>
             <div id="collapserooms" class="collapse" data-parent="#roomdiv">
               <div class="card-body">
                 <h4>Add Room</h4>
-
-                <br>
-                <select class="form-select form-select-sm" id="roomSelectAdd" aria-label="Default select example">
-                  <option selected>Room</option>
-                  <option value="1">Cardiology</option>
-                  <option value="2">Neurosurgery</option>
-                  <option value="3">Plastic surgery</option>
-                  <option value="4">ENT</option>
-                  <option value="5">Eye</option>
-                  <option value="6">Paediatric</option>
-                  <option value="7">Nephrology</option>
-                  <option value="8">Gynae</option>
-                  <option value="9">Urology</option>
-                  <option value="10">Medicine</option>
-                  <option value="11">Surgery</option>
-                  <option value="12">Psychiatry</option>
-                </select>
-                <br>
+                Department
+                <div id="initroom"></div>
                 <input class="form-control w-25 mt-2" type="text" id="TotalBeds" placeholder="TotalBeds">
                 <input class="form-control w-25 mt-2" type="text" id="perDay" placeholder="Per Day charges">
-
-
                 <button class="btn btn-outline-success btn-sm mt-2" onclick="addRoom()">Add</button>
               </div>
             </div>
           </div>
-
-
         </div>
         <br><br>
         <div id="responseroom">
@@ -1511,7 +1503,7 @@
               <div class="card-body">
                 <h4>Add Department</h4>
                 <input class="form-control w-25 mt-2" type="text" id="deptname" placeholder="Name">
-                <button class="btn btn-outline-success btn-sm mt-2" onclick="adddept()">Add</button>
+                <button class="btn btn-outline-success btn-sm mt-2" onclick="runmutiple()">Add</button>
               </div>
             </div>
           </div>
