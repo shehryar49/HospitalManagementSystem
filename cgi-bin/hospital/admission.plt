@@ -36,17 +36,17 @@ function show(var f)
 {
     if(!f.hasKey("cnic"))
     {
-        print("CNIC not received")
+        printf(errAlert,"Bad Request")
         return nil
     }
     var cnic = f["cnic"]
     if(cnic == "")
     {
-        print("CNIC cannot be null")
+        printf(errAlert,"CNIC field cannot be empty!")
         return nil
     }
-    
-    try{
+    try
+    {
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
         var sqlquery = "select * from patients, rooms where r_id = id and cnic = '" + cnic + "' ;"
@@ -61,11 +61,11 @@ function show(var f)
             var num = len(fields)
 
             print("<tr>")
-            for( var loopvar = 0 to (num-1) step 1)
+            for(var loopvar = 0 to (num-1) step 1)
             {
                 if(loopvar == 5 or loopvar == 8 or loopvar == 9)
                 {
-                    loopvar = loopvar + 1
+                    loopvar+=1
                     continue
                 }
                 else
@@ -74,22 +74,24 @@ function show(var f)
             print("</tr>")
         }
     }
-    catch(thrownerror)
+    catch(err)
     {
-        print(errAlert,"Operation failed: ", thrownerror)
+        printf(errAlert,"Operation failed. ")
         return nil
     }
 }
 function admit(var f)
 {
-    if(!f.hasKey("cnic") or !f.hasKey("name") or !f.hasKey("phone") or !f.hasKey("dob") or !f.hasKey("room")){
-        print("all parameters not received")
+    if(!hasFields(["cnic","name","phone","dob","room"],f))
+    {
+        printf(errAlert,"Bad Request")
         return nil
     }
     var cnic = f["cnic"]
     var room = f["room"]
-    if(cnic == "" or room == ""){
-        print(errAlert, "Insufficient Parameters")
+    if(cnic == "" or room == "")
+    {
+        print(errAlert, "Fill in the blank fields!")
         return nil
     }
     try
@@ -150,25 +152,28 @@ function admit(var f)
         printf(successAlert,"Success!")
         viewall()
     }
-    catch(thrownerror){
-        printf(errAlert,"Operation failed: "+thrownerror.msg)
+    catch(err)
+    {
+        printf(errAlert,"Operation failed: "+err.msg)
         return nil
     }
 }
 function discharge(var f)
 {
-    if(!f.hasKey("cnic") or !f.hasKey("status")){
-        print("all parameters not received")
+    if(!f.hasKey("cnic") or !f.hasKey("status"))
+    {
+        printf(errAlert,"Bad Request")
         return nil
     }
     var cnic = f["cnic"]
-    if(cnic == ""){
+    if(cnic == "")
+    {
         print("CNIC cannot be null")
         return nil
     }
     var status = f["status"]
-     try{
-        
+    try
+    {    
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
 
@@ -208,8 +213,9 @@ function discharge(var f)
         printf(successAlert,"Success!")
         viewall()
     }
-    catch(thrownerror){
-        printf(errAlert,thrownerror.msg)#"Operation failed: Make sure patient status is set correctly")
+    catch(err)
+    {
+        printf(errAlert,err.msg)#"Operation failed: Make sure patient status is set correctly")
         return nil
     }
 }
@@ -217,18 +223,18 @@ function discharge(var f)
 
 checkSignin()
 htmlHeader()
-var receivedform = cgi.FormData()
-if(!receivedform.hasKey("operation"))
+var form = cgi.FormData()
+if(!form.hasKey("operation"))
 {
-    print("Error! operation undefined")
+    printf(errAlert,"Bad Request")
     exit()
 }
-var definedoperation = receivedform["operation"]
-if(definedoperation == "show")
-    show(receivedform)
-else if(definedoperation == "admit")
-    admit(receivedform)
-else if(definedoperation == "discharge")
-    discharge(receivedform)
+var op = form["operation"]
+if(op == "show")
+    show(form)
+else if(op == "admit")
+    admit(form)
+else if(op == "discharge")
+    discharge(form)
 else
     print("INVALID REQUEST! Unknown operation!")

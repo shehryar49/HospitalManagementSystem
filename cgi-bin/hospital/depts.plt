@@ -31,7 +31,7 @@ function show()
     }
     catch(error)
     {
-        printf(errAlert, "Operation failed")
+        printf(errAlert, "Operation failed"+error.msg)
         return nil
     }
 }

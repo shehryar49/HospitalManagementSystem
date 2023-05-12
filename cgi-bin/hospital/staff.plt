@@ -135,15 +135,13 @@ function searchStaff(var form)
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
   if(name == "salary")
-    query = "SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc from staff as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
-st.cnic = t.cnic and st."+name+"="+val+";"
+    query = "select * from staffView where "+name+"="+val+";"
   else
-    query = "SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc from staff as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
-st.cnic = t.cnic and st."+name+"='"+val+"';"
+    query = "select * from staffView where "+name+" like '%"+val+"%';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Start Time</th><th>End Time</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
+  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)

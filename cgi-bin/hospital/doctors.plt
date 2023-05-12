@@ -12,8 +12,11 @@ function addDoctor(var form)
     printf(errAlert,"Access Denied")
     return nil
   }
-  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob")  or !form.hasKey("phone") or !form.hasKey("salary"))
-    printf(errAlert,"INVALID REQUEST! Insuffcient parameters!")
+  if(!hasFields(["name","cnic","dob","phone","salary","dept"],form))
+  {
+    printf(errAlert,"Bad Request")
+    return nil
+  }
   var img = form["img"]
   if(!isInstanceOf(img,cgi.File) or (img.type!="image/jpeg" and img.type!="image/jpg" and img.type!="image/png"))
   {
@@ -39,6 +42,8 @@ function addDoctor(var form)
     var query = format("INSERT INTO doctors VALUES('%','%','%','%',%);",name,cnic,phone,dob,salary)
     mysql.query(conn,query)
     query = format("insert into worksIn VALUES(%,'%');",dept,cnic)
+    mysql.query(conn,query)
+    query = format("insert into attendance VALUES('%',CURDATE(),'P',2);",cnic)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")
@@ -315,7 +320,8 @@ function getatt(var f)
 }
 function initdoc()
 {
-  try{
+  try
+  {
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       var query = "SELECT dept_id, deptname FROM departments;"
@@ -323,7 +329,7 @@ function initdoc()
       var res = mysql.store_result(conn)
       var total = mysql.num_rows(res)
       printf("<select class=\"form-select form-select-sm\" id=\"roomSelectAdd\" aria-label=\"Default select example\">
-                  <option selected>Room</option>")
+                  <option selected>Department</option>")
       for(var i = 1 to total step 1)
       {
           var fields = mysql.fetch_row_as_str(res)

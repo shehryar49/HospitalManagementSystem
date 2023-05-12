@@ -1,12 +1,56 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
+
+
 function show()
 {
-    try{
+    try
+    {
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
 
-        var query = "select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from rooms as r join departments as dept on dept.dept_id = r.dept_id;"
+        var query = "select * from roomView;"
+
+        var deptname = ""
+        mysql.query(connection,query)
+        var result = mysql.store_result(connection)
+        var row = mysql.num_rows(result)
+        for(var i=1 to row step 1)
+        {
+            var fields = mysql.fetch_row_as_str(result)
+            if(fields[0] != deptname)
+            {
+                if(deptname != "")
+                    print("</table>")
+                deptname = fields[0]
+                print("<h2>", deptname,"</h2>")
+                print("<table class=\"table table-bordered table-responsive w-auto\" id=\"data\"><tr><th>Room no.</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
+            }
+            printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td></tr>",fields[1],fields[2],fields[3],fields[4])
+        }
+        print("</table>")
+    }
+    catch(error)
+    {
+        printf(errAlert, "Operation failed: "+ error)
+        return nil
+    }
+}
+
+function search(var f)
+{
+    if(!f.hasKey("deptname"))
+    {
+        printf(errAlert,"Bad Request")
+        return nil
+    }
+    var deptname = f["deptname"]
+    try
+    {
+        var connection = mysql.init()
+        mysql.real_connect(connection,"localhost","root","password","hospital")
+
+        var query = "select * from roomView where deptname like '"+deptname+"%';"
 
         var deptname = ""
         mysql.query(connection,query)
@@ -34,61 +78,10 @@ function show()
     }
 }
 
-function search(var f)
-{
-    if(!f.hasKey("id"))
-    {
-        printf("Insufficient parameters!")
-        return nil
-    }
-    var id = f["id"]
-    if(id == "")
-    {
-        printf("ID cannot be NULL")
-        return nil
-    }
-    try{
-        var connection = mysql.init()
-        mysql.real_connect(connection,"localhost","root","password","hospital")
-
-        var query = "select* from rooms where id = "+id+";"
-        mysql.query(connection,query)
-        var result = mysql.store_result(connection)
-        printf("<h3>Room Details</h3><br>")
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Type</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>")
-        var fields = mysql.fetch_row_as_str(result)
-        print("<tr>")
-        foreach(var field: fields)
-        printf("<td>%</td>",field)
-        print("</tr>")
-        print("</table>")
-        printf("<br><h3>Patients in Room</h3><br>")
-
-        query = "select cnic, name, phone, dob from rooms as r, patients as p where r.id = "+id+" and r.id = p.r_id;"
-        mysql.query(connection,query)
-        result = mysql.store_result(connection)
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Name</th><th>Phone</th><th>DOB</th></tr>")
-        fields = mysql.fetch_row_as_str(result)
-        print("<tr>")
-        if(fields != nil)
-        {
-            foreach(var field: fields)
-            printf("<td>%</td>",field)
-            print("</tr>")
-            print("</table>")
-        }
-       
-    }
-    catch(error)
-    {
-        printf(errAlert, "Operation failed: "+error.msg)
-        return nil
-    }
-
-}
 function initroom()
 {
-  try{
+  try
+  {
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       var query = "SELECT dept_id, deptname FROM departments;"
@@ -121,7 +114,7 @@ function add(var f)
     var price = f["price"]
     if(beds == "" or price == "")
     {
-        printf(errAlert, "Insufficient Parameters")
+        printf(errAlert, "Fill all the fields!")
         return nil
     }
     var dept_id = f["dept_id"]
@@ -130,7 +123,8 @@ function add(var f)
         printf(errAlert, "Invalid Value for Department")
         return nil
     }
-    try{
+    try
+    {
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       var query = "SELECT id from rooms as a where dept_id = "+dept_id+" and 0 = (Select COUNT(*) from rooms as b where dept_id = "+dept_id+" and a.id < b.id);"
@@ -138,13 +132,13 @@ function add(var f)
       var res = mysql.store_result(conn)
       var row = mysql.fetch_row_as_str(res)
       var i = 0
-      if(row[0] != nil)
+      if(row!= nil)
         i =  int(row[0])
       i = i+1
       query = format("Insert into rooms values(%,%,0,%,%);", i, dept_id, beds, price)
       mysql.query(conn,query)
-      printf(successAlert,"Insertion Successful")
       show()
+      printf(successAlert,"Insertion Successful")
     }
     catch(err)
     {
@@ -153,9 +147,8 @@ function add(var f)
     }
 }
 
-print("Content-type: text/html\r\n\r\n")
 checkSignin()
-
+htmlHeader()
 var sentdata = cgi.FormData()
 if(!sentdata.hasKey("operation"))
 {
@@ -164,7 +157,9 @@ if(!sentdata.hasKey("operation"))
 }
 var torun = sentdata["operation"]
 if(torun == "show")
+{
     show()
+}
 else if(torun == "search")
     search(sentdata)
 else if(torun == "init")
@@ -173,4 +168,3 @@ else if(torun == "add")
     add(sentdata)
 else
     printf("undefined operation")
-

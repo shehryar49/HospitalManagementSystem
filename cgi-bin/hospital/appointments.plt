@@ -287,7 +287,8 @@ function viewSpec(var form)
 }
 function initApt()
 {
-  try{
+  try
+  {
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       var query = "SELECT dept_id, deptname FROM departments;"

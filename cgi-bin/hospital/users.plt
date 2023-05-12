@@ -1,5 +1,5 @@
 #!C:\plutonium\plutonium.exe
-import "common.plt"
+import "C:\\xampp\\cgi-bin\\hospital\\common.plt"
 var trashIcon = "<td><button onclick=\"deleteUser(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateUser(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 function viewall()
@@ -39,17 +39,17 @@ function addUser(var form)
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     var query = format("INSERT INTO users VALUES('%','%','%','%');",username,boomerHash(password),level,cnic)
+    if(cnic == "")
+      query = format("INSERT INTO users VALUES('%','%','%',NULL);",username,boomerHash(password),level)
     mysql.query(conn,query)
     #insertion query does not return anything
     printf(successAlert,"Success!")
-    viewall()
   }
   catch(err)
   {
-    print(errAlert,"Insertion failed."+err.msg)
-    viewall()
-    return nil
+    printf(errAlert,"Insertion failed."+err.msg)
   }
+  viewall()
 }
 function searchUser(var form)
 {
@@ -85,6 +85,47 @@ function searchUser(var form)
   }
   print("</table>")
 }
+function changePassword(var form )
+{
+  if(!hasFields(["old","new"],form))
+  {
+    println("Bad Request")
+    return nil
+  }
+  ##Critical
+  var old = form["old"]
+  var new = form["new"]
+  var oldhash = boomerHash(old)
+  var newhash = boomerHash(new)
+  var cookies = cgi.cookies()
+  var user = cookies["user"]
+  try
+  {
+    var conn = mysql.init()
+    mysql.real_connect(conn,"localhost","root","password","hospital")
+    mysql.query(conn,"select password from users where username='"+user+"';")
+    var res = mysql.store_result(conn)
+    var row = mysql.fetch_row_as_str(res)
+    if(row == nil)
+    {
+      println("Username does not exist!")
+      return nil
+    }
+    if(row[0] != oldhash)
+    {
+      println("Password Mismatch")
+      return nil
+    }
+    mysql.query(conn,"update users set password = '"+newhash+"' where username='"+user+"';")
+    mysql.close(conn)
+    print("Password Updated")
+    
+  }
+  catch(err)
+  {
+    print("Operation failed")
+  }
+}
 function deleteUser(var form)
 {
   #deletion is done by cnic(primary key)
@@ -95,6 +136,14 @@ function deleteUser(var form)
   }
   #there are SQL injection vulnerabilities
   #to be fixed later
+  var cookies = cgi.cookies()
+  var user = cookies["user"]
+  if(user == form["username"])
+  {
+    printf(errAlert,"You cannot delete your own account!")
+    viewall()
+    return nil
+  }
   var query = format("DELETE FROM users WHERE username='%';",form["username"])
   try
   {
@@ -115,8 +164,10 @@ function deleteUser(var form)
 #main starts from here
 checkSignin()
 print("Content-type: text/html\r\n\r\n")
+
 ## VALIDATE REQUEST ##
 var form = cgi.FormData()
+
 if(!form.hasKey("operation"))
 {
     print("No operation specified!")
@@ -131,5 +182,7 @@ else if(operation == "view")
   viewall()
 else if(operation == "search")
   searchUser(form)
+else if(operation == "changePassword")
+  changePassword(form)
 else
   println("INVALID REQUEST! Unknown operation!")
