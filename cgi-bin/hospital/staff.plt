@@ -135,9 +135,11 @@ function searchStaff(var form)
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
   if(name == "salary")
-    query = "select * from staffView where "+name+"="+val+";"
+    query = "SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc from staff as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
+st.cnic = t.cnic and st."+name+"="+val+";"
   else
-    query = "select * from staffView where "+name+" like '%"+val+"%';"
+    query = "SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.start,st.end,st.salary,t.perc from staff as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b)t on
+st.cnic = t.cnic and st."+name+"='"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)

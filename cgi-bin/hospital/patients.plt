@@ -201,7 +201,30 @@ function getHistory(var f)
       return nil
     }
 }
-
+function initAdmit()
+{
+  try{
+      var conn = mysql.init()
+      mysql.real_connect(conn,"localhost","root","password","hospital")
+      var query = "SELECT dept_id, deptname FROM departments;"
+      mysql.query(conn,query)
+      var res = mysql.store_result(conn)
+      var total = mysql.num_rows(res)
+      printf(" <select class=\"form-select form-select-sm\" id=\"roomSelect\" aria-label=\"Default select example\">
+              <option selected>Room</option>")
+      for(var i = 1 to total step 1)
+      {
+          var fields = mysql.fetch_row_as_str(res)
+          printf("<option value=\"%\">%</option>",fields[0],fields[1])
+      }
+      printf("</select>")
+    }
+  catch(err)
+  {
+    printf(errAlert,"Failed to load card body")
+    return nil
+  }
+}
 #main starts from here
 checkSignin()
 htmlHeader()
@@ -225,5 +248,7 @@ else if(operation == "update")
   update(form)
 else if(operation == "history")
   getHistory(form)
+else if(operation == "init")
+  initAdmit()
 else
   println("INVALID REQUEST! Unknown operation!")

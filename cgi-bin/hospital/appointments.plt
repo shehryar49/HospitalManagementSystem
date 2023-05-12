@@ -285,7 +285,30 @@ function viewSpec(var form)
     }
     print("</table>")
 }
-
+function initApt()
+{
+  try{
+      var conn = mysql.init()
+      mysql.real_connect(conn,"localhost","root","password","hospital")
+      var query = "SELECT dept_id, deptname FROM departments;"
+      mysql.query(conn,query)
+      var res = mysql.store_result(conn)
+      var total = mysql.num_rows(res)
+      printf("<select class=\"form-select form-select-sm\" id=\"appDeptSelect\" aria-label=\"Default select example\">
+                <option selected>Department</option>")
+      for(var i = 1 to total step 1)
+      {
+          var fields = mysql.fetch_row_as_str(res)
+          printf("<option value=\"%\">%</option>",fields[0],fields[1])
+      }
+      printf("</select>")
+    }
+  catch(err)
+  {
+    printf(errAlert,"Failed to load card body")
+    return nil
+  }
+}
 ##Execution starts from here##
 checkSignin()
 htmlHeader()
@@ -309,5 +332,7 @@ else if(request == "viewspecific")
   viewSpec(formData)
 else if(request == "showAvailable")
   showAvailable(formData)
+else if(request == "init")
+  initApt()
 else
     print("INVALID REQUEST! Unknown operation!")

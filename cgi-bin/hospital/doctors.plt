@@ -313,6 +313,30 @@ function getatt(var f)
     return nil
   }
 }
+function initdoc()
+{
+  try{
+      var conn = mysql.init()
+      mysql.real_connect(conn,"localhost","root","password","hospital")
+      var query = "SELECT dept_id, deptname FROM departments;"
+      mysql.query(conn,query)
+      var res = mysql.store_result(conn)
+      var total = mysql.num_rows(res)
+      printf("<select class=\"form-select form-select-sm\" id=\"roomSelectAdd\" aria-label=\"Default select example\">
+                  <option selected>Room</option>")
+      for(var i = 1 to total step 1)
+      {
+          var fields = mysql.fetch_row_as_str(res)
+          printf("<option value=\"%\">%</option>",fields[0],fields[1])
+      }
+      printf("</select>")
+    }
+  catch(err)
+  {
+    printf(errAlert,"Failed to load card body")
+    return nil
+  }
+}
 checkSignin()
 print("Content-type: text/html\r\n\r\n")
 level = int(cgi.cookies()["level"])
@@ -340,5 +364,7 @@ else if(operation == "attinfo")
   getAttPerc(form)
 else if(operation == "attendance")
   getatt(form)
+else if(operation == "init")
+  initdoc()
 else
   println("INVALID REQUEST! Unknown operation!")

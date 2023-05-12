@@ -1,8 +1,6 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
-
-
-function show(var f)
+function show()
 {
     try{
         var connection = mysql.init()
@@ -88,6 +86,72 @@ function search(var f)
     }
 
 }
+function initroom()
+{
+  try{
+      var conn = mysql.init()
+      mysql.real_connect(conn,"localhost","root","password","hospital")
+      var query = "SELECT dept_id, deptname FROM departments;"
+      mysql.query(conn,query)
+      var res = mysql.store_result(conn)
+      var total = mysql.num_rows(res)
+      printf(" <select class=\"form-select form-select-sm\" id=\"roomDeptSelect\" name=\"dept\" aria-label=\"Default select example\">
+                <option selected>Department</option>")
+      for(var i = 1 to total step 1)
+      {
+          var fields = mysql.fetch_row_as_str(res)
+          printf("<option value=\"%\">%</option>",fields[0],fields[1])
+      }
+      printf("</select>")
+    }
+  catch(err)
+  {
+    printf(errAlert,"Failed to load card body")
+    return nil
+  }
+}
+function add(var f)
+{
+    if(!f.hasKey("dept_id") or !f.hasKey("beds") or !f.hasKey("price"))
+    {
+        printf(errAlert,"Bad Request")
+        return nil
+    }
+    var beds = f["beds"]
+    var price = f["price"]
+    if(beds == "" or price == "")
+    {
+        printf(errAlert, "Insufficient Parameters")
+        return nil
+    }
+    var dept_id = f["dept_id"]
+    if(dept_id == "Department")
+    {
+        printf(errAlert, "Invalid Value for Department")
+        return nil
+    }
+    try{
+      var conn = mysql.init()
+      mysql.real_connect(conn,"localhost","root","password","hospital")
+      var query = "SELECT id from rooms as a where dept_id = "+dept_id+" and 0 = (Select COUNT(*) from rooms as b where dept_id = "+dept_id+" and a.id < b.id);"
+      mysql.query(conn,query)
+      var res = mysql.store_result(conn)
+      var row = mysql.fetch_row_as_str(res)
+      var i = 0
+      if(row[0] != nil)
+        i =  int(row[0])
+      i = i+1
+      query = format("Insert into rooms values(%,%,0,%,%);", i, dept_id, beds, price)
+      mysql.query(conn,query)
+      printf(successAlert,"Insertion Successful")
+      show()
+    }
+    catch(err)
+    {
+        printf(errAlert, err.msg)
+        return nil
+    }
+}
 
 print("Content-type: text/html\r\n\r\n")
 checkSignin()
@@ -100,9 +164,13 @@ if(!sentdata.hasKey("operation"))
 }
 var torun = sentdata["operation"]
 if(torun == "show")
-    show(sentdata)
+    show()
 else if(torun == "search")
     search(sentdata)
+else if(torun == "init")
+    initroom()
+else if(torun == "add")
+    add(sentdata)
 else
     printf("undefined operation")
 
