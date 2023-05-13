@@ -783,7 +783,7 @@
         })
         .then(function (html) {
           var k = document.getElementById("responseroom");
-          k.innerHTML = k.innerHTML;
+          k.innerHTML = html;
           setTimeout(hideAlerts, 3000);
         })
         .catch(function (err) {
