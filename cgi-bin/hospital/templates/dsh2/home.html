@@ -534,19 +534,19 @@
       var dname = document.getElementById("dnk");
       var myquery;
       if (d_id.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.d_id";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=d_id";
       else if (starttime.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.start";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=start";
       else if (endtime.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.end";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=end";
       else if (p_id.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.p_id";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=p_id";
       else if (app_date.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=a.app_date";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=app_date";
       else if (pname.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=p.name";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=PName";
       else if (dname.checked)
-        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=d.name";
+        myquery = 'appointments.plt?operation=viewkey&keyval=' + keyval + "&keyname=DName";
       myquery = encodeURI(myquery);
       fetch(myquery)
         .then(function (response) {
@@ -576,7 +576,7 @@
         })
         .then(function (html) {
           var k = document.getElementById("responseAppointments");
-          k.innerHTML = html + k.innerHTML;
+          k.innerHTML = html;
           setTimeout(hideAlerts, 3000);
         })
         .catch(function (err) {
@@ -590,10 +590,13 @@
       var name = document.getElementById('appPatName').value;
       var dob = document.getElementById('appPatDob').value;
       var phone = document.getElementById('appPatPhone').value;
+      var fee = document.getElementById('appPatFee').value;
+      
       var docCnic = elem.parentElement.parentElement.children[3].innerHTML;
       var starttime = elem.parentElement.parentElement.children[1].innerHTML;
       var endtime = elem.parentElement.parentElement.children[2].innerHTML;
-      var query_string = "app_date=" + date + "&start=" + starttime + "&end=" + endtime + "&p_id=" + cnicpatient + "&dept=" + dept + "&name=" + name + "&dob=" + dob + "&phone=" + phone + "&d_id=" + docCnic;
+
+      var query_string = "app_date=" + date + "&start=" + starttime + "&end=" + endtime + "&p_id=" + cnicpatient + "&dept=" + dept + "&name=" + name + "&dob=" + dob + "&phone=" + phone + "&d_id=" + docCnic+"&fee="+fee;
       query_string = encodeURI(query_string);
       fetch('appointments.plt?operation=add&' + query_string)
         .then(function (response) {
@@ -780,7 +783,7 @@
         })
         .then(function (html) {
           var k = document.getElementById("responseroom");
-          k.innerHTML = html + k.innerHTML;
+          k.innerHTML = k.innerHTML;
           setTimeout(hideAlerts, 3000);
         })
         .catch(function (err) {
@@ -1130,9 +1133,42 @@ table
         <br>
         <h2 id="bloodMoney">Blood Money💀 earned: </h2>
       </div>
+
       <div id="patients" class="container tab-pane fade"><br>
         <br>
         <br>
+        <div class="row form-inline">
+          <input class="form-control w-25 ml-3" type="text" id="patKeyVal" placeholder="CNIC">
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchPatients()"><i class="fa fa-search"></i></button>
+          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
+        </div>
+
+        <div class="dropdown mt-2">
+          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Key
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyCNIC"
+              name="patKey" value="CNIC" checked="checked">
+            <label>CNIC</label><br>
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyName"
+              name="patKey" value="Name">
+            <label>Name</label><br>
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyDOB"
+              name="patKey" value="DOB">
+            <label>DOB</label><br>
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyStatus"
+              name="patKey" value="Status">
+            <label>Status</label><br>
+            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyPhone"
+              name="patKey" value="Phone">
+            <label>Phone</label>
+
+          </div>
+          <br>
+          <br>
+        </div>
         <div id="accordion">
           <div id="idkwutitmeantagain">
             <div class="card">
@@ -1188,38 +1224,6 @@ table
 
         </div>
    
-        <div class="row form-inline">
-          <input class="form-control w-25 ml-3" type="text" id="patKeyVal" placeholder="CNIC">
-          <button class="btn btn-outline-primary btn-sm ml-2" onclick="searchPatients()"><i class="fa fa-search"></i></button>
-          <button class="btn btn-outline-primary btn-sm ml-2" onclick="showPatients()">View all</button>
-        </div>
-
-        <div class="dropdown mt-2">
-          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Key
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyCNIC"
-              name="patKey" value="CNIC" checked="checked">
-            <label>CNIC</label><br>
-            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyName"
-              name="patKey" value="Name">
-            <label>Name</label><br>
-            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyDOB"
-              name="patKey" value="DOB">
-            <label>DOB</label><br>
-            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyStatus"
-              name="patKey" value="Status">
-            <label>Status</label><br>
-            <input onclick="setPlaceholder('patKeyVal',this.value)" class="ml-1" type="radio" id="patKeyPhone"
-              name="patKey" value="Phone">
-            <label>Phone</label>
-
-          </div>
-          <br>
-          <br>
-        </div>
         <div id="response">
         </div>
         <div id="pathistory">
@@ -1469,8 +1473,11 @@ table
                 <input class="form-control mt-2 w-25" type="date" id="appPatDob">
                 Date of Appointment
                 <input class="form-control w-25 mt-2" type="date" id="appDate">
-                Department
+                
+                <input class="form-control w-25 mt-2" type="text" placeholder="Fee" id="appPatFee">
+                <br>
                 <div id="aptinit"></div>
+                
                 <button class="btn btn-outline-success btn-sm mt-2" onclick="showAvailable()">Show Available</button>
 
               </div>
