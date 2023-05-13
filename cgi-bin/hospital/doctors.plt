@@ -1,26 +1,26 @@
 #!C:\plutonium\plutonium.exe
-var theeti = false # change to true
-#when running on theeti's computer upload path becomes D:\Database\....
 import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteDoctor(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateDoctor(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 var level = nil # level of access to give
+var theeti = false # change to true
+#when running on theeti's computer upload path becomes D:\Database\....
 function addDoctor(var form)
 {
   if(level != 2) #only admin can add doctor
   {
-    printf(errAlert,"Access Denied")
+    print("Access Denied")
     return nil
   }
   if(!hasFields(["name","cnic","dob","phone","salary","dept"],form))
   {
-    printf(errAlert,"Bad Request")
+    print("Bad Request")
     return nil
   }
   var img = form["img"]
-  if(!isInstanceOf(img,cgi.File) or (img.type!="image/jpeg" and img.type!="image/jpg" and img.type!="image/png"))
+  if(!isInstanceOf(img,cgi.File) or (img.type!="image/jpeg"))
   {
-    printf(errAlert,"UPLOAD a proper JPG/JPEG image!You think i'm stupid?")
+    printf("UPLOAD a proper JPEG image!You think i'm stupid?")
     return nil
   } 
   try
@@ -31,12 +31,18 @@ function addDoctor(var form)
     var phone = form["phone"]
     var salary = form["salary"]
     var dept = form["dept"]
+    if(dept == "Department" or !isNum(dept))
+    {
+      println("Select a department!")
+      return nil
+    }
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     var upload_path = "c:\\xampp\\htdocs\\hospital\\Doctors\\"
     if(theeti)
       upload_path = "D:\\Database\\xampp\\htdocs\\hospital\\Doctors\\"
     var file = open(upload_path+cnic+"."+substr(find("/",img.type)+1,len(img.type)-1,img.type),"wb")
+    #img.content is a bytearray
     fwrite(img.content,file)
     close(file)
     var query = format("INSERT INTO doctors VALUES('%','%','%','%',%);",name,cnic,phone,dob,salary)
@@ -46,11 +52,14 @@ function addDoctor(var form)
     query = format("insert into attendance VALUES('%',CURDATE(),'P',2);",cnic)
     mysql.query(conn,query)
     #insertion query does not return anything
-    printf(successAlert,"Success!")
+    print("Success!")
   }
   catch(err)
   {
-    printf(errAlert,"Insertion failed."+err.msg)
+    var msg = "Insertion failed"
+    if(level == 2)
+      msg += ": "+err.msg
+    print(msg)
     return nil
   }
 }
@@ -62,7 +71,7 @@ function viewall()
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Salary</th><th>Att(%)</th>")
+  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Department</th><th>Salary</th><th>Att(%)</th>")
   if(level == 2)
     print("<th></th><th></th>")
   print("</tr>")
@@ -71,12 +80,14 @@ function viewall()
   {
     var fields = mysql.fetch_row_as_str(res)
     print("<tr>")
+    var i = 0
     foreach(var field: fields)
     {
-      if(level == 2)
-        printf("<td onclick=\"updateDoctor(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+      if(level == 2 and (i == 0 or i == 2 or i==3 or i==5))
+          printf("<td onclick=\"updateDoctor(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td>%</td>",field)
+      i+=1
     }
     if(level == 2)
     {
@@ -91,7 +102,7 @@ function searchDoctor(var form)
 {
   if(!form.hasKey("keyval") or !form.hasKey("keyname"))
   {
-    print("Insufficient parameters!")
+    printf(errAlert,"Bad Request")
     return nil
   }
   var val = form["keyval"]
@@ -99,16 +110,19 @@ function searchDoctor(var form)
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
-  if(name == "salary")
-   query = "select * from docView where salary="+val+";"
-  else if(name == "name")
-      query = "select * from docView where name like '%"+val+"%';"
+  if(name == "name" or name == "deptname")
+    query = "SELECT * from docView where "+name+" like '%"+val+"%';"
   else
     query = "SELECT * from docView where "+name+"='"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Spec</th><th>Salary</th><th>Att(%)</th>")
+  if(total == 0)
+  {
+    println("<h2>No results</h2><br>")
+    return nil
+  }
+  print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Department</th><th>Salary</th><th>Att(%)</th>")
   if(level == 2)
     print("<th></th><th></th>")
   print("</tr>")
@@ -137,16 +151,14 @@ function fireDoctor(var form)
 {
   if(level != 2)
   {
-    print("Access Denied")
+    printf(errAlert,"Access Denied")
     return nil
   }
   if(!form.hasKey("cnic"))
   {
-    print("Bad Request")
+    printf(errAlert,"Bad Request")
     return nil
   }
-  #there are SQL injection vulnerabilities
-  #to be fixed later
   var query = format("Select * from appointments where d_id = '%' and start >= CURDATE();", form["cnic"]) #checks if doctor has any pending appointments
   try
   {
@@ -155,20 +167,23 @@ function fireDoctor(var form)
     mysql.query(conn,query)
     var res = mysql.store_result(conn)
     var row = mysql.fetch_row_as_str(res)
-
     if(row == nil)
     {
       query = format("DELETE FROM doctors WHERE cnic='%';",form["cnic"])
       mysql.query(conn,query)
+      query = format("DELETE FROM attendance WHERE cnic='%';",form["cnic"])
+      mysql.query(conn,query)
+      query = format("DELETE FROM worksIn WHERE d_id='%';",form["cnic"])
+      mysql.query(conn,query)
       printf(successAlert,"Delete QUERY executed.")
-      viewall()
     }
     else
       printf(errAlert, "Doctor has pending appointments!")
+    viewall()
   }
   catch(err)
   {
-    printf(errAlert,"InternalError occurred")
+    printf(errAlert,"Operation failed")
     return nil
   }
 }
@@ -179,7 +194,7 @@ function updateDoctor(var form)
     print("Access Denied")
     return nil
   }
-  if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob")  or !form.hasKey("phone")  or !form.hasKey("salary"))
+  if(!hasFields(["name","cnic","dob","phone","salary"],form))
   {
     printf(errAlert,"INVALID REQUEST! Insuffcient parameters!")
     return nil

@@ -70,7 +70,7 @@ function updateExistingStaff(var f)
 {
     if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("dob"))
     {   
-        print("Insfficient Parameters")
+        printf(errAlert,"Bad Request")
         return nil
     }
     var name = f["name"]

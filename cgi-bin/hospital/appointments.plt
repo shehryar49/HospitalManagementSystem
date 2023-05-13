@@ -7,7 +7,15 @@ function searchApp(var start,var end,var all,var doc)
     var k = 0
     foreach(var record: all)
     {
-        if(format("%:00:00",str(start)) == record[1] and format("%:00:00",str(end))==record[2] and record[4]==doc)
+        var a = str(start)
+        var b = str(end)
+        if(len(a) == 1)
+          a = "0"+a
+        if(len(b) == 1)
+          b = "0"+b
+        a+=":00:00"
+        b+=":00:00"
+        if(a == record[1] and b==record[2] and record[4]==doc)
           return true
         k+=1
     }
@@ -21,12 +29,33 @@ function showAvailable(var f)
         return nil
     }
     var dept = f["dept"]
+    if(dept == "Department" or !isNum(dept))
+    {
+        printf(errAlert,"Select a department!")
+        return nil
+    }
     var date = f["date"]
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = format("select a.name,a.cnic from doctors as a join worksin as b on a.cnic=b.d_id and b.dept_id = %;",dept)
+    var query = format("select WEEKDAY('%'),'%' < CURDATE();",date,date)
     mysql.query(conn,query)
     var res = mysql.store_result(conn)
+    var P = mysql.fetch_row_as_str(res)
+    if(P == nil)
+      throw @UnknownError,"Something wrong with Sql Server"
+    if(P[0] == "6") # Sunday
+    {
+        printf(errAlert,"Appointment can't be scheduled on Sunday.")
+        return nil
+    }
+    if(P[1] == "1")
+    {
+        printf(errAlert,"Can't book appointment on past date.")
+        return nil
+    }
+    query = format("select a.name,a.cnic from doctors as a join worksin as b on a.cnic=b.d_id and b.dept_id = %;",dept)
+    mysql.query(conn,query)
+    res = mysql.store_result(conn)
     var totalDocs = mysql.num_rows(res) 
     if(totalDocs == 0) # NO Doctor of requested department
     {
@@ -36,13 +65,14 @@ function showAvailable(var f)
     var docs = [] # all docs of requested department
     for(var i=1 to totalDocs step 1)
       docs.push(mysql.fetch_row_as_str(res))
+    #Query to get all appointments of a specific department on a given date
     query = format("select doctors.name,t.start,t.end,t.app_date,doctors.cnic from(
         select * from appointments where dept_id=%)t 
     join doctors on t.d_id=doctors.cnic and app_date='%';",dept,date)
     mysql.query(conn,query)
     res = mysql.store_result(conn)
     var total = mysql.num_rows(res)
-    if(total != 0)
+    if(total != 0) # there are appointments on given date,try to find a free slot
     {
         var all = []
         for(var i=1 to total step 1)
@@ -50,30 +80,31 @@ function showAvailable(var f)
           var row = mysql.fetch_row_as_str(res)
           all.push(row)
         }
-        print("<br>")
+        
         print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th><th>Doctor CNIC</th><th></th>")
-        foreach(var row: all)
+        foreach(var row: docs)
         {
             var start = 9
-            while(start<=16)
+            while(start<=20)
             {
-                var k = searchApp(start,start+1,all,row[4]) #check if this doctor has the slot free
+                var k = searchApp(start,start+1,all,row[1]) #check if this doctor has the slot free
                 if(!k)
-                    printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td><td>%</td></tr>",row[0],start,start+1,row[4],booknow)
+                    printf("<tr><td>%</td><td>%:00</td><td>%:00</td><td>%</td><td>%</td></tr>",row[0],start,start+1,row[1],booknow)
                 start+=1
             }
         }
+
         print("</table>")
     }
-    else #we have the doctor but no appointment on given date
+    else #we have the doctor but no appointment on given date,i.e whole day is free
     {
       print("<table class=\"table table-bordered table-responsive\" id=\"data\"><th>Doctor</th><th>Start</th><th>End</th><th>Doctor CNIC</th><th></th>")
       foreach(var doc: docs)
       {
         var start = 9
-        while(start<=16)
+        while(start<=20)
         {
-          printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td><td>%</td></tr>",doc[0],start,start+1,doc[1],booknow)
+          printf("<tr><td>%</td><td>%:00</td><td>%:00</td><td>%</td><td>%</td></tr>",doc[0],start,start+1,doc[1],booknow)
           start+=1
         }
       }
@@ -89,9 +120,10 @@ function addAppointment(var f)
     }
     var cnic = f["p_id"]
     var dept = f["dept"]
+    var fee = f["fee"]
     var app_date = f["app_date"]
     if(cnic == "" or dept == "" or app_date == ""){
-        print(errAlert, "Insufficient Parameters")
+        print(errAlert, "CNIC, Department and Date are required")
         return nil
     }
     try
@@ -101,11 +133,9 @@ function addAppointment(var f)
         ##to see if patient is entered in database
         
         var sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
-        println(sqlquery,"<br>")
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
-        println(row,"<br>")
         if(row == nil)
         {
            var dob = f["dob"]
@@ -118,20 +148,20 @@ function addAppointment(var f)
            result = mysql.store_result(connection)
            row = mysql.fetch_row_as_str(result)
         }
-        if(row[0] == "deceased")
+        if(row[0] == "Deceased")
         {
-            printf("Invalid! Patient records states patient has passed away")
+            printf(errAlert,"Patient deceased. Press button again to join him/her")
             return nil
         }
 
         var start = f["start"]
         var admit = app_date+" "+start ##datetime
         ##println(admit,"<br>")
-        var end = f["end"]
+        var end = app_date+" "+f["end"]
         var d_id = f["d_id"]
         connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query = format("INSERT INTO records VALUES(0,'%','%','%', NULL ,'%',NULL,%)",cnic, admit, end, d_id,dept)
+        var query = format("INSERT INTO records VALUES(0,'%','%','%',%,'%',NULL,%)",cnic, admit, end,fee, d_id,dept)
         mysql.query(connection,query)
         printf(successAlert,"Success")
     }
@@ -141,39 +171,7 @@ function addAppointment(var f)
         return nil
     }
 }
-function cancelAppointment(var f)
-{
-    if(!f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("app_date"))
-    {   
-        print("Bad Request")
-        return nil
-    }
-    var app_date = f["app_date"]
-    var d_id = f["d_id"]
-    var start = f["start"]
-    if(app_date == "" or d_id == "" or start == "")
-    {
-        print(errAlert,"Insufficient Parameters")
-        return nil
-    }
-    else
-    {
-        try{
-            var dt = app_date+" "+start
-            var connection = mysql.init()
-            mysql.real_connect(connection,"localhost","root","password","hospital")
-            var query = format("DELETE from records WHERE d_id = '%' AND admitDate = '%';", d_id, dt)
-            mysql.query(connection,query)
-            printf(successAlert,"Success")
-        }
-        catch(err)
-        {
-            print(errAlert,"Operation Failed")
-            return nil
-        }
-    }
-}
-function viewkeyAppointment(var f)
+function searchAppointment(var f)
 {  
     try{
         if(!f.hasKey("keyval") or !f.hasKey("keyname"))
@@ -185,7 +183,10 @@ function viewkeyAppointment(var f)
         var keyname = f["keyname"]
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query  = format("select d.name, p.name, a.start, a.end, a.app_date, d.cnic, p.cnic FROM appointments as a, patients as p, doctors as d where d.cnic = a.d_id and p.cnic = a.p_id and % = '%'",keyname,keyval)
+        var query  = format("select * from appView where % = '%'",keyname,keyval)
+        
+        if(keyname == "PName" or keyname == "DName")
+          query  = "select * from appView where "+keyname+" like '%"+keyval+"%';"
         mysql.query(connection,query)
         var res = mysql.store_result(connection)
         var total = mysql.num_rows(res)
@@ -195,7 +196,7 @@ function viewkeyAppointment(var f)
             var fields = mysql.fetch_row_as_str(res)
             print("<tr>")
             foreach(var field: fields)
-              printf("<td contentEditable=\"true\">%</td>",field)
+              printf("<td>%</td>",field)
             print(trashIcon)
             print("</tr>")
         }
@@ -206,36 +207,66 @@ function viewkeyAppointment(var f)
         printf(errAlert,"Operation Failed: "+er.msg)
     }
 }
-function viewAppointment(var f)
+function viewAppointments(var f)
 {  
     try
     {
-        var connection = mysql.init()
-        mysql.real_connect(connection,"localhost","root","password","hospital")
-        # Guess what strings in plutonium are multiline by default
-        var query = "select doctors.name,patients.name,a.start,a.end,a.app_date,a.d_id,
-        a.p_id from appointments as a
-         inner join doctors on doctors.cnic = a.d_id inner join 
-         patients on patients.cnic=a.p_id;"
-        mysql.query(connection,query)
-        var res = mysql.store_result(connection)
+        var conn = mysql.init()
+        mysql.real_connect(conn,"localhost","root","password","hospital")
+        mysql.query(conn,"select * from appView;")
+        var res = mysql.store_result(conn)
         var total = mysql.num_rows(res)
         print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>DName</th><th>PName</th><th>Start Time</th><th>End Time</th><th>Date</th><th>DID</th><th>PID</th><th></th></tr>")
-        var all = []
         for(var i=1 to total step 1)
         {
             var fields = mysql.fetch_row_as_str(res)
             print("<tr>")
             foreach(var field: fields)
-              printf("<td contentEditable=\"true\">%</td>",field)
+              printf("<td>%</td>",field)
             print(trashIcon)
             print("</tr>")
         }
         print("</table>")
     }
-    catch(er)
+    catch(err)
     {
-        printf(errAlert,"Operation Failed: "+er.msg)
+        printf(errAlert,"Operation Failed: "+err.msg)
+    }
+}
+function cancelAppointment(var f)
+{
+    if(!f.hasKey("d_id") or !f.hasKey("start") or !f.hasKey("app_date"))
+    {   
+        printf(errAlert,"Bad Request")
+        viewAppointments(f)
+        return nil
+    }
+    var app_date = f["app_date"]
+    var d_id = f["d_id"]
+    var start = f["start"]
+    if(app_date == "" or d_id == "" or start == "")
+    {
+        print(errAlert,"Insufficient Parameters")
+        viewAppointments(f)
+        return nil
+    }
+    else
+    {
+        try{
+            var dt = app_date+" "+start
+            var connection = mysql.init()
+            mysql.real_connect(connection,"localhost","root","password","hospital")
+            var query = format("DELETE from records WHERE d_id = '%' AND admitDate = '%';", d_id, dt)
+            mysql.query(connection,query)
+            printf(successAlert,"Success")
+            viewAppointments(f)
+        }
+        catch(err)
+        {
+            printf(errAlert,"Operation Failed")
+            viewAppointments(f)
+            return nil
+        }
     }
 }
 function viewSpec(var form)
@@ -326,9 +357,9 @@ if(request == "add")
 else if(request == "delete")
     cancelAppointment(formData)
 else if(request == "view")
-    viewAppointment(formData)
+    viewAppointments(formData)
 else if(request == "viewkey")
-    viewkeyAppointment(formData)
+    searchAppointment(formData)
 else if(request == "viewspecific")
   viewSpec(formData)
 else if(request == "showAvailable")
