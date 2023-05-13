@@ -380,7 +380,7 @@ insert into records values (0,'35142-8193038-5', '2023-01-23 13:00:00', '2023-01
 insert into records values (0,'35100-1839103-8', '2023-01-01 10:00:00', '2023-01-01 11:00:00', 3000, '32019-8917101-7', NULL,1);
 insert into records values (0,'24153-2819301-9', '2022-12-10 15:00:00', '2022-12-10 16:00:00', 3000, '32019-8917101-7', NULL,1);
 -- to kill samin
-insert into records values(1,'35100-1839103-8','2022-12-10 15:00:00','2023-05-12 4:00:00',NULL,NULL,2,4);
+insert into records values(1,'35100-1839103-8','2022-12-10 15:00:00','2023-05-12 4:00:00',244000,NULL,2,4);
 
 --appointments
 create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
