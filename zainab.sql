@@ -58,18 +58,63 @@ create table rooms(id int, dept_id int,occ int,totalBeds int, perDay float);
 alter table rooms add constraint FK_roomdept foreign key (dept_id) references departments(dept_id);
 alter table rooms add constraint FK_primaryroom PRIMARY KEY (id, dept_id); 
 
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,1,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,1,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,1,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,1,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,1,0,25,600);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,1,0,6,1000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,2,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,2,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,2,0,3,1000);
+
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,3,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,3,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,3,0,1,1200);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,3,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,3,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,3,0,12,800);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,4,0,6,2000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,4,0,6,2000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,5,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,5,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,5,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,5,0,12,800);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,6,0,1,20000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,7,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,7,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,7,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,7,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,7,0,25,600);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,7,0,6,1000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,8,0,1,20000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(7,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(8,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(9,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(10,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(11,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,9,0,1,15000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,10,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,10,1,1,18000);
@@ -292,6 +337,18 @@ insert into attendance VALUES('30102-4801342-2','2023-3-9','P',2);
 insert into attendance VALUES('30102-4801342-2','2023-3-10','A',2);
 insert into attendance VALUES('30102-4801342-2','2023-3-11','A',2);
 
+insert into attendance VALUES('30102-2849041-2','2023-3-1','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-2','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-3','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-4','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-5','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-6','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-7','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-8','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-9','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-10','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-11','A',2);
+
 
 --patient records 
 --type 0 = appointment, type 1 = admission
@@ -323,7 +380,7 @@ insert into records values (0,'35142-8193038-5', '2023-01-23 13:00:00', '2023-01
 insert into records values (0,'35100-1839103-8', '2023-01-01 10:00:00', '2023-01-01 11:00:00', 3000, '32019-8917101-7', NULL,1);
 insert into records values (0,'24153-2819301-9', '2022-12-10 15:00:00', '2022-12-10 16:00:00', 3000, '32019-8917101-7', NULL,1);
 -- to kill samin
-insert into records values(1,'35100-1839103-8	','2022-12-10 15:00:00','2023-05-12 4:00:00',NULL,NULL,2,4);
+insert into records values(1,'35100-1839103-8','2022-12-10 15:00:00','2023-05-12 4:00:00',NULL,NULL,2,4);
 
 --appointments
 create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
