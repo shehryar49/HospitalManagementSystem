@@ -347,4 +347,7 @@ from departments left join doctors on departments.hod = doctors.cnic;
 create view roomView as select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from 
   rooms as r join departments as dept on dept.dept_id = r.dept_id;
 
-select v.dept_id, v.deptname, COUNT(w.d_id), v.hod, v.name from deptView as v, worksIn as w  where v.dept_id = w.dept_id group by dept_id;
+create view appView as (select doctors.name as DName,patients.name as PName,a.start,a.end,a.app_date,a.d_id,
+        a.p_id from appointments as a
+         inner join doctors on doctors.cnic = a.d_id inner join 
+         patients on patients.cnic=a.p_id);
