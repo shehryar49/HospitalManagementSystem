@@ -1,35 +1,49 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
+# Plutonium uses a string pool
+# so we are fine performance wise
 var trashIcon = "<td><button onclick=\"deleteUser(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
-var updateIcon = "<td><button onclick=\"updateUser(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
+var cred = nil
 function viewall()
 {
-  var conn = mysql.init()
-  mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT username,level,id FROM users;"
-  mysql.query(conn,query)
-  var res = mysql.store_result(conn)
-  var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
-  for(var i=1 to total step 1)
+  try
   {
-    var fields = mysql.fetch_row_as_str(res)
-    print("<tr>")
-    foreach(var field: fields)
+    var conn = mysql.init()
+    mysql.real_connect(conn,"localhost","root","password","hospital")
+    var query = "SELECT username,level,id FROM users;"
+    mysql.query(conn,query)
+    var res = mysql.store_result(conn)
+    var total = mysql.num_rows(res)
+    print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
+    for(var i=1 to total step 1)
     {
-      if(field == nil)
-        field = "-"
-      printf("<td>%</td>",field)
+      var fields = mysql.fetch_row_as_str(res)
+      print("<tr>")
+      foreach(var field: fields)
+      {
+        if(field == nil)
+          field = "-"
+        printf("<td>%</td>",field)
+      }
+      print(trashIcon)
+      print("</tr>")
     }
-    print(trashIcon)
-    print("</tr>")
+    print("</table>")
   }
-  print("</table>")
+  catch(err)
+  {
+    printf(errAlert,"Operation failed.")
+    return nil
+  }
 }
 function addUser(var form)
 {
-  if(!form.hasKey("username") or !form.hasKey("cnic") or !form.hasKey("level") or !form.hasKey("password"))
+  if(!hasFields(["username","cnic","level","password"],form))
+  {
     print(errAlert,"Bad Request")
+    viewall()
+    return nil
+  }
   try
   {
     var username = form["username"]
@@ -48,6 +62,7 @@ function addUser(var form)
   catch(err)
   {
     printf(errAlert,"Insertion failed."+err.msg)
+    
   }
   viewall()
 }
@@ -61,14 +76,14 @@ function searchUser(var form)
   var val = form["keyval"]
   var name = form["keyname"]
   if(name == "cnic")
-    name = "id" #thanks to Isbah,gotta remap this
+    name = "id" # thanks to Isbah,gotta remap this
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = "SELECT username, level, id FROM users where "+name+" = "+" '"+val+"'"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th><th></th></tr>")
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
@@ -80,7 +95,6 @@ function searchUser(var form)
       printf("<td>%</td>",field)
     }
     print(trashIcon)
-    print(updateIcon)
     print("</tr>")
   }
   print("</table>")
@@ -97,8 +111,7 @@ function changePassword(var form )
   var new = form["new"]
   var oldhash = boomerHash(old)
   var newhash = boomerHash(new)
-  var cookies = cgi.cookies()
-  var user = cookies["user"]
+  var user = cred["user"]
   try
   {
     var conn = mysql.init()
@@ -128,16 +141,13 @@ function changePassword(var form )
 }
 function deleteUser(var form)
 {
-  #deletion is done by cnic(primary key)
+  # deletion is done by cnic(primary key)
   if(!form.hasKey("username"))
   {
     print("Insufficient parameters")
     return nil
   }
-  #there are SQL injection vulnerabilities
-  #to be fixed later
-  var cookies = cgi.cookies()
-  var user = cookies["user"]
+  var user = cred["user"]
   if(user == form["username"])
   {
     printf(errAlert,"You cannot delete your own account!")
@@ -162,7 +172,7 @@ function deleteUser(var form)
   }
 }
 #main starts from here
-checkSignin()
+cred = checkSignin()
 print("Content-type: text/html\r\n\r\n")
 
 ## VALIDATE REQUEST ##

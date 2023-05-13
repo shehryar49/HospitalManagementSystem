@@ -3,14 +3,15 @@ import "common.plt"
 var updateIcon = "<td><button onclick=\"updatedept(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 function show()
 {
-    try{
+    try
+    {
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
         var query = "select v.dept_id, v.deptname, COUNT(w.d_id), v.name, v.hod from deptView as v left join worksIn as w  ON v.dept_id = w.dept_id group by dept_id;"
         mysql.query(connection,query)
         var result = mysql.store_result(connection)
         var row = mysql.num_rows(result)
-       print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Name</th><th>Number of Doctors</th><th>Head of Department</th><th>Head of Department(cnic)</th></tr>")
+        print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Name</th><th>Number of Doctors</th><th>Head of Department</th><th>Head of Department(cnic)</th></tr>")
         for(var i=1 to row step 1)
         {
             var fields = mysql.fetch_row_as_str(result)

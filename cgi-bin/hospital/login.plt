@@ -12,7 +12,7 @@ function login(var uname,var pass)
 {
   if(uname == "")
   {
-    renderLoginPage("UserName cannot be empty")
+    renderLoginPage("Username cannot be empty")
     return nil
   }
   if(pass == "")
@@ -26,19 +26,18 @@ function login(var uname,var pass)
     return nil
   }
   var conn = mysql.init()
-  var query = "SELECT password,level,id from users WHERE username='"+uname+"'" # uname = admin
-  #' union select 'admin' as 'password',2 as 'level',3434 as 'id
+  var query = "SELECT password,level,id from users WHERE username='"+uname+"'"
   mysql.real_connect(conn,"localhost","root","password","hospital")
   mysql.query(conn,query)
-  var res = mysql.store_result(conn) # row[0] = admin, row[1]=1
-  #duplicate usernames are not allowed so it must be 1 row
+  var res = mysql.store_result(conn) 
+  # duplicate usernames are not allowed so it must be 1 row
   var row = mysql.fetch_row_as_str(res)
   if(row == nil)
   {
     renderLoginPage("Invalid Username")
     return nil
   }
-  if(row[0]!=boomerHash(pass)) #password hash mismatch mismatch
+  if(row[0]!=boomerHash(pass)) #password hash mismatch
   {
     renderLoginPage("Invalid Password")
     return nil
@@ -46,6 +45,10 @@ function login(var uname,var pass)
   mysql.close(conn)
   # login was successful
   # set cookies and redirect to dashboard.plt
+  # this method is probably not the best security wise
+  # but as mentioned in README.md this project is for educational purposes
+  # JWTs coud be used but that requires an encryption library which as of today 13 May 2023
+  # plutonium does not have
   print("Set-cookie: user=",uname,"\r\n")
   print("Set-cookie: pass=",row[0],"\r\n")
   print("Set-cookie: level=",row[1],"\r\n")
@@ -53,6 +56,7 @@ function login(var uname,var pass)
   
   print("location: dashboard.plt\r\n\r\n") #redirect to dashboard
 }
+
 #main starts here
 if(getenv("HTTP_COOKIE")!=nil)
 {

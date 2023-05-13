@@ -5,32 +5,39 @@ var updateIcon = "<td><button onclick=\"updatePatient(this.parentElement.parentE
 var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHistory(this)\">Records</button></td>"
 function viewall()
 {
-  var conn = mysql.init()
-  mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT name,cnic,phone,dob,status FROM patients;"
-  mysql.query(conn,query)
-  var res = mysql.store_result(conn)
-  var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th><th></th><th></th></tr>")
-  for(var i=1 to total step 1)
+  try
   {
-    var fields = mysql.fetch_row_as_str(res)
-    print("<tr>")
-    var k = 0
-    foreach(var field: fields)
+    var conn = mysql.init()
+    mysql.real_connect(conn,"localhost","root","password","hospital")
+    var query = "SELECT name,cnic,phone,dob,status FROM patients;"
+    mysql.query(conn,query)
+    var res = mysql.store_result(conn)
+    var total = mysql.num_rows(res)
+    print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th><th></th><th></th></tr>")
+    for(var i=1 to total step 1)
     {
-      if(k!= len(fields)-1 and k != 1)
-        printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
-      else
-        printf("<td >%</td>",field)
-      k+=1
+        var fields = mysql.fetch_row_as_str(res)
+        print("<tr>")
+        var k = 0
+        foreach(var field: fields)
+        {
+            if(k!= len(fields)-1 and k != 1)
+                printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+            else
+                printf("<td >%</td>",field)
+            k+=1
+        }
+        print(trashIcon)
+        print(updateIcon)
+        print(history)
+        print("</tr>")
     }
-    print(trashIcon)
-    print(updateIcon)
-    print(history)
-    print("</tr>")
+    print("</table>")
   }
-  print("</table>")
+  catch(err)
+  {
+    printf(errAlert,"Operation failed.")
+  }
 }
 function show(var f)
 {
@@ -91,7 +98,7 @@ function admit(var f)
     var room = f["room"]
     if(cnic == "" or room == "" or room == "Room")
     {
-        printf(errAlert, "Insufficient Parameters!")
+        printf(errAlert, "CNIC and Room fields are mandatory!")
         return nil
     }
     try
