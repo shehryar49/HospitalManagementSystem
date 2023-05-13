@@ -68,10 +68,10 @@ function logout()
     .catch(function(err) {console.log('Failed to fetch page: ', err);});
     }
 ////////////////PATIENTS///////////////////
-    function showPatients() {
+function showPatients() {
       fetch('/cgi-bin/hospital/patients.plt?operation=view')
         .then(function (response) { return response.text() })
-        .then(function (html) { document.getElementById("response").innerHTML = html; })
+        .then(function (html) { document.getElementById("response").innerHTML = html;var k = document.getElementById("pathistory");k.innerHTML ="";})
         .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
     function searchPatients() {
@@ -100,11 +100,14 @@ function logout()
         })
         .then(function (html) {
           document.getElementById("response").innerHTML = html;
+          var k = document.getElementById("pathistory");
+          k.innerHTML = "";
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
         });
     }
+
     function getHistory(elem) {
       var row = elem.parentElement.parentElement;
       var cnic = row.children[1].innerHTML;
@@ -113,7 +116,7 @@ function logout()
       fetch(query)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var k = document.getElementById("response");
+          var k = document.getElementById("pathistory");
           k.innerHTML = html;
           setTimeout(hideAlerts, 3000);
         })
