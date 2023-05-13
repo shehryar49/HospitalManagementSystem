@@ -89,9 +89,9 @@ function admit(var f)
     }
     var cnic = f["cnic"]
     var room = f["room"]
-    if(cnic == "" or room == "")
+    if(cnic == "" or room == "" or room == "Room")
     {
-        print(errAlert, "Fill in the blank fields!")
+        printf(errAlert, "Insufficient Parameters!")
         return nil
     }
     try
@@ -166,23 +166,28 @@ function discharge(var f)
         return nil
     }
     var cnic = f["cnic"]
-    if(cnic == "")
+    var status = f["status"]
+    if(cnic == "" or status == "Status")
     {
-        print("CNIC cannot be null")
+        printf(errAlert, "Insufficient Parameters")
         return nil
     }
-    var status = f["status"]
     try
     {    
         var connection = mysql.init()
         mysql.real_connect(connection, "localhost", "root", "password", "hospital")
 
-        var sqlquery = "Select status from patients where cnic = '"+cnic+"';"
-        print(sqlquery)
+        var sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
+        #println(sqlquery,"<br>")
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var patstatus = mysql.fetch_row_as_str(result)
-        print(patstatus)
+        #print(patstatus)
+        if(patstatus == nil)
+        {
+            printf(errAlert,"Patient not found in Records")
+            return nil
+        }
         if(patstatus[0] != "Admit")
         {
             printf(errAlert,"Patient is not admitted, cannot set status as "+status)
@@ -191,7 +196,7 @@ function discharge(var f)
 
         ##get total charges
         sqlquery = "select id, dept_id, perDay from rooms where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"
-        print(sqlquery)
+        #print(sqlquery)
         mysql.query(connection,sqlquery)
         result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
@@ -200,11 +205,11 @@ function discharge(var f)
         var dept_id = row[1]
 
         #update tables
-        sqlquery = "Update records Set expiryDate = NOW(), fee = CEILING((TIMESTAMPDIFF(SECOND,'23/4/18 00:00:00', NOW()))/86400)*"+totalcharges+" where r_id = "+id+" and dept_id = "+dept_id+" and cnic = '"+cnic+"' ;"
-        print(sqlquery)       
+        sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';"
         mysql.query(connection,sqlquery)
 
-        sqlquery = "update patients set status = '"+status+"' where cnic = '"+cnic+"';"
+        sqlquery = "Update records Set expiryDate = NOW(), fee = CEILING((TIMESTAMPDIFF(SECOND,'23/4/18 00:00:00', NOW()))/86400)*"+totalcharges+" where r_id = "+id+" and dept_id = "+dept_id+" and cnic = '"+cnic+"' ;"
+        #print(sqlquery)       
         mysql.query(connection,sqlquery)
 
         sqlquery = "update rooms set occ = occ -1 where id = (Select r_id from patients where cnic = '"+cnic+"') and dept_id =  (Select dept_id from patients where cnic = '"+cnic+"');"

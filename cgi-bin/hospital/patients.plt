@@ -67,7 +67,11 @@ function searchPatient(var form)
   var name = form["keyname"]
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
-  var query = "SELECT name,cnic,phone,dob,status FROM patients where "+name+" = "+" '"+val+"'"
+  var query = ""
+  if(name == "name" or name == "dob" or name == "phone")
+    query = "SELECT name,cnic,phone,dob,status FROM patients where "+name+" LIKE '%"+val+"%';"
+  else
+    query = "SELECT name,cnic,phone,dob,status FROM patients where "+name+" = "+" '"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
@@ -151,6 +155,7 @@ function update(var form)
 }
 function getHistory(var f)
 {
+    viewall()
     if(!f.hasKey("cnic"))
     {
       printf(errAlert,"Bad Request")
@@ -166,14 +171,13 @@ function getHistory(var f)
       var res = mysql.store_result(conn)
       var total = mysql.num_rows(res)
       print("<h2>Appointment History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Department</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th><th></th></tr>")
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Doctor Name</th><th>Department</th><th>Start Time</th><th>End Time</th><th>Date</th><th>Fee</th></tr>")
       for(var i=1 to total step 1)
       {
         var fields = mysql.fetch_row_as_str(res)
         print("<tr>")
         foreach(var field: fields)
           printf("<td>%</td>",field)
-        print(trashIcon)
         print("</tr>")
       }
       print("</table>")
@@ -183,14 +187,18 @@ function getHistory(var f)
       res = mysql.store_result(conn)
       total = mysql.num_rows(res)
       print("<h2>Admission History</h2><br>")
-      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Department</th><th>Room No</th><th>Admit</th><th>Discharge</th><th>Fee</th><th></th></tr>")
+      print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Department</th><th>Room No</th><th>Admit</th><th>Discharge</th><th>Fee</th></tr>")
       for(var i=1 to total step 1)
       {
         var fields = mysql.fetch_row_as_str(res)
         print("<tr>")
         foreach(var field: fields)
-          printf("<td>%</td>",field)
-        print(trashIcon)
+        {
+          if(field == nil)
+            printf("<td>-</td>")
+          else
+            printf("<td>%</td>",field)
+        }
         print("</tr>")
       }
       print("</table>")

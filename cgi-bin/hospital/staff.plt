@@ -19,7 +19,7 @@ function viewStaff()
       var k = 0
       foreach(var field: fields)
       {
-        if(k!= 1)
+        if(k!= 1 and k!= 6)
           printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
         else
           printf("<td >%</td>",field)
@@ -142,16 +142,23 @@ function searchStaff(var form)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
   print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Desginatiion</th><th>Salary</th><th>Att(%)</th><th></th><th></th></tr>")
-  for(var i=1 to total step 1)
-  {
-    var fields = mysql.fetch_row_as_str(res)
-    print("<tr>")
-    foreach(var field: fields)
-      printf("<td contentEditable=\"true\">%</td>",field)
-    print(trashIcon)
-    print(updateIcon)
-    print("</tr>")
-  }
+   for(var i=1 to total step 1)
+    {
+      var fields = mysql.fetch_row_as_str(res)
+      print("<tr>")
+      var k = 0
+      foreach(var field: fields)
+      {
+        if(k!= 1 and k!= 6)
+          printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+        else
+          printf("<td >%</td>",field)
+        k+=1
+      }
+      print(trashIcon)
+      print(updateIcon)
+      print("</tr>")
+    }
   print("</table>")
 }
 ##Execution starts from here##
