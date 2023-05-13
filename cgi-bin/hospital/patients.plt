@@ -178,7 +178,6 @@ function update(var form)
 }
 function getHistory(var f)
 {
-    viewall()
     if(!f.hasKey("cnic"))
     {
       printf(errAlert,"Bad Request")
