@@ -91,6 +91,7 @@ function update(var form)
   var deptname = form["deptname"] 
   var hod = form["hod"]
   var query = "Select dept_id from worksIn where d_id = '"+hod+"';"
+  
   try
   {
     var conn = mysql.init()
@@ -98,7 +99,17 @@ function update(var form)
     mysql.query(conn,query)
     var result = mysql.store_result(conn)
     var row = mysql.fetch_row_as_str(result)
-    if(row[0] == ID)
+    if(hod == "nil") # NO HOD
+    {
+        var query = format("update departments set deptname='%',hod=NULL WHERE dept_id='%';",deptname,ID)
+        mysql.query(conn,query)
+        printf(successAlert,"Update Query executed.")
+    }
+    else if(row == nil) # HOD no in worksIN
+    {
+        printf(errAlert,"HOD CNIC not of any known doctor!")
+    }
+    else if(row[0] == ID)
     {
         var query = format("update departments set deptname='%',hod='%' WHERE dept_id='%';",deptname,hod,ID)
         mysql.query(conn,query)
@@ -109,7 +120,7 @@ function update(var form)
   }
   catch(err)
   {
-    printf(errAlert,"Updation failed.")
+    printf(errAlert,"Updation failed."+err.msg)
     return nil
   }
 }
