@@ -3,6 +3,7 @@ import "common.plt"
 var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updatePatient(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHistory(this)\">Records</button></td>"
+var cred = nil
 function addPatient(var form)
 {
   if(!form.hasKey("name") or !form.hasKey("cnic") or !form.hasKey("dob") or !form.hasKey("status") or !form.hasKey("phone"))
@@ -29,13 +30,19 @@ function addPatient(var form)
 }
 function viewall()
 {
+  var level = int(cred["level"])
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = "SELECT name,cnic,phone,dob,status FROM patients;"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th><th></th><th></th></tr>")
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th>")
+  if(level == 2)
+    print("<th></th><th></th>")
+  else if(level == 1)
+    print("<th></th>")
+  print("</tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
@@ -43,14 +50,16 @@ function viewall()
     var k = 0
     foreach(var field: fields)
     {
-      if(k!= len(fields)-1 and k != 1)
+      if(level!=3 and  k!= len(fields)-1 and k != 1)
         printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
       else
         printf("<td >%</td>",field)
       k+=1
     }
-    print(trashIcon)
-    print(updateIcon)
+    if(level == 2)
+      print(trashIcon)
+    if(level != 3)
+      print(updateIcon)
     print(history)
     print("</tr>")
   }
@@ -63,6 +72,7 @@ function searchPatient(var form)
     print(errAlert,"Bad Request")
     return nil
   }
+  var level = int(cred["level"])
   var val = form["keyval"]
   var name = form["keyname"]
   var conn = mysql.init()
@@ -75,16 +85,29 @@ function searchPatient(var form)
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th></tr>")
-  var all = []
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th>")
+  if(level == 2)
+    print("<th></th><th></th>")
+  else if(level == 1)
+    print("<th></th>")
+  print("</tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
     print("<tr>")
+    var k = 0
     foreach(var field: fields)
-      printf("<td contentEditable=\"true\">%</td>",field)
-    print(trashIcon)
-    print(updateIcon)
+    {
+      if(level!=3 and  k!= len(fields)-1 and k != 1)
+        printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+      else
+        printf("<td >%</td>",field)
+      k+=1
+    }
+    if(level == 2)
+      print(trashIcon)
+    if(level != 3)
+      print(updateIcon)
     print(history)
     print("</tr>")
   }
@@ -234,7 +257,7 @@ function initAdmit()
   }
 }
 #main starts from here
-checkSignin()
+cred = checkSignin()
 htmlHeader()
 ## VALIDATE REQUEST ##
 var form = cgi.FormData()

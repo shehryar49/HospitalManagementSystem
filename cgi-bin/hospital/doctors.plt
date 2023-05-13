@@ -5,6 +5,7 @@ var updateIcon = "<td><button onclick=\"updateDoctor(this.parentElement.parentEl
 var level = nil # level of access to give
 var theeti = false # change to true
 #when running on theeti's computer upload path becomes D:\Database\....
+var cred = nil
 function addDoctor(var form)
 {
   if(level != 2) #only admin can add doctor
@@ -274,13 +275,13 @@ function getallInfo()
     var res = mysql.store_result(conn)
     var total = mysql.num_rows(res)
     var data = mysql.fetch_row_as_str(res)
-    printf("<br>
-        <img height=\"300\" class=\"float-right\" src=\"http://localhost/hospital/Doctors/%.jpeg\"><br><br>
+    printf("
+        <img class=\"image-cover float-right\" height=\"300\" class=\"float-right\" src=\"http://localhost/hospital/Doctors/%.jpeg\">
         <b>Name: </b>%<br><br>
         <b>Date of Birth: </b>%<br><br>
         <b>Age: </b>%<br><br>
         <b>CNIC: </b>%<br><br>
-        <b>Phone No: </b>%",data[1],data[0],data[3],data[7],data[1],data[2])
+        <b>Phone No: </b>%",data[1],data[0],data[3],data[5],data[1],data[2])
   }
   catch(err)
   {
@@ -290,18 +291,12 @@ function getallInfo()
 }
 function getatt(var f)
 {
-  var cookies = cgi.cookies()
-  if(!cookies.hasKey("id"))
-  {  
-    printf(errAlert,"User is not a Doctor....idk how he got here")
-    return nil
-  }
-  var id = cookies["id"]
+  var id = cred["id"]
   try
   {
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = "SELECT date, DAYNAME(date) as Day, status FROM attendance where cnic = '"+id+"' and type = 2;"
+    var query = "SELECT date, DAYNAME(date) as Day, status FROM attendance where cnic = '"+id+"' and type = 2 order by date desc;"
     mysql.query(conn,query)
     var res = mysql.store_result(conn)
     var total = mysql.num_rows(res)
@@ -358,9 +353,9 @@ function initdoc()
     return nil
   }
 }
-checkSignin()
+cred = checkSignin()
 print("Content-type: text/html\r\n\r\n")
-level = int(cgi.cookies()["level"])
+level = int(cred["level"])
 ## VALIDATE REQUEST ##
 var form = cgi.FormData()
 if(!form.hasKey("operation"))

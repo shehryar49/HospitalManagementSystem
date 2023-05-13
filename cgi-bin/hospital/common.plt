@@ -47,21 +47,16 @@ function checkSignin()
 {
   try
   {
-  var cookies = cgi.cookies()
-  if(!cookies.hasKey("user") or !cookies.hasKey("pass") or !cookies.hasKey("level"))
-  {
-    #user is not signed In
-    #redirect to login page
-    print("location: login.plt\r\n\r\n")
-    exit()
-  }
-  var level = int(cookies["level"])
-  if(level < 1) #not possible but still
-  {
-    print("Content-type: text/html\r\n\r\n")
-    print("Access denied")
-    exit()
-  }
+    var cookies = cgi.cookies()
+    if(!cookies.hasKey("user") or !cookies.hasKey("pass") or !cookies.hasKey("level"))
+    {
+      #user is not signed In
+      #redirect to login page
+      htmlHeader()
+      println("You are not logged in: <a href=\"/cgi-bin/hospital/login.plt\">Login here</a>")
+      exit()
+    }
+    return cookies
   }
   catch(err)
   {

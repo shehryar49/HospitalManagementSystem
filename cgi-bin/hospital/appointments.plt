@@ -2,6 +2,7 @@
 import "common.plt"
 var trashIcon = "<td><button onclick=\"cancelAppointment(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var booknow = "<button class=\"btn btn-outline-dark btn-sm mt-2\" onclick=\"addAppointment(this)\">Book Now</button>"
+var cred = nil
 function searchApp(var start,var end,var all,var doc)
 {
     var k = 0
@@ -173,7 +174,8 @@ function addAppointment(var f)
 }
 function searchAppointment(var f)
 {  
-    try{
+    try
+    {
         if(!f.hasKey("keyval") or !f.hasKey("keyname"))
         {
             printf(errAlert,"Bad request")
@@ -181,23 +183,41 @@ function searchAppointment(var f)
         }
         var keyval = f["keyval"]
         var keyname = f["keyname"]
+        var level = int(cred["level"])
         var connection = mysql.init()
         mysql.real_connect(connection,"localhost","root","password","hospital")
-        var query  = format("select * from appView where % = '%'",keyname,keyval)
+        var query = nil
+        if(level == 3)
+          query  = format("select * from appView where % = '%' and d_id = '%';",keyname,keyval,cred["id"])
+        else
+          query  = format("select * from appView where % = '%'",keyname,keyval)
         
         if(keyname == "PName" or keyname == "DName")
-          query  = "select * from appView where "+keyname+" like '%"+keyval+"%';"
+        {
+          if(level == 3)
+            query  = "select * from appView where "+keyname+" like '%"+keyval+"%' and d_id='"+cred["id"]+"';"
+          else
+            query  = "select * from appView where "+keyname+" like '%"+keyval+"%';"
+        }
         mysql.query(connection,query)
         var res = mysql.store_result(connection)
         var total = mysql.num_rows(res)
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>DName</th><th>PName</th><th>Start Time</th><th>End Time</th><th>Date</th><th>DID</th><th>PID</th><th></th></tr>")
+        print("<table class=\"table table-bordered table-responsive\" 
+                id=\"data\"><tr><th>DName</th>
+                <th>PName</th><th>Start Time</th>
+                <th>End Time</th><th>Date</th><th>DID</th>
+                <th>PID</th>")
+        if(level != 3)
+          print("<th></th>")
+        print("</tr>")
         for(var i=1 to total step 1)
         {
             var fields = mysql.fetch_row_as_str(res)
             print("<tr>")
             foreach(var field: fields)
               printf("<td>%</td>",field)
-            print(trashIcon)
+            if(level != 3)
+              print(trashIcon)
             print("</tr>")
         }
         print("</table>")
@@ -211,19 +231,27 @@ function viewAppointments(var f)
 {  
     try
     {
+        var level = int(cred["level"])
         var conn = mysql.init()
         mysql.real_connect(conn,"localhost","root","password","hospital")
-        mysql.query(conn,"select * from appView;")
+        if(level==3) # doctor
+          mysql.query(conn,"select * from appView where d_id='"+cred["id"]+"' order by app_date desc;")
+        else
+          mysql.query(conn,"select * from appView order by app_date desc;")
         var res = mysql.store_result(conn)
         var total = mysql.num_rows(res)
-        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>DName</th><th>PName</th><th>Start Time</th><th>End Time</th><th>Date</th><th>DID</th><th>PID</th><th></th></tr>")
+        print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>DName</th><th>PName</th><th>Start Time</th><th>End Time</th><th>Date</th><th>DID</th><th>PID</th>")
+        if(level != 3)
+          println("<th></th>")
+        println("</tr>")
         for(var i=1 to total step 1)
         {
             var fields = mysql.fetch_row_as_str(res)
             print("<tr>")
             foreach(var field: fields)
               printf("<td>%</td>",field)
-            print(trashIcon)
+            if(level!=3)
+              print(trashIcon)
             print("</tr>")
         }
         print("</table>")
@@ -342,7 +370,7 @@ function initApt()
   }
 }
 ##Execution starts from here##
-checkSignin()
+cred = checkSignin()
 htmlHeader()
 ##Request Processing##
 var formData = cgi.FormData()

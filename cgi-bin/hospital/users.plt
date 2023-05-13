@@ -1,5 +1,5 @@
 #!C:\plutonium\plutonium.exe
-import "C:\\xampp\\cgi-bin\\hospital\\common.plt"
+import "common.plt"
 var trashIcon = "<td><button onclick=\"deleteUser(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updateUser(this)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 function viewall()
