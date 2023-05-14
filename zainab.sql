@@ -302,16 +302,17 @@ insert into attendance VALUES('24243-1009440-4','2023-3-9','P',2);
 insert into attendance VALUES('24243-1009440-4','2023-3-10','P',2);
 insert into attendance VALUES('24243-1009440-4','2023-3-11','P',2);
 
-insert into attendance VALUES('32910-1927181-7','2023-3-1','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-2','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-3','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-4','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-6','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-7','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-8','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-9','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-10','P',2);
-insert into attendance VALUES('32910-1927181-7','2023-3-11','P',2);
+insert into attendance VALUES('32910-1927181-7','2023-3-1','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-2','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-3','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-4','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-5','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-6','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-7','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-8','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-9','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-10','P',1);
+insert into attendance VALUES('32910-1927181-7','2023-3-11','P',1);
 
 insert into attendance VALUES('20184-6174013-0','2023-3-1','P',2);
 insert into attendance VALUES('20184-6174013-0','2023-3-2','P',2);
@@ -337,6 +338,17 @@ insert into attendance VALUES('30102-4801342-2','2023-3-9','P',2);
 insert into attendance VALUES('30102-4801342-2','2023-3-10','A',2);
 insert into attendance VALUES('30102-4801342-2','2023-3-11','A',2);
 
+insert into attendance VALUES('30102-2849041-2','2023-3-1','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-2','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-3','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-4','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-5','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-6','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-7','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-8','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-9','P',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-10','A',2);
+insert into attendance VALUES('30102-2849041-2','2023-3-11','A',2);
 
 --patient records 
 --type 0 = appointment, type 1 = admission
