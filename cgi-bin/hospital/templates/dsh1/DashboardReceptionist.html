@@ -68,25 +68,7 @@
           console.log('Failed to fetch page: ', err);
         });
     }
-    function deletePatient(elem) {
-      var row = elem.parentElement.parentElement;
-      var cnic = row.children[1].innerHTML; //first column of patient row is cnic
-      cnic = encodeURIComponent(cnic);
-      url = 'patients.plt?operation=delete&cnic=' + cnic;
-      fetch(url)
-        .then(function (response) {
-          // When the page is loaded convert it to text
-          return response.text()
-        })
-        .then(function (html) {
-          var k = document.getElementById('response');
-          k.innerHTML = html;
-          setTimeout(hideAlerts, 3000);
-        })
-        .catch(function (err) {
-          console.log('Failed to fetch page: ', err);
-        });
-    }
+
     function updatePatient(row, push = true) {
       var updateBtn = row.children[row.children.length - 2].children[0].children[0];
 
@@ -147,8 +129,8 @@
       fetch(string_url)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html + whytho.innerHTML;
+          var whytho = document.getElementById("response");
+          whytho.innerHTML = html ;
           setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
         })
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
@@ -162,8 +144,8 @@
       fetch(string_url)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html + whytho.innerHTML;
+          var whytho = document.getElementById("response");
+          whytho.innerHTML = html;
           setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
         })
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
