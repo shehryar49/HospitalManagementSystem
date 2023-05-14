@@ -3,41 +3,43 @@ import "common.plt"
 var trashIcon = "<td><button onclick=\"deletePatient(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
 var updateIcon = "<td><button onclick=\"updatePatient(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>"
 var history = "<td><button class=\"btn btn-outline-secondary\" onclick = \"getHistory(this)\">Records</button></td>"
+var cred = nil
 function viewall()
 {
-  try
+  var level = int(cred["level"])
+  var conn = mysql.init()
+  mysql.real_connect(conn,"localhost","root","password","hospital")
+  var query = "SELECT name,cnic,phone,dob,status FROM patients;"
+  mysql.query(conn,query)
+  var res = mysql.store_result(conn)
+  var total = mysql.num_rows(res)
+  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th>")
+  if(level == 2)
+    print("<th></th><th></th>")
+  else if(level == 1)
+    print("<th></th>")
+  print("</tr>")
+  for(var i=1 to total step 1)
   {
-    var conn = mysql.init()
-    mysql.real_connect(conn,"localhost","root","password","hospital")
-    var query = "SELECT name,cnic,phone,dob,status FROM patients;"
-    mysql.query(conn,query)
-    var res = mysql.store_result(conn)
-    var total = mysql.num_rows(res)
-    print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Name</th><th>Cnic</th><th>Phone</th><th>DOB</th><th>Status</th><th></th><th></th><th></th></tr>")
-    for(var i=1 to total step 1)
+    var fields = mysql.fetch_row_as_str(res)
+    print("<tr>")
+    var k = 0
+    foreach(var field: fields)
     {
-        var fields = mysql.fetch_row_as_str(res)
-        print("<tr>")
-        var k = 0
-        foreach(var field: fields)
-        {
-            if(k!= len(fields)-1 and k != 1)
-                printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
-            else
-                printf("<td >%</td>",field)
-            k+=1
-        }
-        print(trashIcon)
-        print(updateIcon)
-        print(history)
-        print("</tr>")
+      if(level!=3 and  k!= len(fields)-1 and k != 1)
+        printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+      else
+        printf("<td >%</td>",field)
+      k+=1
     }
-    print("</table>")
+    if(level == 2)
+      print(trashIcon)
+    if(level != 3)
+      print(updateIcon)
+    print(history)
+    print("</tr>")
   }
-  catch(err)
-  {
-    printf(errAlert,"Operation failed.")
-  }
+  print("</table>")
 }
 function show(var f)
 {
@@ -96,9 +98,17 @@ function admit(var f)
     }
     var cnic = f["cnic"]
     var room = f["room"]
-    if(cnic == "" or room == "" or room == "Room")
+    var phone = f["phone"]
+    if(cnic == "" or room == "" or room == "Room" )
     {
         printf(errAlert, "CNIC and Room fields are mandatory!")
+        viewall()
+        return nil
+    }
+    if(!isNum(phone) or phone == "")
+    {
+        printf(errAlert,"Enter valid phone number")
+        viewall()
         return nil
     }
     try
@@ -127,11 +137,13 @@ function admit(var f)
         if(row[0] == "Deceased")
         {
             printf(errAlert,"Invalid! Patient records states patient has passed away")
+            viewall()
             return nil
         }
         if(row[0] == "Admit")
         {
             printf(errAlert,"Patient already admit")
+            viewall()
             return nil
         }
         ##to check availability of room
@@ -144,6 +156,7 @@ function admit(var f)
         if(row == nil)
         {
             print("Empty room not found")
+            viewall()
             return nil
         }
         ##update tables
@@ -161,7 +174,8 @@ function admit(var f)
     }
     catch(err)
     {
-        printf(errAlert,"Operation failed: "+err.msg)
+        printf(errAlert,"Operation failed: ")
+        viewall()
         return nil
     }
 }
@@ -176,7 +190,8 @@ function discharge(var f)
     var status = f["status"]
     if(cnic == "" or status == "Status")
     {
-        printf(errAlert, "Insufficient Parameters")
+        printf(errAlert, "CNIC and Status are mandatory fields!")
+        viewall()
         return nil
     }
     try
@@ -193,11 +208,13 @@ function discharge(var f)
         if(patstatus == nil)
         {
             printf(errAlert,"Patient not found in Records")
+            viewall()
             return nil
         }
         if(patstatus[0] != "Admit")
         {
             printf(errAlert,"Patient is not admitted, cannot set status as "+status)
+            viewall()
             return nil
         }
 
@@ -227,13 +244,14 @@ function discharge(var f)
     }
     catch(err)
     {
-        printf(errAlert,err.msg)#"Operation failed: Make sure patient status is set correctly")
+        printf(errAlert,"Operation failed.")#"Operation failed: Make sure patient status is set correctly")
+        viewall()
         return nil
     }
 }
 
 
-checkSignin()
+cred = checkSignin()
 htmlHeader()
 var form = cgi.FormData()
 if(!form.hasKey("operation"))

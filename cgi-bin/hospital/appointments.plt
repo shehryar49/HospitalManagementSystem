@@ -114,7 +114,7 @@ function showAvailable(var f)
 }
 function addAppointment(var f)
 {
-    if(!f.hasKey("name") or !f.hasKey("p_id") or !f.hasKey("start") or !f.hasKey("dob") or !f.hasKey("app_date") or !f.hasKey("phone") or !f.hasKey("dept") or !f.hasKey("end"))
+    if(!hasFields(["name","p_id","start","dob","app_date","fee","start","end","phone","dept"],f))
     {   
         printf(errAlert,"Bad Request")
         return nil
@@ -122,9 +122,18 @@ function addAppointment(var f)
     var cnic = f["p_id"]
     var dept = f["dept"]
     var fee = f["fee"]
+    var dob = f["dob"]
+    var phone = f["phone"]
+    var name = f["name"] 
+    if(!isNum(fee))
+    {
+      printf(errAlert,"Enter a valid fee")
+      return nil
+    }
     var app_date = f["app_date"]
-    if(cnic == "" or dept == "" or app_date == ""){
-        print(errAlert, "CNIC, Department and Date are required")
+    if(cnic == "" or dept == "" or app_date == "" )
+    {
+        printf(errAlert, "CNIC, Department and Date are required")
         return nil
     }
     try
@@ -137,11 +146,19 @@ function addAppointment(var f)
         mysql.query(connection,sqlquery)
         var result = mysql.store_result(connection)
         var row = mysql.fetch_row_as_str(result)
-        if(row == nil)
+        if(row == nil) # 
         {
-           var dob = f["dob"]
-           var phone = f["phone"]
-           var name = f["name"] 
+           if(!isDate(dob) or dob=="")
+           {
+             printf(errAlert,"Select a valid DOB")
+             return nil
+           }
+           if(phone=="")
+           {
+             printf(errAlert,"Enter phone number")
+             return nil
+           }
+           
            sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Not Admit');"
            mysql.query(connection,sqlquery)
            sqlquery = "select status from patients where cnic = '" + cnic + "' ;"
@@ -168,7 +185,7 @@ function addAppointment(var f)
     }
     catch(err)
     {
-        printf(errAlert,"Operation Failed"+err.msg)
+        printf(errAlert,"Operation Failed")
         return nil
     }
 }
