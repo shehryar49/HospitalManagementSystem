@@ -32,7 +32,7 @@
     function showPatients() {
       fetch('/cgi-bin/hospital/patients.plt?operation=view')
         .then(function (response) { return response.text() })
-        .then(function (html) { document.getElementById("response").innerHTML = html; })
+        .then(function (html) { document.getElementById("response").innerHTML = html;var k = document.getElementById("pathistory");k.innerHTML ="";})
         .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
     function searchPatients() {
@@ -61,6 +61,8 @@
         })
         .then(function (html) {
           document.getElementById("response").innerHTML = html;
+          var k = document.getElementById("pathistory");
+          k.innerHTML = "";
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -175,11 +177,11 @@
       fetch(query)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var k = document.getElementById("response");
+          var k = document.getElementById("pathistory");
           k.innerHTML = html;
           setTimeout(hideAlerts, 3000);
         })
-        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
+        .catch(function (thrownerror) { console.log('Page not Found: ', thrownerror); });
     }
     //Appointment handler
     function updtaptselect()
@@ -512,7 +514,7 @@ table
               </div>
               <div id="collapsibleAdmission" class="collapse" data-parent="#idekwutitmeant">
                 <div class="card-body">
-                  <h4>Admission Details</h4>
+                  "<h4>Admission Details</h4>
 
                   <input class="form-control w-25" type="text" id="Name" placeholder="Name">
                   <input class="form-control w-25 mt-2" type="text" id="cnic2" placeholder="CNIC">
