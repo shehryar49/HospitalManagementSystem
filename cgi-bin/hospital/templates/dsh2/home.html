@@ -203,8 +203,8 @@
       fetch(string_url)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html + whytho.innerHTML;
+          var whytho = document.getElementById("response");
+          whytho.innerHTML = html
           setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
         })
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
@@ -218,8 +218,8 @@
       fetch(string_url)
         .then(function (response) { return response.text() })
         .then(function (html) {
-          var whytho = document.getElementById("response").innerHTML = html;
-          whytho.innerHTML = html + whytho.innerHTML;
+          var whytho = document.getElementById("response");
+          whytho.innerHTML = html ;
           setTimeout(hideAlerts, 3000); //is this to hide the success/err alerts after some time?
         })
         .catch(function (thrownerror) { console.log('Page not Found: ', thrownerr); });
