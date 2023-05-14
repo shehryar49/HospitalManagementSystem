@@ -58,18 +58,63 @@ create table rooms(id int, dept_id int,occ int,totalBeds int, perDay float);
 alter table rooms add constraint FK_roomdept foreign key (dept_id) references departments(dept_id);
 alter table rooms add constraint FK_primaryroom PRIMARY KEY (id, dept_id); 
 
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,1,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,1,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,1,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,1,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,1,0,25,600);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,1,0,6,1000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,2,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,2,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,2,0,3,1000);
+
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,3,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,3,0,1,1800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,3,0,1,1200);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,3,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,3,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,3,0,12,800);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,4,0,6,2000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,4,0,6,2000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,5,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,5,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,5,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,5,0,12,800);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,6,0,2,5000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,6,0,1,20000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,7,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,7,0,6,1000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,7,0,12,800);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,7,0,1,12000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,7,0,25,600);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,7,0,6,1000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,8,0,2,5000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,8,0,1,20000);
+
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(3,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(4,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(5,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(6,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(7,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(8,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(9,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(10,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(11,9,0,1,18000);
+insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,9,0,1,15000);
 
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(1,10,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(2,10,1,1,18000);
@@ -98,6 +143,7 @@ insert into rooms(id, dept_id, occ, totalBeds, perDay) values(9,11,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(10,11,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(11,11,0,1,18000);
 insert into rooms(id, dept_id, occ, totalBeds, perDay) values(12,11,0,1,15000);
+
 
 --patients that ever visited the hospital
 --Not Admit means the idiot came for an appointment
