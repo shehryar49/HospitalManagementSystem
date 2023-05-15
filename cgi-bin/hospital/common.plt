@@ -19,11 +19,62 @@ function isNum(var str)
 }
 function isDate(var str)
 {
-    return regex.match(str,"[0-9]+-[0-9]+-[0-9]+")
+    return regex.match(str,"[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}")
 }
 function isTime(var str)
 {
-    return regex.match(str,"[0-9]+:[0-9]+")
+    return regex.match(str,"[0-9]{1,2}:[0-9]{1,2}")
+}
+function isCNIC(var str)
+{
+  return regex.match(str,"[0-9]+-[0-9]+-[0-9]+")
+}
+function formatCheck(var form)
+{
+  if(form.hasKey("cnic") and !isCNIC(form["cnic"]))
+    return "CNIC"
+  if(form.hasKey("name") and !isAlpha(form["name"]))
+    return "Name"
+  if(form.hasKey("p_id") and !isCNIC(form["p_id"]))
+    return "Patient CNIC"
+  if(form.hasKey("d_id") and !isCNIC(form["d_id"]))
+    return "Doctor CNIC"
+  if(form.hasKey("salary") and !isNum(form["salary"]))
+    return "Salary"
+  if(form.hasKey("app_date") and !isDate(form["app_date"]))
+    return "Appointment Date"
+  if(form.hasKey("desig") and !isAlpha(form["desig"]))
+    return "Designation"
+  if(form.hasKey("dob") and !isDate(form["dob"]))
+    return "Date of birth"  
+  if(form.hasKey("phone") and !isNum(form["phone"]))
+    return "Phone Number"  
+  if(form.hasKey("start") and !isTime(form["start"]))
+    return "Start time"
+  if(form.hasKey("end") and !isTime(form["end"]))
+    return "End time"
+  if(form.hasKey("DName") and !isAlpha(form["DName"]))
+    return "Doctor Name"
+  if(form.hasKey("PName") and !isAlpha(form["PName"]))
+    return "Patient Name"
+  if(form.hasKey("fee") and !isNum(form["fee"]))
+    return "Fee"
+  if(form.hasKey("type") and !isAlpha(form["type"]))
+    return "Inventory type"
+  if(form.hasKey("ppu") and !isNum(form["ppu"]))
+    return "Price per unit"
+  if(form.hasKey("nou") and !isNum(form["nou"]))
+    return "Number of units"
+  if(form.hasKey("deptname") and !isAlpha(form["deptname"]))
+    return "Department name"
+  if(form.hasKey("dept_id") and !isNum(form["dept_id"]))
+    return "Department ID"
+  if(form.hasKey("price") and !isNum(form["price"]))
+    return "Price per day"
+  if(form.hasKey("beds") and !isNum(form["beds"]))
+    return "Total beds"
+          
+  return nil
 }
 function htmlHeader()
 {

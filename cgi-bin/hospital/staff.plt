@@ -33,22 +33,29 @@ function viewStaff()
 }
 function addNewStaff(var f)
 {
-    if(!f.hasKey("name") or !f.hasKey("cnic") or !f.hasKey("phone") or !f.hasKey("desig") or !f.hasKey("salary") or !f.hasKey("dob"))
+  
+    if(!hasFields(["name","dob","cnic","phone","desig","salary"],f))
     {   
-        print("Insfficient Parameters")
+        printf(errAlert,"Bad Request")
         return nil
     }
     var name = f["name"]
     var cnic = f["cnic"]
-    if(cnic == "")
-    {
-        print("cnic field cannot be empty")
-        return nil
-    }
     var phone = f["phone"]
     var date_of_birth = f["dob"]
     var designation = f["desig"]
     var salary = f["salary"]
+    if(cnic == "" or name=="" or date_of_birth=="" or phone=="" or designation=="" or salary=="")
+    {
+        printf(errAlert,"All fields are mandatory")
+        return nil
+    }
+    var k = formatCheck(f)
+    if(k != nil)
+    {
+      printf(errAlert,"Invalid format of "+k)
+      return nil
+    }
     try
     {
         var connection = mysql.init()
@@ -102,12 +109,18 @@ function deleteExistingStaff(var form)
 {
   if(!form.hasKey("cnic"))
   {
-    print("Insufficient parameters")
+    printf(errAlert,"Bad Request")
+    viewStaff()
     return nil
   }
-  #there are SQL injection vulnerabilities
-  #to be fixed later
-  var query = format("DELETE FROM staff WHERE cnic='%';",form["cnic"])
+  var cnic = form["cnic"]
+  if(!isCNIC(cnic))
+  {
+    printf(errAlert,"Invalid format of CNIC")
+    showStaff()
+    return nil
+  }
+  var query = format("DELETE FROM staff WHERE cnic='%';",cnic)
   try
   {
     var conn = mysql.init()
@@ -126,18 +139,25 @@ function searchStaff(var form)
 {
   if(!form.hasKey("keyval") or !form.hasKey("keyname"))
   {
-    print("Insufficient parameters!")
+    printf(errAlert,"Bad Request!")
     return nil
   }
   var val = form["keyval"]
+  if(val == "")
+  {
+    printf(errAlert,"Search field is empty")
+    return nil
+  }
   var name = form["keyname"]
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
   if(name == "salary")
     query = "select * from staffView where "+name+"="+val+";"
-  else
+  else if(name == "name" or name == "desig")
     query = "select * from staffView where "+name+" like '%"+val+"%';"
+  else
+    query = "select * from staffView where "+name+"='"+val+"';"
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
@@ -162,7 +182,7 @@ function searchStaff(var form)
   print("</table>")
 }
 ##Execution starts from here##
-checkSignin()
+var cred = checkSignin()
 htmlHeader()
 ##Request Processing##
 var formData = cgi.FormData()
@@ -183,4 +203,4 @@ else if(request == "view")
 else if(request == "search")
   searchStaff(formData)
 else
-  print("Unknown Operation")
+  print("Bad Request")

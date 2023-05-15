@@ -94,9 +94,16 @@ function admit(var f)
     if(!hasFields(["cnic","name","phone","dob","room"],f))
     {
         printf(errAlert,"Bad Request")
+        viewall()
         return nil
     }
     var cnic = f["cnic"]
+    if(!isCNIC(cnic))
+    {
+        printf(errAlert,"Invalid format of CNIC")
+        viewall()
+        return nil
+    }
     var room = f["room"]
     var phone = f["phone"]
     if(cnic == "" or room == "" or room == "Room" )
@@ -118,25 +125,14 @@ function admit(var f)
         {
            var dob = f["dob"]
            var phone = f["phone"]
-           var name = f["name"] 
-           if(!isAlpha(name) or name == "")
+           var name = f["name"]
+           var k = formatCheck(f)
+           if(k != nil)
            {
-             printf(errAlert,"Enter valid name!")
+             printf(errAlert,"Invalid format of "+k)
              viewall()
              return nil
-           }
-           if(!isDate(dob) or dob == "")
-           {
-             printf(errAlert,"Enter valid dob")
-             viewall()
-             return nil
-           }
-           if(!isNum(phone) or phone == "")
-           {
-             printf(errAlert,"Enter valid phone number!")
-             viewall()
-             return nil
-           }
+           } 
            sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Discharged');"
            mysql.query(connection,sqlquery)
         }
@@ -203,6 +199,12 @@ function discharge(var f)
     if(cnic == "" or status == "Status")
     {
         printf(errAlert, "CNIC and Status are mandatory fields!")
+        viewall()
+        return nil
+    }
+    if(!isCNIC(cnic))
+    {
+        printf(errAlert,"Invalid format of CNIC")
         viewall()
         return nil
     }

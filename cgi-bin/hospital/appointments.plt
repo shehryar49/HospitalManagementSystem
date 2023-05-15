@@ -30,12 +30,17 @@ function showAvailable(var f)
         return nil
     }
     var dept = f["dept"]
+    var date = f["date"]
     if(dept == "Department" or !isNum(dept))
     {
         printf(errAlert,"Select a department!")
         return nil
     }
-    var date = f["date"]
+    if(date == "")
+    {
+      printf(errAlert,"Select a date")
+      return nil
+    }
     var conn = mysql.init()
     mysql.real_connect(conn,"localhost","root","password","hospital")
     var query = format("select WEEKDAY('%'),'%' < CURDATE();",date,date)
@@ -43,7 +48,10 @@ function showAvailable(var f)
     var res = mysql.store_result(conn)
     var P = mysql.fetch_row_as_str(res)
     if(P == nil)
-      throw @UnknownError,"Something wrong with Sql Server"
+    {
+      printf(errAlert,"Something wrong with SQL Server")
+      return nil
+    }
     if(P[0] == "6") # Sunday
     {
         printf(errAlert,"Appointment can't be scheduled on Sunday.")
@@ -136,6 +144,7 @@ function addAppointment(var f)
         printf(errAlert, "CNIC, Department and Date are required")
         return nil
     }
+
     try
     {
         var connection = mysql.init()
@@ -158,7 +167,17 @@ function addAppointment(var f)
              printf(errAlert,"Enter phone number")
              return nil
            }
-           
+           if(name == "")
+           {
+             printf(errAlert,"Enter Patient name")
+             return nil
+           }
+           var k = formatCheck(f)
+           if(k != nil)
+           {
+             printf(errAlert,"Invalid format of "+k)
+             return nil
+           }         
            sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Not Admit');"
            mysql.query(connection,sqlquery)
            sqlquery = "select status from patients where cnic = '" + cnic + "' ;"

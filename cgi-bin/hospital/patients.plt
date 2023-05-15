@@ -75,6 +75,11 @@ function searchPatient(var form)
   var level = int(cred["level"])
   var val = form["keyval"]
   var name = form["keyname"]
+  if(val == "")
+  {
+    printf(errAlert,"Empty search field")
+    return nil
+  }
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
   var query = ""
