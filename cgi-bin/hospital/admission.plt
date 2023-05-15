@@ -105,12 +105,6 @@ function admit(var f)
         viewall()
         return nil
     }
-    if(!isNum(phone) or phone == "")
-    {
-        printf(errAlert,"Enter valid phone number")
-        viewall()
-        return nil
-    }
     try
     {
         var connection = mysql.init()
@@ -125,6 +119,24 @@ function admit(var f)
            var dob = f["dob"]
            var phone = f["phone"]
            var name = f["name"] 
+           if(!isAlpha(name) or name == "")
+           {
+             printf(errAlert,"Enter valid name!")
+             viewall()
+             return nil
+           }
+           if(!isDate(dob) or dob == "")
+           {
+             printf(errAlert,"Enter valid dob")
+             viewall()
+             return nil
+           }
+           if(!isNum(phone) or phone == "")
+           {
+             printf(errAlert,"Enter valid phone number!")
+             viewall()
+             return nil
+           }
            sqlquery = "insert into patients(name, cnic, phone, dob, status) values('"+name+"','"+cnic+"','"+phone+"','"+dob+"','Discharged');"
            mysql.query(connection,sqlquery)
         }
