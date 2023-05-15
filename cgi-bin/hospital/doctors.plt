@@ -276,7 +276,7 @@ function getallInfo()
     var total = mysql.num_rows(res)
     var data = mysql.fetch_row_as_str(res)
     printf("
-        <img class=\"image-cover float-right\" height=\"300\" class=\"float-right\" src=\"http://localhost/hospital/Doctors/%.jpeg\">
+        <img class=\"image-cover float-right\" height=\"300\" class=\"float-right\" src=\"/hospital/Doctors/%.jpeg\">
         <b>Name: </b>%<br><br>
         <b>Date of Birth: </b>%<br><br>
         <b>Age: </b>%<br><br>
