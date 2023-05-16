@@ -11,10 +11,10 @@ use hospital;
 --doctors that currently work at hospital
 create table doctors(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,salary int);
 insert into doctors values('Zabago','32910-1927181-7','03253416969','1987-09-09',690000);
-insert into doctors values('Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', 900000);
-insert into doctors values('Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21', 1000000);
-insert into doctors values('Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10',  850000);
-insert into doctors values('Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10',231220);
+insert into doctors values('Nasir Ahmad', '35202-7555101-1','03216241789', '1995-01-08', 900000);
+insert into doctors values('Asiya Bhatti','34212-3810353-4','03021829104', '1992-11-21', 1000000);
+insert into doctors values('Saad Asif', '32019-8917101-6','03326364156', '1990-12-10',  850000);
+insert into doctors values('Asa Butterfield','32019-8917101-7','03326765193','1995-12-10',231220);
 
 
 insert into doctors values('Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', 950000);
