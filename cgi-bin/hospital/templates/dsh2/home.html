@@ -14,7 +14,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script>
 
-    function showOverview() {
+    function showOverview()
+    {
       fetch('/cgi-bin/hospital/stats.plt')
         .then(function (response) { return response.json() })
         .then(function (json) {
@@ -295,6 +296,7 @@
         })
         .then(function (html) {
           document.getElementById("response1").innerHTML = html;
+          setTimeout(hideAlerts,3000);
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -499,7 +501,7 @@
           })
           .then(function (html) {
             var k = document.getElementById("responseStaff");
-            k.innerHTML = html + k.innerHTML;
+            k.innerHTML = html;
             setTimeout(hideAlerts, 3000);
           })
           .catch(function (err) {
@@ -647,6 +649,7 @@
         })
         .then(function (html) {
           document.getElementById("responseinventory").innerHTML = html;
+          setTimeout(hideAlerts,3000);
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -661,6 +664,7 @@
         })
         .then(function (html) {
           document.getElementById("responseinventory").innerHTML = html;
+          setTimeout(hideAlerts,3000);
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -698,7 +702,7 @@
         })
         .then(function (html) {
           var k = document.getElementById("responseinventory");
-          k.innerHTML = html + k.innerHTML;
+          k.innerHTML = html;
           setTimeout(hideAlerts, 3000);
         })
         .catch(function (err) {
