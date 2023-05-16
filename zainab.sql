@@ -384,28 +384,12 @@ insert into records values(1,'35100-1839103-8','2022-12-10 15:00:00','2023-05-12
 
 --appointments
 create view appointments as (SELECT d_id,TIME(admitDate) as start,TIME(expiryDate) as end,cnic as p_id, DATE(admitDate) as app_date, dept_id FROM records WHERE type = 0);
-create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.salary,t.perc
-     from staff as st join 
-     (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from 
-       (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic)
-        as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where a.cnic=b.cnic)t on
-st.cnic = t.cnic);
+create view staffView as (SELECT st.name,st.cnic,st.phone,st.dob,st.desig,st.salary,t.perc     from staff as st join      (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from        (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic)        as a,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b where a.cnic=b.cnic)t on st.cnic = t.cnic);
 
-create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.salary,t.perc
- from doctors as st join 
-   (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from 
-          (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a
-          ,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b
-           where b.cnic = a.cnic)t
-   on st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id);
+create view docView as (SELECT st.name,st.cnic,st.phone,st.dob,departments.deptname,st.salary,t.perc from doctors as st join (SELECT DISTINCT a.cnic,a.total/b.total*100 as perc from           (SELECT cnic,COUNT(*) as total from attendance where status='P' group by cnic) as a          ,(SELECT cnic,COUNT(*) as total from attendance group by cnic) as b           where b.cnic = a.cnic)t   on st.cnic = t.cnic join worksin on st.cnic=worksin.d_id join departments on worksin.dept_id=departments.dept_id);
 
-create view deptView as Select departments.dept_id, departments.deptname, departments.hod, doctors.name
-from departments left join doctors on departments.hod = doctors.cnic;
+create view deptView as Select departments.dept_id, departments.deptname, departments.hod, doctors.name from departments left join doctors on departments.hod = doctors.cnic;
  
-create view roomView as select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from 
-  rooms as r join departments as dept on dept.dept_id = r.dept_id;
+create view roomView as select dept.deptname, r.id, r.occ, r.totalBeds, r.perDay from   rooms as r join departments as dept on dept.dept_id = r.dept_id;
 
-create view appView as (select doctors.name as DName,patients.name as PName,a.start,a.end,a.app_date,a.d_id,
-        a.p_id from appointments as a
-         inner join doctors on doctors.cnic = a.d_id inner join 
-         patients on patients.cnic=a.p_id);
+create view appView as (select doctors.name as DName,patients.name as PName,a.start,a.end,a.app_date,a.d_id, a.p_id from appointments as a inner join doctors on doctors.cnic = a.d_id inner join patients on patients.cnic=a.p_id);
