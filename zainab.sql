@@ -17,10 +17,10 @@ insert into doctors values('Saad Asif', '32019-8917101-6','03326364156', '1990-1
 insert into doctors values('Asa Butterfield','32019-8917101-7','03326765193','1995-12-10',231220);
 
 
-insert into doctors values('Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', 950000);
-insert into doctors values('Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', 700000);
-insert into doctors values('Kabir Mujtaba', '25754-1021678-5','0317-1020603','1992-8-24',850000);
-insert into doctors values('Ahmed Hussain', '24243-1009440-4', '0311-1001758','1965-9-2', 200000);
+insert into doctors values('Ali Hamza', '19820-0174516-2', '03017392113', '1989-08-21', 950000);
+insert into doctors values('Aqsa Shahid', '20193-1872451-0', '03351982991', '1980-11-11', 700000);
+insert into doctors values('Kabir Mujtaba', '25754-1021678-5','03171020603','1992-8-24',850000);
+insert into doctors values('Ahmed Hussain', '24243-1009440-4', '03111001758','1965-9-2', 200000);
 
 
 --department table
