@@ -10,17 +10,17 @@ use hospital;
 
 --doctors that currently work at hospital
 create table doctors(name varchar(30),cnic varchar(30) PRIMARY KEY,phone char(12),dob date,salary int);
-insert into doctors values('Dr. Zabago','32910-1927181-7','03253416969','1987-09-09',690000);
-insert into doctors values('Dr. Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', 900000);
-insert into doctors values('Dr. Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21', 1000000);
-insert into doctors values('Dr. Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10',  850000);
-insert into doctors values('Dr. Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10',231220);
+insert into doctors values('Zabago','32910-1927181-7','03253416969','1987-09-09',690000);
+insert into doctors values('Nasir Ahmad', '35202-7555101-1','0321-6241789', '1995-01-08', 900000);
+insert into doctors values('Asiya Bhatti','34212-3810353-4','0302-1829104', '1992-11-21', 1000000);
+insert into doctors values('Saad Asif', '32019-8917101-6','0332-6364156', '1990-12-10',  850000);
+insert into doctors values('Asa Butterfield','32019-8917101-7','0332-6765193','1995-12-10',231220);
 
 
-insert into doctors values('Dr. Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', 950000);
-insert into doctors values('Dr. Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', 700000);
-insert into doctors values('Dr. Kabir Mujtaba', '25754-1021678-5','0317-1020603','1992-8-24',850000);
-insert into doctors values('Dr. Ahmed Hussain', '24243-1009440-4', '0311-1001758','1965-9-2', 200000);
+insert into doctors values('Ali Hamza', '19820-0174516-2', '0301-7392113', '1989-08-21', 950000);
+insert into doctors values('Aqsa Shahid', '20193-1872451-0', '0335-1982991', '1980-11-11', 700000);
+insert into doctors values('Kabir Mujtaba', '25754-1021678-5','0317-1020603','1992-8-24',850000);
+insert into doctors values('Ahmed Hussain', '24243-1009440-4', '0311-1001758','1965-9-2', 200000);
 
 
 --department table
