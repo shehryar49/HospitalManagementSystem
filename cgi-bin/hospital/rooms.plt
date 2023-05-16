@@ -45,6 +45,11 @@ function search(var f)
         return nil
     }
     var deptname = f["deptname"]
+    if(deptname == "")
+    {
+        printf(errAlert,"Empty search field!")
+        return nil
+    }
     try
     {
         var connection = mysql.init()
@@ -65,7 +70,7 @@ function search(var f)
                     print("</table>")
                 deptname = fields[0]
                 print("<h2>", deptname,"</h2>")
-                print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>ID</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
+                print("<table class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Room no.</th><th>Occupied Beds</th><th>Total Beds</th><th>Price Per Day</th></tr>") 
             }
             printf("<tr><td>%</td><td>%</td><td>%</td><td>%</td></tr>",fields[1],fields[2],fields[3],fields[4])
         }
@@ -121,6 +126,16 @@ function add(var f)
     if(dept_id == "Department")
     {
         printf(errAlert, "Invalid Value for Department")
+        return nil
+    }
+    if(!isNum(beds))
+    {
+        printf(errAlert,"Invalid format of total beds")
+        return nil
+    }
+    if(!isNum(price))
+    {
+        printf(errAlert,"Invalid format of price per day")
         return nil
     }
     try

@@ -218,6 +218,11 @@ function searchAppointment(var f)
             return nil
         }
         var keyval = f["keyval"]
+        if(keyval == "")
+        {
+          printf(errAlert,"Empty search field!")
+          return nil
+        }
         var keyname = f["keyname"]
         var level = int(cred["level"])
         var connection = mysql.init()

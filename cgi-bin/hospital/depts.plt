@@ -92,7 +92,16 @@ function update(var form)
   var deptname = form["deptname"] 
   var hod = form["hod"]
   var query = "Select dept_id from worksIn where d_id = '"+hod+"';"
-  
+  if(ID == "" or !isNum(ID))
+  {
+    printf(errAlert,"Invalid format of ID")
+    return nil
+  }
+  if(hod == "" or (!isCNIC(hod) and hod!="nil"))
+  {
+    printf(errAlert,"Invalid format of HOD CNIC")
+    return nil
+  }
   try
   {
     var conn = mysql.init()
@@ -135,10 +144,16 @@ function add(var form)
     var deptname = form["name"]
     if(deptname == "")
     {
-        printf(errAlert, "Insufficient Parameters")
+        printf(errAlert, "Enter a department name!")
         return nil
     }
-    try{
+    if(!isAlpha(deptname))
+    {
+        printf(errAlert,"Invalid format of department name!")
+        return nil
+    }
+    try
+    {
         var conn = mysql.init()
         mysql.real_connect(conn,"localhost","root","password","hospital")
         var query = "Insert into departments(deptname) values('"+deptname+"');"

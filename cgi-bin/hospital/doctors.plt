@@ -24,6 +24,12 @@ function addDoctor(var form)
     printf("UPLOAD a proper JPEG image!You think i'm stupid?")
     return nil
   } 
+  var k = formatCheck(form)
+  if(k!=nil)
+  {
+    println("Invalid format of "+k)
+    return nil
+  }
   try
   {
     var name = form["name"]
@@ -167,7 +173,7 @@ function fireDoctor(var form)
     printf(errAlert,"Bad Request")
     return nil
   }
-  var query = format("Select * from appointments where d_id = '%' and start >= CURDATE();", form["cnic"]) #checks if doctor has any pending appointments
+  var query = format("Select * from appointments where d_id = '%' and app_date >= CURDATE();", form["cnic"]) #checks if doctor has any pending appointments
   try
   {
     var conn = mysql.init()
@@ -177,12 +183,15 @@ function fireDoctor(var form)
     var row = mysql.fetch_row_as_str(res)
     if(row == nil)
     {
+      mysql.query(conn,"start transaction")
       query = format("DELETE FROM doctors WHERE cnic='%';",form["cnic"])
       mysql.query(conn,query)
       query = format("DELETE FROM attendance WHERE cnic='%';",form["cnic"])
       mysql.query(conn,query)
       query = format("DELETE FROM worksIn WHERE d_id='%';",form["cnic"])
       mysql.query(conn,query)
+
+      mysql.query(conn,"commit")
       printf(successAlert,"Delete QUERY executed.")
     }
     else
@@ -211,6 +220,7 @@ function updateDoctor(var form)
   if(k!=nil)
   {
     printf(errAlert,"Invalid format of "+k)
+    viewall()
     return nil
   }
   var name = form["name"]
@@ -225,11 +235,13 @@ function updateDoctor(var form)
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
     mysql.close(conn)
+    viewall()
     printf(successAlert,"Update query executed.")
   }
   catch(err)
   {
     printf(errAlert,"Updation failed."+err.msg)
+    viewall()
     return nil
   }
 }
@@ -367,10 +379,19 @@ function initdoc()
   }
 }
 cred = checkSignin()
-print("Content-type: text/html\r\n\r\n")
 level = int(cred["level"])
+htmlHeader()
 ## VALIDATE REQUEST ##
-var form = cgi.FormData()
+var form = nil
+try
+{
+  form = cgi.FormData()
+}
+catch(err)
+{
+  println("Operation failed. Make sure all fields were filled!")
+  exit()
+}
 if(!form.hasKey("operation"))
 {
     print("No operation specified!")

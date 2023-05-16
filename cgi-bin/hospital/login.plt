@@ -49,10 +49,10 @@ function login(var uname,var pass)
   # but as mentioned in README.md this project is for educational purposes
   # JWTs coud be used but that requires an encryption library which as of today 13 May 2023
   # plutonium does not have
-  print("Set-cookie: user=",uname,"\r\n")
-  print("Set-cookie: pass=",row[0],"\r\n")
-  print("Set-cookie: level=",row[1],"\r\n")
-  print("Set-cookie: id=",row[2],"\r\n")
+  print("Set-cookie: user=",uname,"; HttpOnly\r\n")
+  print("Set-cookie: pass=",row[0],"; HttpOnly\r\n")
+  print("Set-cookie: level=",row[1],"; HttpOnly\r\n")
+  print("Set-cookie: id=",row[2],"; HttpOnly\r\n")
   
   print("location: dashboard.plt\r\n\r\n") #redirect to dashboard
 }

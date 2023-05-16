@@ -191,7 +191,7 @@ function getHistory(var f)
     }
     try{
       var cnic = f["cnic"]
-      var query = "select d.name, dept.deptname, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from doctors as d, records as r, departments as dept where r.type = 0 and r.dept_id = dept.dept_id and  d.cnic = r.d_id and r.cnic ='"+cnic+"';"
+      var query = "select d.name, dept.deptname, TIME(r.admitDate), TIME(r.expiryDate),DATE(r.admitDate), r.fee from doctors as d right join records as r on  d.cnic = r.d_id join departments as dept on r.dept_id = dept.dept_id where r.type = 0  and r.cnic ='"+cnic+"';"
       var conn = mysql.init()
       mysql.real_connect(conn,"localhost","root","password","hospital")
       mysql.query(conn,query)
@@ -205,7 +205,11 @@ function getHistory(var f)
         var fields = mysql.fetch_row_as_str(res)
         print("<tr>")
         foreach(var field: fields)
+        {
+          if(field == nil)
+            field = "-"
           printf("<td>%</td>",field)
+        }
         print("</tr>")
       }
       print("</table>")
