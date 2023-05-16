@@ -46,12 +46,14 @@ function addDoctor(var form)
     #img.content is a bytearray
     fwrite(img.content,file)
     close(file)
+    mysql.query(conn,"START TRANSACTION")
     var query = format("INSERT INTO doctors VALUES('%','%','%','%',%);",name,cnic,phone,dob,salary)
     mysql.query(conn,query)
     query = format("insert into worksIn VALUES(%,'%');",dept,cnic)
     mysql.query(conn,query)
     query = format("insert into attendance VALUES('%',CURDATE(),'P',2);",cnic)
     mysql.query(conn,query)
+    mysql.query(conn,"COMMIT")
     #insertion query does not return anything
     print("Success!")
   }
@@ -107,6 +109,11 @@ function searchDoctor(var form)
     return nil
   }
   var val = form["keyval"]
+  if(val == "")
+  {
+    printf(errAlert,"Search field is empty")
+    return nil
+  }
   var name = form["keyname"]
   var conn = mysql.init()
   mysql.real_connect(conn,"localhost","root","password","hospital")
@@ -197,7 +204,13 @@ function updateDoctor(var form)
   }
   if(!hasFields(["name","cnic","dob","phone","salary"],form))
   {
-    printf(errAlert,"INVALID REQUEST! Insuffcient parameters!")
+    printf(errAlert,"Bad Request!")
+    return nil
+  }
+  var k = formatCheck(form)
+  if(k!=nil)
+  {
+    printf(errAlert,"Invalid format of "+k)
     return nil
   }
   var name = form["name"]

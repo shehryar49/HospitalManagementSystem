@@ -20,7 +20,7 @@ function viewStaff()
       foreach(var field: fields)
       {
         if(k!= 1 and k!= 6)
-          printf("<td onclick=\"updatePatient(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
+          printf("<td onclick=\"updatestaff(this.parentElement,false)\" contentEditable=\"true\">%</td>",field)
         else
           printf("<td >%</td>",field)
         k+=1
@@ -84,13 +84,21 @@ function updateExistingStaff(var f)
     var cnic = f["cnic"]
     if(cnic == "")
     {
-        print("cnic cannot be NULL")
+        print("CNIC field can not be empty!")
+        viewStaff()
         return nil
     }
     var phone = f["phone"]
     var date_of_birth = f["dob"]
     var designation = f["desig"]
     var salary = f["salary"]
+    var k = formatCheck(f)
+    if(k != nil)
+    {
+      viewStaff()
+      printf(errAlert,"Invalid format of "+k)
+      return nil
+    }
     try
     {
         var connection = mysql.init()
@@ -98,10 +106,12 @@ function updateExistingStaff(var f)
         var query = format("UPDATE staff SET name = '%', cnic = '%', phone = '%',dob = '%', desig = '%',  salary = % where cnic='%';",name, cnic, phone, date_of_birth, designation, salary,cnic)
         mysql.query(connection,query)
         printf(successAlert,"Success")
+        viewStaff()
     }
     catch(err)
     {
         printf(errAlert,"Operation Failed")
+        viewStaff()
         return nil
     }
 }
@@ -117,7 +127,7 @@ function deleteExistingStaff(var form)
   if(!isCNIC(cnic))
   {
     printf(errAlert,"Invalid format of CNIC")
-    showStaff()
+    viewStaff()
     return nil
   }
   var query = format("DELETE FROM staff WHERE cnic='%';",cnic)

@@ -40,7 +40,12 @@ function search(var f)
     var id = f["id"]
     if(id == "")
     {
-        printf(errAlert, "Insufficient Parameters")
+        printf(errAlert, "Empty search field!")
+        return nil
+    }
+    if(!isNum(id))
+    {
+        printf(errAlert,"Invalid format of ID")
         return nil
     }
     var query = "Select * from INVENTORY where id = "+id+";"
@@ -79,12 +84,33 @@ function addinventory(var f)
     var id = f["id"]
     if(id == "")
     {
-        print("id cannot be NULL")
+        printf(errAlert,"ID field is mandatory")
         return nil
     }
     var type = f["type"]
     var noofunits = f["nou"]
     var priceperunit = f["ppu"]
+    if(!isNum(id))
+    {
+        printf(errAlert,"Invalid format of id")
+        return nil
+    }
+    if(!isAlpha(type))
+    {
+        printf(errAlert,"Invalid format of type")
+        return nil
+    }
+    if(!isNum(noofunits))
+    {
+        printf(errAlert,"Invalid format of number of units")
+        return nil
+    }
+    if(!isNum(priceperunit))
+    {
+        printf(errAlert,"Invalid format of price per unit")
+        return nil
+    }
+    
     try
     {
         var connection = mysql.init()
@@ -105,13 +131,13 @@ function removeinventory(var f)
 {
     if(!f.hasKey("id"))
     {   
-        print("Insfficient Parameters")
+        printf(errAlert,"Bad Request")
         return nil
     }
     var id = f["id"]
     if(id == "")
     {
-        print("id cannot be NULL")
+        print("ID field cannot be empty")
         return nil
     }
     else
@@ -136,18 +162,38 @@ function updateinventory(var f)
 {
     if(!f.hasKey("id") or !f.hasKey("type") or !f.hasKey("nou") or !f.hasKey("ppu"))
     {   
-        print("Insfficient Parameters")
+        printf(errAlert,"Bad Request")
         return nil
     }
     var id = f["id"]
     if(id == "")
     {
-        print("id cannot be NULL")
+        print("ID field is mandatory!")
         return nil
     }
     var type = f["type"]
     var noofunits = f["nou"]
     var priceperunit = f["ppu"]
+    if(!isNum(id))
+    {
+        printf(errAlert,"Invalid format of ID")
+        return nil
+    }
+    if(!isAlpha(type))
+    {
+        printf(errAlert,"Invalid format of type")
+        return nil
+    }
+    if(!isNum(noofunits))
+    {
+        printf(errAlert,"Invalid format of number of units")
+        return nil
+    }
+    if(!isNum(priceperunit))
+    {
+        printf(errAlert,"Invalid format of price per unit")
+        return nil
+    }
     try
     {
         var connection = mysql.init()
@@ -164,9 +210,8 @@ function updateinventory(var f)
 }
 
 ##Execution starts from here##
-print("Content-type: text/html\r\n\r\n")
 checkSignin()
-
+htmlHeader()
 ##Request Processing##
 var formData = cgi.FormData()
 if(!formData.hasKey("operation"))
