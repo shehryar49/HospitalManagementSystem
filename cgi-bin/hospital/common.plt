@@ -120,10 +120,10 @@ var map = {"0": 0," ": 0,",": 11,".": 111,"?": 1111,"!": 11111,"1": 1,"2": 2,"3"
 function hexEncode(var bytes)
 {
     var res = ""
-    foreach(var byte: bytes)
+    foreach(var BYTE: bytes)
     {
-      var a = ByteToInt((IntToByte(byte) & 0xf0)>>4)
-      var b = ByteToInt(IntToByte(byte) & 0x0f)
+      var a = int((byte(BYTE) & 0xf0)>>4)
+      var b = int(byte(BYTE) & 0x0f)
       if(a<=9)
         res+=char(48+a)
       else
