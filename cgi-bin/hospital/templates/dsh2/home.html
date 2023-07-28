@@ -13,7 +13,66 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script>
+    function hideAlerts() {
+      var k = document.getElementsByClassName("alert");
+      if (k.length >= 1)//close alert at the end
+        k[k.length - 1].children[0].click();
+    } 
+    function displaySuccessMsg(msg,divName)
+    {
+      var div = document.getElementById(divName);
+      var successAlert = "<div id=\"sA\" class=\"alert alert-success alert-dismissible fade show\" role=\"alert\">"+msg+"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>";
+      div.innerHTML += successAlert;
+      setTimeout(hideAlerts,3000);
+    }
+    function displayErrMsg(msg,divName)
+    {
+      var div = document.getElementById(divName);
+      var errAlert = "<div id=\"eA\" class=\"alert alert-warning alert-dismissible fade show\" role=\"alert\">"+msg+"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>";
+      div.innerHTML += errAlert;
+      setTimeout(hideAlerts,3000);
+    }
+    function buildTable(json,div,deleteFnName = "",updateFnName = "")
+    {
+      var data = json["data"];//2d array
+      var isDeletable = json["deleteable"] == "yes"; 
+      
+      var isUpdatable = json["editables"].length > 0;
+      
+      div = document.getElementById(div);
+      var table = '<table class="table table-bordered table-responsive">';
+      var headings = json["headings"]; //heading names of table
+      table+="<tr>";
+      for(var i=0;i<headings.length;i++)
+      {
+        table+="<th>"+headings[i]+"</th>";
+      }
+      if(isUpdatable)
+        table+="<th></th>";
+      if(isDeletable)
+        table+="<th></th>";
+      table+="</tr>";
 
+      for(var i=0;i<data.length;i++)
+      {
+        var row = data[i];
+        table += "<tr>";
+        for(var j=0;j<row.length;j++)
+        {
+          if(isUpdatable && json["editables"].includes(j))
+            table += "<td onclick=\""+updateFnName+"(this,false)\" contentEditable=\"true\">"+row[j]+"</td>";
+          else
+            table += "<td>"+row[j]+"</td>";
+        }
+        if(isDeletable)
+          table+= "<td><button onclick=\""+deleteFnName+"(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>";
+          if(isUpdatable)
+          table += "<td><button onclick=\""+updateFnName+"(this.parentElement.parentElement)\" class=\"updateBtn\"><i class=\"fa fa-edit\"></i></button></td>";
+        table += "</tr>";
+      }
+      table+="</table>";
+      div.innerHTML = table;
+    }
     function showOverview()
     {
       fetch('/cgi-bin/hospital/stats.plt')
@@ -73,11 +132,7 @@
     /////////////////////////////////////////////////LOGOUT BUTTON///////////////////////////////////
     function logout() { window.location.href = "logout.plt"; }
     ///////////////////////////////////////////////SUCCESS/ERR ALERTS/////////////////////////////
-    function hideAlerts() {
-      var k = document.getElementsByClassName("alert");
-      if (k.length >= 1)//close alert at the end
-        k[k.length - 1].children[0].click();
-    }
+    
     ///////////////////////////////////////////////////PATIENT SCRIPT////////////////////////////////
     function updtpatselect()
     {
@@ -901,8 +956,13 @@
     //////////////////////////////////////////////////////Users//////////////////////////////////////////
     function showUsers() {
       fetch('/cgi-bin/hospital/users.plt?operation=view')
-        .then(function (response) { return response.text() })
-        .then(function (html) { document.getElementById("responseUsers").innerHTML = html; })
+        .then(function (response) { return response.json() })
+        .then(function (json) {
+          if(json["status"] != 200)
+            displayErrMsg(json["msg"],"responseUsers");
+          else
+           buildTable(json,"responseUsers","deleteUser");
+          })
         .catch(function (err) { console.log('Failed to fetch page: ', err); });
     }
     function searchUsers() {
@@ -921,10 +981,13 @@
       fetch(url)
         .then(function (response) {
           // When the page is loaded convert it to text
-          return response.text()
+          return response.json()
         })
-        .then(function (html) {
-          document.getElementById("responseUsers").innerHTML = html;
+        .then(function (json) {
+          if(json["status"] != 200)
+            displayErrMsg(json["msg"],"responseUsers");
+          else
+           buildTable(json,"responseUsers","deleteUser");
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -938,12 +1001,13 @@
       fetch(url)
         .then(function (response) {
           // When the page is loaded convert it to text
-          return response.text()
+          return response.json()
         })
-        .then(function (html) {
-          var k = document.getElementById('responseUsers');
-          k.innerHTML = html;
-          setTimeout(hideAlerts, 3000);
+        .then(function (json) {
+          if(json["status"]!=200)
+            displayErrMsg(json["msg"],"responseUsers");
+          else
+            displaySuccessMsg("Deleted user.","responseUsers");
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
@@ -959,58 +1023,19 @@
       fetch('users.plt?operation=add&' + query_string)
         .then(function (response) {
           // When the page is loaded convert it to text
-          return response.text()
+          return response.json()
         })
-        .then(function (html) {
-          var k = document.getElementById("responseUsers");
-          k.innerHTML = html;
-          setTimeout(hideAlerts, 3000);
+        .then(function (json) {
+             if(json["status"]!=200)
+               displayErrMsg(json["msg"],"responseUsers");
+             else
+               displaySuccessMsg("New User added.","responseUsers");
         })
         .catch(function (err) {
           console.log('Failed to fetch page: ', err);
         });
     }
-    function updateUser(elem) {
-      if (elem.children[0].className == "fa fa-edit") {
-        elem.children[0].className = "fa fa-check";
-        var row = elem.parentElement.parentElement;
-        for (var i = 0; i < row.children.length; i++) {
-          var p = row.children[i];
-          if (p == elem)
-            break;
-          if (p.contentEditable == "true") {
-            var range = document.createRange();
-            range.selectNodeContents(p);
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            break;
-          }
-        }
-        return null;
-      }
-      else {
-        var row = elem.parentElement.parentElement;
-        var username = row.children[0].innerHTML;
-        var level = row.children[1].innerHTML;
-        var cnic = row.children[2].innerHTML;
-        var query_string = "username=" + username + "&cnic=" + cnic + "&level=" + level;
-        query_string = encodeURI(query_string);
-        fetch('users.plt?operation=update&' + query_string)
-          .then(function (response) {
-            // When the page is loaded convert it to text
-            return response.text()
-          })
-          .then(function (html) {
-            var k = document.getElementById("responseUsers");
-            k.innerHTML = html + k.innerHTML;
-            setTimeout(hideAlerts, 3000);
-          })
-          .catch(function (err) {
-            console.log('Failed to fetch page: ', err);
-          });
-      }
-    }
+
     function changePwd()
     {
       var old = document.getElementById("old").value;
@@ -1020,15 +1045,14 @@
         fetch('users.plt?operation=changePassword&'+query_string)
     .then(function(response) {
         // When the page is loaded convert it to text
-        return response.text()
+        return response.json()
     })
-    .then(function(html) {
-        var k = document.getElementById("responsePwd");
-        k.innerHTML = html;
-        if(html == "Password Updated")
-        {
-          setTimeout(logout,2000);
-        }
+    .then(function(json) {
+        if(json["status"]!=200)
+          displayErrMsg(json["msg"],"responsePwd");
+        else
+          displaySuccessMsg("Password Changed","responsePwd");  
+
 
     })
     .catch(function(err) {
