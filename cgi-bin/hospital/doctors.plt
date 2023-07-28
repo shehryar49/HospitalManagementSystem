@@ -266,7 +266,7 @@ function getAttPerc(var form)
     var res = mysql.store_result(conn)
     var total = mysql.num_rows(res)
     if(total != 1)
-      throw @UnknownError,"Invalid response from DB"
+      throw Error("Invalid response from DB")
     mysql.close(conn)
     var row = mysql.fetch_row_as_str(res)
     print(row[0])

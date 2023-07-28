@@ -126,7 +126,7 @@ function update(var form)
         printf(successAlert,"Update Query executed.")
     }
     else
-        throw @UnknownError,"Doctor does not belong to this department"
+        throw Error("Doctor does not belong to this department")
   }
   catch(err)
   {

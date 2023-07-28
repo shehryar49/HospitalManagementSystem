@@ -1,11 +1,15 @@
 #!C:\plutonium\plutonium.exe
 import "common.plt"
-# Plutonium uses a string pool
-# so we are fine performance wise
-var trashIcon = "<td><button onclick=\"deleteUser(this)\" class=\"delBtn\"><i class=\"fa fa-trash\"></i></button></td>"
+import json
+
 var cred = nil
 function viewall()
 {
+  var payload = {"data": [],"status": 200} # 200 means success
+
+  payload.emplace("headings",["user","level","cnic"])
+  payload.emplace("editables", []) # add indexes of editable columns if you need any
+  payload.emplace("deleteable", "yes") # rows are deleteable
   try
   {
     var conn = mysql.init()
@@ -14,34 +18,26 @@ function viewall()
     mysql.query(conn,query)
     var res = mysql.store_result(conn)
     var total = mysql.num_rows(res)
-    print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
     for(var i=1 to total step 1)
     {
-      var fields = mysql.fetch_row_as_str(res)
-      print("<tr>")
-      foreach(var field: fields)
-      {
-        if(field == nil)
-          field = "-"
-        printf("<td>%</td>",field)
-      }
-      print(trashIcon)
-      print("</tr>")
+      var row = mysql.fetch_row_as_str(res)
+      payload["data"].push(row)
     }
-    print("</table>")
   }
   catch(err)
   {
-    printf(errAlert,"Operation failed.")
-    return nil
+    payload["status"] = 500 # Internal Server Error
+    payload.emplace("msg","Internal Server Error")
   }
+  # json.dumps converts nil to javascript null
+  # it basically retruns the json string version of a plutonium dict
+  println(json.dumps(payload))
 }
 function addUser(var form)
 {
   if(!hasFields(["username","cnic","level","password"],form))
   {
-    print(errAlert,"Bad Request")
-    viewall()
+    print({"status": 500,"msg": "Bad Request"})
     return nil
   }
   try
@@ -57,22 +53,25 @@ function addUser(var form)
       query = format("INSERT INTO users VALUES('%','%','%',NULL);",username,boomerHash(password),level)
     mysql.query(conn,query)
     #insertion query does not return anything
-    printf(successAlert,"Success!")
+    println({"status": 200})
   }
   catch(err)
   {
-    printf(errAlert,"Insertion failed."+err.msg)
-    
+   println({"status": 500,"msg": err.msg}) 
   }
-  viewall()
 }
 function searchUser(var form)
 {
   if(!form.hasKey("keyval") or !form.hasKey("keyname"))
   {
-    print(errAlert,"Bad Request")
+    print({"status":500,"msg": "Bad Request"})
     return nil
   }
+  var payload = {"data": [],"status": 200} # 200 means success
+  payload.emplace("headings",["user","level","cnic"])
+  payload.emplace("editables", []) # add indexes of editable columns if you need any
+  payload.emplace("deleteable", "yes") # rows are deleteable
+  
   var val = form["keyval"]
   var name = form["keyname"]
   if(name == "cnic")
@@ -83,27 +82,18 @@ function searchUser(var form)
   mysql.query(conn,query)
   var res = mysql.store_result(conn)
   var total = mysql.num_rows(res)
-  print("<table spellcheck=\"false\" class=\"table table-bordered table-responsive\" id=\"data\"><tr><th>Username</th><th>Level</th><th>CNIC</th><th></th></tr>")
   for(var i=1 to total step 1)
   {
     var fields = mysql.fetch_row_as_str(res)
-    print("<tr>")
-     foreach(var field: fields)
-    {
-      if(field == nil)
-        field = "-"
-      printf("<td>%</td>",field)
-    }
-    print(trashIcon)
-    print("</tr>")
+    payload["data"].push(fields)
   }
-  print("</table>")
+  println(json.dumps(payload))
 }
 function changePassword(var form )
 {
   if(!hasFields(["old","new"],form))
   {
-    println("Bad Request")
+    println({"status": 500,"msg": "Bad Request"})
     return nil
   }
   ##Critical
@@ -121,22 +111,21 @@ function changePassword(var form )
     var row = mysql.fetch_row_as_str(res)
     if(row == nil)
     {
-      println("Username does not exist!")
+      println({"status": 500,"msg": "Username does not exist!"})
       return nil
     }
     if(row[0] != oldhash)
     {
-      println("Password Mismatch")
+      println({"status": 500,"msg": "Old Password Mismatch"})
       return nil
     }
     mysql.query(conn,"update users set password = '"+newhash+"' where username='"+user+"';")
     mysql.close(conn)
-    print("Password Updated")
-    
+    println({"status": 200})
   }
   catch(err)
   {
-    print("Operation failed")
+   println({"status": 500,"msg": "Operation failed!"})
   }
 }
 function deleteUser(var form)
@@ -144,14 +133,13 @@ function deleteUser(var form)
   # deletion is done by cnic(primary key)
   if(!form.hasKey("username"))
   {
-    print("Insufficient parameters")
+    println({"status": 500,"msg": "Bad Request"})
     return nil
   }
   var user = cred["user"]
   if(user == form["username"])
   {
-    printf(errAlert,"You cannot delete your own account!")
-    viewall()
+    println({"status": 500,"msg": "Fuck you! You cannot delete your own account."})
     return nil
   }
   var query = format("DELETE FROM users WHERE username='%';",form["username"])
@@ -161,27 +149,27 @@ function deleteUser(var form)
     mysql.real_connect(conn,"localhost","root","password","hospital")
     mysql.query(conn,query)
     mysql.close(conn)
-    printf(successAlert,"Delete Query executed.")
-    viewall()
+    println({"status": 200})
   }
   catch(err)
   {
-    printf(errAlert,"Deletion failed.")
-    viewall()
+    println({"status": 500,"msg": "Deletion failed"})
     return nil
   }
 }
 #main starts from here
 cred = checkSignin()
-print("Content-type: text/html\r\n\r\n")
+# this is very important
+# set output type of script to json
+print("Content-type: application/json\r\n\r\n")
 
 ## VALIDATE REQUEST ##
 var form = cgi.FormData()
 
 if(!form.hasKey("operation"))
 {
-    print("No operation specified!")
-    exit()
+  println({"status": 500,"msg": "Bad Request"})
+  exit() #dont't use exit(1) server will not send the response back
 }
 var operation = form["operation"]
 if(operation == "add")
@@ -195,4 +183,4 @@ else if(operation == "search")
 else if(operation == "changePassword")
   changePassword(form)
 else
-  println("INVALID REQUEST! Unknown operation!")
+  println({"status": 500,"msg": "Unknown Operation"})
